@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Referral Progress - Status Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Track your referral progress and see how close you are to unlocking Premium">
+    <meta name="theme-color" content="#667eea">
+</head>
+<body>
+    <div class="container">
+        <!-- Page Header -->
+        <header class="page-header" role="banner">
+            <div class="hero">
+                <img src="https://pixabay.com/get/gf994dffecd31e6235ab2a278591d970298f40a47dfdefd5c30726872dd313a2e0609bae49b2c2f92c80ecff4a6a9efea1b96c5e66bf112a074d6b8f1cac82be4_1280.jpg" alt="Progress tracking and gamification levels visualization" class="hero-image">
+                <h1 class="hero-title" id="hero-title">Loading...</h1>
+                <p class="hero-subtitle" id="hero-subtitle">Loading your progress...</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="page-content" id="main-content">
+            <!-- Loading state will be shown here initially -->
+        </main>
+
+        <!-- Footer Actions -->
+        <footer class="page-footer">
+            <div class="share-buttons" id="action-buttons">
+                <button class="btn btn-primary" id="share-again" disabled>Loading...</button>
+                <button class="btn btn-secondary" id="copy-link" disabled>Loading...</button>
+                <button class="btn btn-secondary" id="copy-code" disabled>Loading...</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="referralData.js"></script>
+    <script src="utils.js"></script>
+    <script src="referralStatus.js"></script>
+</body>
+</html>
