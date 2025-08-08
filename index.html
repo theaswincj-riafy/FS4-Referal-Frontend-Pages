@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral System - Demo Navigation</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .navigation-container {
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .nav-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        
+        .nav-subtitle {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #2d3748;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-btn:hover {
+            border-color: #4299e1;
+            background: #f7fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .nav-btn-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        
+        .nav-btn-content {
+            flex: 1;
+            text-align: left;
+        }
+        
+        .nav-btn-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-btn-desc {
+            font-size: 0.9rem;
+            color: #718096;
+            font-weight: 400;
+        }
+        
+        .nav-btn-arrow {
+            font-size: 1.2rem;
+            color: #a0aec0;
+        }
+        
+        .params-info {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .params-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        
+        .params-list {
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation-container">
+        <h1 class="nav-title">Referral System Demo</h1>
+        <p class="nav-subtitle">Navigate through the complete referral flow with demo parameters</p>
+        
+        <div class="nav-buttons">
+            <a href="referralPromote.html?referrer_name=John&referral_code=DEMO123&referral_link=https://example.com/invite/DEMO123&current_redemptions=2&target_redemptions=5" class="nav-btn">
+                <div class="nav-btn-icon">🚀</div>
+                <div class="nav-btn-content">
+                    <div class="nav-btn-title">Promote Page</div>
+                    <div class="nav-btn-desc">Share your referral code and invite friends</div>
+                </div>
+                <div class="nav-btn-arrow">→</div>
+            </a>
+            
+            <a href="referralStatus.html?referrer_name=John&referral_code=DEMO123&referral_link=https://example.com/invite/DEMO123&current_redemptions=3&target_redemptions=5&show_recent_event=true" class="nav-btn">
+                <div class="nav-btn-icon">📊</div>
+                <div class="nav-btn-content">
+                    <div class="nav-btn-title">Status Page</div>
+                    <div class="nav-btn-desc">Track your referral progress and achievements</div>
+                </div>
+                <div class="nav-btn-arrow">→</div>
+            </a>
+            
+            <a href="referralDownload.html?referrer_name=John&referral_code=DEMO123&referral_link=https://example.com/invite/DEMO123" class="nav-btn">
+                <div class="nav-btn-icon">📱</div>
+                <div class="nav-btn-content">
+                    <div class="nav-btn-title">Download Page</div>
+                    <div class="nav-btn-desc">Landing page for new users to download the app</div>
+                </div>
+                <div class="nav-btn-arrow">→</div>
+            </a>
+            
+            <a href="referralRedeem.html?referrer_name=John&referral_code=DEMO123" class="nav-btn">
+                <div class="nav-btn-icon">🎯</div>
+                <div class="nav-btn-content">
+                    <div class="nav-btn-title">Redeem Page</div>
+                    <div class="nav-btn-desc">Enter and redeem referral codes</div>
+                </div>
+                <div class="nav-btn-arrow">→</div>
+            </a>
+        </div>
+        
+        <div class="params-info">
+            <div class="params-title">Demo Parameters Used:</div>
+            <div class="params-list">
+                • <strong>referrer_name:</strong> John<br>
+                • <strong>referral_code:</strong> DEMO123<br>
+                • <strong>referral_link:</strong> https://example.com/invite/DEMO123<br>
+                • <strong>current_redemptions:</strong> 2-3 (varies by page)<br>
+                • <strong>target_redemptions:</strong> 5<br>
+                • <strong>show_recent_event:</strong> true (status page only)
+            </div>
+        </div>
+    </div>
+</body>
+</html>
