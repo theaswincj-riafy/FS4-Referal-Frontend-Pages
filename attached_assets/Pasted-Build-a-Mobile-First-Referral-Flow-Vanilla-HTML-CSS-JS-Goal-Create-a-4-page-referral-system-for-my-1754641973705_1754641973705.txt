@@ -1,0 +1,146 @@
+Build a Mobile-First Referral Flow (Vanilla HTML/CSS/JS)
+Goal
+Create a 4-page referral system for my app. Each page renders dynamic copy from a shared JSON and personalizes only with the referrer’s name/code (never store or display redeemer identities—GDPR).
+
+Tech Stack
+Vanilla HTML/CSS/JS only (no frameworks, no build tools).
+
+One shared data file: referralData.js exporting the JSON used by all pages.
+
+Personalization values (e.g., {{referrer_name}}, {{referral_code}}) should resolve from URL parameters with sensible fallbacks.
+
+File Naming (camelCase)
+Page 1: referralPromote.html (promoteSharing)
+
+Page 2: referralStatus.html (myReferals)
+
+Page 3: referralDownload.html (downloadApp)
+
+Page 4: referralRedeem.html (redeemCode)
+
+Data: referralData.js
+
+Layout & Responsiveness
+Mobile-first design. Must look full-screen and native on all mobile dimensions.
+
+On desktop, center content in a vertical mobile container (e.g., 430–480px width) with subtle background; page height stretches full viewport.
+
+Fully responsive across all mobile sizes (iPhone SE → large Android). No horizontal scroll. Touch-friendly hit targets.
+
+Images & Visuals
+Add meaningful images/illustrations to elevate UX:
+
+Page 1 (Promote): celebratory/invite visuals.
+
+Page 2 (Status): progress/levels/gamification visual cues.
+
+Page 3 (Download): app mockups/store badges/benefit visuals.
+
+Page 4 (Redeem): verification/success imagery.
+
+Images should complement JSON text and not replace it. Use accessible alt text.
+
+Accessibility & UX
+Clear hierarchy, large tap targets, readable contrast.
+
+Keyboard focus styles, ARIA roles for banners/alerts/toasts.
+
+Non-blocking toasts for “copied” messages.
+
+All CTAs use action verbs and reflect page goals.
+
+Data Source & Tokens
+All page strings come from referralData.js. Support these tokens at minimum:
+
+{{referrer_name}}, {{referral_code}}, {{referral_link}},
+
+{{current_redemptions}}, {{target_redemptions}},
+
+{{show_recent_event}}.
+
+Provide graceful fallbacks if params are missing.
+
+Page Requirements
+1) referralPromote.html (Sharer landing)
+Objective: Motivate sending the invite. Show reward: “1 month Premium when 5 redemptions”.
+
+Render from JSON: hero, benefits, progress teaser, social proof, privacy note, and nudges.
+
+Actions:
+
+Share Invite (toast guiding to channels),
+
+Copy Code, Copy Link buttons,
+
+Quick-share presets (WhatsApp/SMS/Generic) using JSON messages with {{referral_link}}.
+
+Footer button → referralStatus.html with URL params preserved.
+
+Add celebratory imagery.
+
+2) referralStatus.html (Sharer progress)
+Objective: Show progress and levels (1–5 for five redemptions) from JSON milestones.
+
+Elements:
+
+Progress bar (percentage = current/target),
+
+Level cards: visually mark reached vs locked, with title & short message per level,
+
+Optional banner if {{show_recent_event}} is true.
+
+Actions: Copy Invite Link, Copy Code, Share Again.
+
+Reinforce privacy: show only totals, never identities.
+
+Gamified visuals/icons to signal progression.
+
+3) referralDownload.html (Invitee pre-install)
+Objective: Lead invitee to install the app.
+
+Render from JSON: hero (with {{referrer_name}}), feature highlights, how-it-works steps (including “Enter code {{referral_code}}”), store CTAs.
+
+Buttons: Google Play and App Store (use placeholder links).
+
+Secondary CTA: “Already installed? Go to Redeem” → referralRedeem.html with params.
+
+Use app mockup/benefit imagery.
+
+4) referralRedeem.html (Invitee redemption)
+Objective: Redeem code.
+
+Render from JSON: hero, form labels/placeholders, validation messages, privacy note, help list.
+
+Behaviors:
+
+Paste from Clipboard,
+
+Code format validation (basic alphanumeric 4–12 chars).
+
+On success, show JSON “success” and “You’re all set” section.
+
+Add light verification/success imagery.
+
+Notifications (Referrer Only)
+Include a notifications.referrer[] list in referralData.js with 5 catchy progress notifications (4 left, 3 left, 2 left, 1 left, unlocked).
+
+Each item: { id, title, body, cta }.
+
+No notifications for redeemers. Never show or store redeemer identity anywhere.
+
+Privacy (GDPR)
+Never store or display redeemer names or identifiers. Only aggregate counts.
+
+Show privacy notes where relevant.
+
+Performance
+Keep assets light. Inline minimal CSS per page is fine.
+
+No external libraries unless absolutely necessary (but avoid; requirement is vanilla).
+
+Developer Notes
+Implement a tiny interpolation helper to replace {{token}} with URL param values/fallbacks.
+
+Keep code modular and readable; no bundlers.
+
+Favor semantic HTML sections and consistent component classes.
