@@ -9,8 +9,12 @@ class ReferralDownloadPage {
   async init() {
     try {
       await this.loadPageData();
-      this.renderPage();
-      this.bindEvents();
+      if (this.data) {
+        this.renderPage();
+        this.bindEvents();
+      } else {
+        throw new Error('No data loaded');
+      }
     } catch (error) {
       console.error('Failed to load page:', error);
       this.showError('Failed to load invitation data. Please try again.');
@@ -25,7 +29,10 @@ class ReferralDownloadPage {
     try {
       // Simulate API call
       this.data = await ReferralUtils.simulateApiCall('page3_referralDownload');
+      console.log('Loaded data:', this.data); // Debug log
     } catch (error) {
+      console.error('API call error:', error);
+      this.data = null;
       throw new Error('API call failed');
     }
   }

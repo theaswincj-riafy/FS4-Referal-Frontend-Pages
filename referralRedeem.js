@@ -10,9 +10,13 @@ class ReferralRedeemPage {
   async init() {
     try {
       await this.loadPageData();
-      this.renderPage();
-      this.bindEvents();
-      this.prefillCode();
+      if (this.data) {
+        this.renderPage();
+        this.bindEvents();
+        this.prefillCode();
+      } else {
+        throw new Error('No data loaded');
+      }
     } catch (error) {
       console.error('Failed to load page:', error);
       this.showError('Failed to load redemption form. Please try again.');
@@ -27,7 +31,10 @@ class ReferralRedeemPage {
     try {
       // Simulate API call
       this.data = await ReferralUtils.simulateApiCall('page4_referralRedeem');
+      console.log('Loaded data:', this.data); // Debug log
     } catch (error) {
+      console.error('API call error:', error);
+      this.data = null;
       throw new Error('API call failed');
     }
   }

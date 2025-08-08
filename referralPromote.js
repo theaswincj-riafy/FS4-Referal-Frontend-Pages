@@ -9,8 +9,12 @@ class ReferralPromotePage {
   async init() {
     try {
       await this.loadPageData();
-      this.renderPage();
-      this.bindEvents();
+      if (this.data) {
+        this.renderPage();
+        this.bindEvents();
+      } else {
+        throw new Error('No data loaded');
+      }
     } catch (error) {
       console.error('Failed to load page:', error);
       this.showError('Failed to load page data. Please try again.');
@@ -23,9 +27,17 @@ class ReferralPromotePage {
     ReferralUtils.showLoading(mainContent);
 
     try {
+      // Debug logs
+      console.log('REFERRAL_DATA exists:', !!window.REFERRAL_DATA);
+      console.log('Available keys:', window.REFERRAL_DATA ? Object.keys(window.REFERRAL_DATA) : 'none');
+      console.log('Looking for key: page1_referralPromote');
+      
       // Simulate API call
       this.data = await ReferralUtils.simulateApiCall('page1_referralPromote');
+      console.log('Loaded data:', this.data);
     } catch (error) {
+      console.error('API call error:', error);
+      this.data = null;
       throw new Error('API call failed');
     }
   }
@@ -37,24 +49,33 @@ class ReferralPromotePage {
   }
 
   renderHero() {
-    document.getElementById('hero-title').textContent = this.data.hero.title;
-    document.getElementById('hero-subtitle').textContent = this.data.hero.subtitle;
-    document.getElementById('hero-badge').textContent = this.data.hero.badge;
+    if (!this.data || !this.data.hero) {
+      console.error('No hero data available');
+      return;
+    }
+    document.getElementById('hero-title').textContent = this.data.hero.title || 'Loading...';
+    document.getElementById('hero-subtitle').textContent = this.data.hero.subtitle || 'Loading...';
+    document.getElementById('hero-badge').textContent = this.data.hero.badge || 'Loading...';
   }
 
   renderMainContent() {
+    if (!this.data) {
+      console.error('No data available for rendering');
+      return;
+    }
+    
     const mainContent = document.getElementById('main-content');
     
     mainContent.innerHTML = `
       <!-- Benefits Section -->
       <section class="benefits" role="region" aria-labelledby="benefits-title">
         <h2 id="benefits-title">Why Share Your Code?</h2>
-        ${this.data.benefits.map(benefit => `
+        ${this.data.benefits ? this.data.benefits.map(benefit => `
           <div class="card">
             <h3 class="card-title">${benefit.title}</h3>
             <p class="card-desc">${benefit.desc}</p>
           </div>
-        `).join('')}
+        `).join('') : '<p>Loading benefits...</p>'}
       </section>
 
       <!-- Progress Teaser -->
@@ -104,11 +125,11 @@ class ReferralPromotePage {
       <!-- Social Proof -->
       <section class="social-proof" role="region" aria-labelledby="social-proof-title">
         <div class="card">
-          <h3 id="social-proof-title">${this.data.social_proof.title}</h3>
+          <h3 id="social-proof-title">${this.data.social_proof ? this.data.social_proof.title : 'Why people join'}</h3>
           <ul class="bullet-list">
-            ${this.data.social_proof.bullets.map(bullet => `
+            ${this.data.social_proof && this.data.social_proof.bullets ? this.data.social_proof.bullets.map(bullet => `
               <li>${bullet}</li>
-            `).join('')}
+            `).join('') : '<li>Loading...</li>'}
           </ul>
         </div>
       </section>
@@ -118,23 +139,27 @@ class ReferralPromotePage {
         <div class="card">
           <h3 id="nudges-title">Pro Tips</h3>
           <ul class="bullet-list">
-            ${this.data.nudges.map(nudge => `
+            ${this.data.nudges ? this.data.nudges.map(nudge => `
               <li>${nudge}</li>
-            `).join('')}
+            `).join('') : '<li>Loading tips...</li>'}
           </ul>
         </div>
       </section>
 
       <!-- Privacy Note -->
       <div class="privacy-note" role="note">
-        ${this.data.privacy_note}
+        ${this.data.privacy_note || 'Loading privacy information...'}
       </div>
     `;
   }
 
   renderFooter() {
+    if (!this.data || !this.data.footer_cta) {
+      console.error('No footer data available');
+      return;
+    }
     const footerCta = document.getElementById('footer-cta');
-    footerCta.textContent = this.data.footer_cta.label;
+    footerCta.textContent = this.data.footer_cta.label || 'Continue';
     footerCta.disabled = false;
     footerCta.className = 'btn btn-primary';
   }
