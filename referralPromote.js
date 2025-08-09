@@ -83,9 +83,9 @@ class ReferralPromotePage {
       <section class="how-it-works">
         <h2 class="section-title">How it works</h2>
         <div class="steps-list">
-          ${this.data.how_it_works ? this.data.how_it_works.map(step => `
-            <div class="step-item">
-              <div class="step-number">${step.step}</div>
+          ${this.data.how_it_works ? this.data.how_it_works.map((step, index) => `
+            <div class="step-item ${step.step === 5 ? 'highlight-step' : ''}">
+              <div class="step-number ${step.step === 5 ? 'highlight-number' : ''}">${step.step}</div>
               <p class="step-description">${step.desc}</p>
             </div>
           `).join('') : ''}
@@ -110,12 +110,12 @@ class ReferralPromotePage {
 
       <!-- Tips Section -->
       <section class="tips-section">
-        ${this.data.nudges && this.data.nudges.length > 0 ? `
+        ${this.data.nudges && this.data.nudges.length > 0 ? this.data.nudges.map(nudge => `
           <div class="tip-item">
             <div class="tip-icon"></div>
-            <span>${this.data.nudges[0]}</span>
+            <span>${nudge}</span>
           </div>
-        ` : ''}
+        `).join('') : ''}
       </section>
     `;
   }
@@ -142,13 +142,46 @@ class ReferralPromotePage {
   positionCards(cards) {
     cards.forEach((card, index) => {
       const offset = index - this.currentCardIndex;
+      let x = 0, y = 0, rotation = 0, scale = 1, zIndex = cards.length;
       
-      gsap.set(card, {
-        zIndex: cards.length - Math.abs(offset),
-        x: offset * 20,
-        y: offset * 10,
-        rotation: offset * 5,
-        scale: 1 - Math.abs(offset) * 0.05
+      if (offset === 0) {
+        // Center card - front and center
+        x = 0;
+        y = 0;
+        rotation = 0;
+        scale = 1;
+        zIndex = cards.length + 2;
+      } else if (offset === -1 || (offset === 2 && cards.length === 3)) {
+        // Left card - behind and angled
+        x = -60;
+        y = 20;
+        rotation = -15;
+        scale = 0.85;
+        zIndex = cards.length;
+      } else if (offset === 1 || (offset === -2 && cards.length === 3)) {
+        // Right card - behind and angled
+        x = 60;
+        y = 20;
+        rotation = 15;
+        scale = 0.85;
+        zIndex = cards.length;
+      } else {
+        // Hidden cards
+        x = offset > 0 ? 120 : -120;
+        y = 40;
+        rotation = offset > 0 ? 30 : -30;
+        scale = 0.7;
+        zIndex = 1;
+      }
+      
+      gsap.to(card, {
+        x,
+        y,
+        rotation,
+        scale,
+        zIndex,
+        duration: 0.4,
+        ease: "power2.out"
       });
     });
   }

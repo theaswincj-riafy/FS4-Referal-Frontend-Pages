@@ -483,6 +483,11 @@ p {
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.02);
 }
 
+.step-item.highlight-step {
+  background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%);
+  border: 1px solid #F59E0B;
+}
+
 .step-number {
   min-width: 32px;
   height: 32px;
@@ -495,6 +500,12 @@ p {
   font-size: 1.125rem;
   font-weight: 700;
   font-style: italic;
+}
+
+.step-number.highlight-number {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .step-description {
@@ -528,28 +539,30 @@ p {
 /* Rotating Card Stack */
 .card-stack-container {
   position: relative;
-  height: 280px;
+  height: 320px;
   margin-bottom: 32px;
   overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
+  perspective: 1000px;
 }
 
 .benefit-card {
   position: absolute;
-  width: 240px;
-  height: 200px;
-  border-radius: 20px;
-  padding: 20px;
+  width: 260px;
+  height: 240px;
+  border-radius: 24px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   user-select: none;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 .benefit-card.premium-access {
@@ -587,6 +600,9 @@ p {
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .tip-item {
@@ -605,6 +621,19 @@ p {
   border: 1.5px solid #86868b;
   flex-shrink: 0;
   margin-top: 2px;
+  position: relative;
+}
+
+.tip-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: #86868b;
+  border-radius: 50%;
 }
 
 .level-card.reached {
