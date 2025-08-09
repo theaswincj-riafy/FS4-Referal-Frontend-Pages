@@ -12,7 +12,6 @@ class ReferralPromotePage {
       await this.loadPageData();
       if (this.data) {
         this.renderPage();
-        this.initCardStack();
         this.bindEvents();
       } else {
         throw new Error('No data loaded');
@@ -95,128 +94,11 @@ class ReferralPromotePage {
       <!-- Progress Section -->
       <section class="progress-section">
         <h3 class="progress-title">${this.data.progress_teaser?.title || 'Almost there!'}</h3>
-        <p class="progress-subtitle">${this.data.progress_teaser?.subtitle || 'Keep sharing!'}</p>
-      </section>
-
-      <!-- Rotating Card Stack -->
-      <div class="card-stack-container" id="card-stack">
-        ${this.data.benefits ? this.data.benefits.map((benefit, index) => `
-          <div class="benefit-card ${this.getCardClass(benefit.title)}" data-index="${index}">
-            <h4 class="benefit-card-title">${benefit.title}</h4>
-            <p class="benefit-card-desc">${benefit.desc}</p>
-          </div>
-        `).join('') : ''}
-      </div>
-
-      <!-- Tips Section -->
-      <section class="tips-section">
-        ${this.data.nudges && this.data.nudges.length > 0 ? `
-          <div class="tip-item">
-            <div class="tip-icon"></div>
-            <span>${this.data.nudges[0]}</span>
-          </div>
-        ` : ''}
       </section>
     `;
   }
 
-  getCardClass(title) {
-    if (title.toLowerCase().includes('premium')) return 'premium-access';
-    if (title.toLowerCase().includes('together')) return 'win-together';
-    return 'fast-simple';
-  }
 
-  initCardStack() {
-    if (!this.data.benefits || this.data.benefits.length === 0) return;
-
-    const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length === 0) return;
-
-    // Position cards in stack
-    this.positionCards(cards);
-
-    // Add touch/swipe support
-    this.addTouchSupport();
-  }
-
-  positionCards(cards) {
-    cards.forEach((card, index) => {
-      const offset = index - this.currentCardIndex;
-      
-      gsap.set(card, {
-        zIndex: cards.length - Math.abs(offset),
-        x: offset * 20,
-        y: offset * 10,
-        rotation: offset * 5,
-        scale: 1 - Math.abs(offset) * 0.05
-      });
-    });
-  }
-
-  rotateCards(direction) {
-    const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length === 0) return;
-
-    if (direction === 'next') {
-      this.currentCardIndex = (this.currentCardIndex + 1) % cards.length;
-    } else {
-      this.currentCardIndex = (this.currentCardIndex - 1 + cards.length) % cards.length;
-    }
-
-    this.positionCards(cards);
-  }
-
-  addTouchSupport() {
-    const container = document.getElementById('card-stack');
-    if (!container) return;
-
-    let startX = 0;
-    let startY = 0;
-    let isDragging = false;
-
-    // Touch events
-    container.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isDragging = true;
-    }, { passive: true });
-
-    container.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-
-    container.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      
-      const endX = e.changedTouches[0].clientX;
-      const endY = e.changedTouches[0].clientY;
-      const deltaX = endX - startX;
-      const deltaY = endY - startY;
-
-      // Check if it's a horizontal swipe (not vertical scroll)
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0) {
-          this.rotateCards('prev');
-        } else {
-          this.rotateCards('next');
-        }
-      }
-      
-      isDragging = false;
-    }, { passive: true });
-
-    // Click events for cards
-    container.addEventListener('click', (e) => {
-      const card = e.target.closest('.benefit-card');
-      if (card) {
-        const index = parseInt(card.dataset.index);
-        if (index !== this.currentCardIndex) {
-          this.currentCardIndex = index;
-          this.positionCards(document.querySelectorAll('.benefit-card'));
-        }
-      }
-    });
-  }
 
   renderFooter() {
     const primaryCta = document.getElementById('primary-cta');
