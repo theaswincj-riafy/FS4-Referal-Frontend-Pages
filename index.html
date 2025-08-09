@@ -137,6 +137,11 @@
                 color: #a0aec0;
             }
 
+            /* Prevent scroll on input focus */
+            .param-input:focus {
+                scroll-margin: 0;
+            }
+
             @media (max-width: 768px) {
                 .params-grid {
                     grid-template-columns: 1fr;
@@ -205,19 +210,19 @@
                     <div class="nav-btn-arrow">→</div>
                 </a>
 
-                <a href="#" class="nav-btn" onclick="navigateToPage('referralDownload.html')">
+                <a href="#" class="nav-btn" onclick="navigateToPage('referralDownload.html')" style="position: relative;">
+                    <div class="nav-btn-arrow" style="position: absolute; top: 1rem; right: 1.5rem; margin: 0;">→</div>
                     <div class="nav-btn-icon">📱</div>
-                    <div class="nav-btn-content">
+                    <div class="nav-btn-content" style="margin-right: 0;">
                         <div class="nav-btn-title">Download Page</div>
                         <div class="nav-btn-desc">
                             Landing page for new users to download the app
                         </div>
                         <div class="param-group" style="margin-top: 0.75rem;">
                             <label class="param-label" for="referralCode">Referral Code</label>
-                            <input type="text" id="referralCode" class="param-input" value="aju2586" placeholder="ABC123" onclick="event.stopPropagation();">
+                            <input type="text" id="referralCode" class="param-input" value="aju2586" placeholder="ABC123" onclick="event.stopPropagation();" onfocus="event.preventDefault(); this.scrollIntoView = function() {};">
                         </div>
                     </div>
-                    <div class="nav-btn-arrow">→</div>
                 </a>
 
                 <a href="#" class="nav-btn" onclick="navigateToPage('referralRedeem.html')">
