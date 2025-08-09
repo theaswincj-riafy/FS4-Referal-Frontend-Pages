@@ -1,0 +1,67 @@
+
+    "page1_referralPromote": {
+      "page_id": "referral-promote",
+      "personalization": {
+        "referrer_name": "{{referrer_name}}",
+        "referral_code": "{{referral_code}}",
+        "target_redemptions": 5,
+        "current_redemptions": "{{current_redemptions}}",
+        "pending_redemptions": "{{pending_redemptions}}",
+      },
+      "hero": {
+        "page_title": "Invite Friends",
+        "hero_title": "Invite & Unlock 1 Month Premium",
+        "subtitle": "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code.",
+        "referral_code": "{{referral_code}}",
+        "quickButtonText": "View my referrals"
+      },
+      "how_it_works": [
+        {
+          "step": 1,
+          "desc": "Invite your friends and family using your referral code"
+        },
+         {
+          "step": 2,
+          "desc": "After your friend has installed the app, they can redeem your code."
+        },
+         {
+          "step": 3,
+          "desc": "On every successful redemption, you will gain a new level!"
+        }, {
+          "step": 4,
+          "desc": "Your friend receives a week of free premium as well!"
+        }, {
+          "step": 5,
+          "desc": "You can unlock a month of free premium on reaching level 5!"
+        },
+      ],
+      "progress_teaser": {
+        "title": "Only {{pending_redemptions}} more levels to go!",
+        "subtitle": "Each redemption brings you closer to Premium!",
+      },
+      "benefits": [
+        {
+          "title": "Premium Access",
+          "desc": "Ad-free experience, pro features, and priority support for 1 month."
+        },
+        {
+          "title": "Win Together",
+          "desc": "Your friends get an exclusive newcomer perk when they join via your link."
+        },
+        {
+          "title": "Fast & Simple",
+          "desc": "Share your link; they download and redeem. You progress instantly."
+        }
+      ],
+      "nudges": [
+        "Best results: share with 5–10 close contacts first.",
+        "Add a personal note: tell them why you like the app.",
+        "Post your link in a relevant group or community."
+      ],
+      "share": {
+        "primary_cta": "Invite Friends & Family",
+        "messages": {
+          "default": "{{referrer_name}} invited you to try this app. Get 1 week of Premium features for free using this referral: {{referral_link}}"
+        }
+      }
+    },
