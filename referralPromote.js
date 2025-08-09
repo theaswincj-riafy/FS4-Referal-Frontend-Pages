@@ -11,7 +11,8 @@ class ReferralPromotePage {
     try {
       await this.loadPageData();
       if (this.data) {
-        this.renderPage();
+        this.populateContent();
+        this.hideLoader();
         this.initCardStack();
         this.bindEvents();
       } else {
@@ -24,11 +25,10 @@ class ReferralPromotePage {
   }
 
   async loadPageData() {
-    // Show loading state
-    const mainContent = document.getElementById('main-content');
-    ReferralUtils.showLoading(mainContent);
-
     try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       // Get data from the correct language section
       const language = this.params.language || 'en';
       const dataKey = `page1_referralPromote`;
@@ -51,84 +51,63 @@ class ReferralPromotePage {
     }
   }
 
-  renderPage() {
-    this.renderMainContent();
-    this.renderFooter();
-  }
-
-  renderMainContent() {
+  populateContent() {
     if (!this.data) {
       console.error('No data available for rendering');
       return;
     }
-    
-    const mainContent = document.getElementById('main-content');
-    
-    mainContent.innerHTML = `
-      <!-- Hero Section -->
-      <section class="hero-section">
-        <div class="hero-image-placeholder"></div>
-        <h1 class="hero-title">${this.data.hero?.hero_title || 'Invite & Unlock'}</h1>
-        <p class="hero-subtitle">${this.data.hero?.subtitle || 'Loading...'}</p>
-        <div class="referral-code-display">${this.data.hero?.referral_code || 'CODE123'}</div>
-        <button class="view-referrals-btn" id="view-referrals">
-          ${this.data.hero?.quickButtonText || 'View my referrals'}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </section>
 
-      <!-- How It Works Section -->
-      <section class="how-it-works">
-        <h2 class="section-title">How it works</h2>
-        <div class="steps-list">
-          ${this.data.how_it_works ? this.data.how_it_works.map((step, index) => `
-            <div class="step-item ${step.step === 5 ? 'highlight-step' : ''}">
-              <div class="step-number ${step.step === 5 ? 'highlight-number' : ''}">${step.step}</div>
-              <p class="step-description">${step.desc}</p>
-            </div>
-          `).join('') : ''}
-        </div>
-      </section>
+    // Populate header
+    document.getElementById('header-title').textContent = this.data.hero?.page_title || 'Invite Friends';
 
-      <!-- Progress Section -->
-      <section class="progress-section">
-        <h3 class="progress-title">${this.data.progress_teaser?.title || 'Almost there!'}</h3>
-        <p class="progress-subtitle">${this.data.progress_teaser?.subtitle || 'Keep sharing!'}</p>
-      </section>
+    // Populate hero section
+    document.getElementById('hero-title').textContent = this.data.hero?.hero_title || 'Invite & Unlock 1 Month Premium';
+    document.getElementById('hero-subtitle').textContent = this.data.hero?.subtitle || 'Loading...';
+    document.getElementById('referral-code').textContent = this.data.hero?.referral_code || 'CODE123';
+    document.getElementById('view-referrals-text').textContent = this.data.hero?.quickButtonText || 'View my referrals';
 
-      <!-- Rotating Card Stack -->
-      <div class="card-stack-container" id="card-stack">
-        ${this.data.benefits ? this.data.benefits.map((benefit, index) => `
-          <div class="benefit-card ${this.getCardClass(benefit.title)}" data-index="${index}">
-            <h4 class="benefit-card-title">${benefit.title}</h4>
-            <p class="benefit-card-desc">${benefit.desc}</p>
-          </div>
-        `).join('') : ''}
-      </div>
+    // Populate how it works steps
+    if (this.data.how_it_works) {
+      this.data.how_it_works.forEach((step, index) => {
+        const stepElement = document.getElementById(`step-${step.step}`);
+        if (stepElement) {
+          stepElement.textContent = step.desc;
+        }
+      });
+    }
 
-      <!-- Tips Section -->
-      <section class="tips-section">
-        ${this.data.nudges && this.data.nudges.length > 0 ? this.data.nudges.map(nudge => `
-          <div class="tip-item">
-            <div class="tip-icon"></div>
-            <span>${nudge}</span>
-          </div>
-        `).join('') : ''}
-      </section>
-    `;
+    // Populate progress section
+    document.getElementById('progress-title').textContent = this.data.progress_teaser?.title || 'Almost there!';
+    document.getElementById('progress-subtitle').textContent = this.data.progress_teaser?.subtitle || 'Keep sharing!';
+
+    // Populate benefits cards
+    if (this.data.benefits) {
+      this.data.benefits.forEach((benefit, index) => {
+        const titleElement = document.getElementById(`benefit-${index + 1}-title`);
+        const descElement = document.getElementById(`benefit-${index + 1}-desc`);
+        if (titleElement) titleElement.textContent = benefit.title;
+        if (descElement) descElement.textContent = benefit.desc;
+      });
+    }
+
+    // Populate tip
+    if (this.data.nudges && this.data.nudges.length > 0) {
+      document.getElementById('tip-text').textContent = this.data.nudges[0];
+    }
+
+    // Populate footer CTA
+    document.getElementById('primary-cta').textContent = this.data.share?.primary_cta || 'Invite Friends & Family';
   }
 
-  getCardClass(title) {
-    if (title.toLowerCase().includes('premium')) return 'premium-access';
-    if (title.toLowerCase().includes('together')) return 'win-together';
-    return 'fast-simple';
+  hideLoader() {
+    const loader = document.getElementById('page-loader');
+    const content = document.getElementById('page-content-wrapper');
+    
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
   }
 
   initCardStack() {
-    if (!this.data.benefits || this.data.benefits.length === 0) return;
-
     const cards = document.querySelectorAll('.benefit-card');
     if (cards.length === 0) return;
 
@@ -142,46 +121,13 @@ class ReferralPromotePage {
   positionCards(cards) {
     cards.forEach((card, index) => {
       const offset = index - this.currentCardIndex;
-      let x = 0, y = 0, rotation = 0, scale = 1, zIndex = cards.length;
       
-      if (offset === 0) {
-        // Center card - front and center
-        x = 0;
-        y = 0;
-        rotation = 0;
-        scale = 1;
-        zIndex = cards.length + 2;
-      } else if (offset === -1 || (offset === 2 && cards.length === 3)) {
-        // Left card - behind and angled
-        x = -60;
-        y = 20;
-        rotation = -15;
-        scale = 0.85;
-        zIndex = cards.length;
-      } else if (offset === 1 || (offset === -2 && cards.length === 3)) {
-        // Right card - behind and angled
-        x = 60;
-        y = 20;
-        rotation = 15;
-        scale = 0.85;
-        zIndex = cards.length;
-      } else {
-        // Hidden cards
-        x = offset > 0 ? 120 : -120;
-        y = 40;
-        rotation = offset > 0 ? 30 : -30;
-        scale = 0.7;
-        zIndex = 1;
-      }
-      
-      gsap.to(card, {
-        x,
-        y,
-        rotation,
-        scale,
-        zIndex,
-        duration: 0.4,
-        ease: "power2.out"
+      gsap.set(card, {
+        zIndex: cards.length - Math.abs(offset),
+        x: offset * 20,
+        y: offset * 10,
+        rotation: offset * 5,
+        scale: 1 - Math.abs(offset) * 0.05
       });
     });
   }
@@ -251,14 +197,6 @@ class ReferralPromotePage {
     });
   }
 
-  renderFooter() {
-    const primaryCta = document.getElementById('primary-cta');
-    if (primaryCta && this.data.share) {
-      primaryCta.textContent = this.data.share.primary_cta || 'Invite Friends & Family';
-      primaryCta.disabled = false;
-    }
-  }
-
   bindEvents() {
     // Back button
     const backBtn = document.getElementById('back-btn');
@@ -304,13 +242,15 @@ class ReferralPromotePage {
   }
 
   showError(message) {
-    const mainContent = document.getElementById('main-content');
-    mainContent.innerHTML = `
-      <div class="error-state">
-        <p class="error-message">${message}</p>
-        <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
-      </div>
-    `;
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.innerHTML = `
+        <div class="error-state">
+          <p class="error-message">${message}</p>
+          <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+        </div>
+      `;
+    }
   }
 }
 

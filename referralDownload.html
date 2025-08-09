@@ -10,30 +10,64 @@
 </head>
 <body>
     <div class="container">
-        <!-- Page Header -->
-        <header class="page-header" role="banner">
-            <div class="hero">
-                <img src="https://pixabay.com/get/ge6d5504b952e8c7eab50e1338e875927fb2826d2e1b30ec0e63ced646abd6d719b296ae0caadcb6533df6fad72c39d126c5aaacec2a9fdc3381ccf8de4b5ae75_1280.jpg" alt="Mobile app mockup showcasing premium features" class="hero-image">
-                <h1 class="hero-title" id="hero-title">Loading...</h1>
-                <p class="hero-subtitle" id="hero-subtitle">Loading your invitation...</p>
+        <!-- Page Content (No header for this page) -->
+        <main class="download-content" id="main-content">
+            <!-- Full Page Loader -->
+            <div class="page-loader" id="page-loader">
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading...</p>
+                    </div>
+                </div>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="page-content" id="main-content">
-            <!-- Loading state will be shown here initially -->
+            <!-- Main Content (Hidden during loading) -->
+            <div class="page-content-wrapper" id="page-content-wrapper" style="display: none;">
+                <!-- App Title Section -->
+                <section class="app-title-section">
+                    <h1 class="app-title" id="app-title">Dance Workouts For Weight Loss</h1>
+                    <div class="hero-image-placeholder"></div>
+                </section>
+
+                <!-- Invitation Section -->
+                <section class="invitation-section">
+                    <h2 class="invitation-title" id="invitation-title">John Invited You To Try This App</h2>
+                    <p class="invitation-subtitle" id="invitation-subtitle">Download the app to claim your invite and get 1 week of Premium features for Free!</p>
+                    <div class="referral-code-display" id="referral-code">JOHN1234</div>
+                    <button class="secondary-btn" id="copy-clipboard">Copy To Clipboard</button>
+                </section>
+
+                <!-- How It Works Section -->
+                <section class="how-it-works">
+                    <h2 class="section-title">How it works</h2>
+                    <div class="steps-list" id="steps-list">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <p class="step-description" id="step-1">Download the app from Google Play or Apple App Store</p>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <p class="step-description" id="step-2">Open the app and and click on Redeem Referral Code</p>
+                        </div>
+                        <div class="step-item highlight">
+                            <div class="step-number highlight-number">3</div>
+                            <p class="step-description" id="step-3">Paste John's referral code and hit redeem to unlock a week of Premium features for yourself!</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="page-footer">
-            <div id="footer-content">
-                <p class="small-text" id="footer-smallprint">Loading...</p>
-                <button class="btn btn-secondary" id="secondary-cta" disabled>Loading...</button>
-            </div>
+        <!-- Download Buttons Footer -->
+        <footer class="download-footer">
+            <button class="download-btn google-play" id="download-google">Download from Google Play</button>
+            <button class="download-btn app-store" id="download-appstore">Download from App Store</button>
         </footer>
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="referralData.js"></script>
     <script src="utils.js"></script>
     <script src="referralDownload.js"></script>

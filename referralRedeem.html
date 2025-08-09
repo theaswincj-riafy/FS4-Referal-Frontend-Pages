@@ -10,27 +10,74 @@
 </head>
 <body>
     <div class="container">
-        <!-- Page Header -->
-        <header class="page-header" role="banner">
-            <div class="hero">
-                <img src="https://pixabay.com/get/gcb577799de5d30753af08c730f4429b80d850a48a8c51f885b8f086a959a285dd5c8f96cd8b010aa7b4ad8ffe5cc3fda4105069eace8001e714b4504f85c13e2_1280.jpg" alt="Success verification checkmark for code redemption" class="hero-image">
-                <h1 class="hero-title" id="hero-title">Loading...</h1>
-                <p class="hero-subtitle" id="hero-subtitle">Loading form...</p>
-            </div>
+        <!-- Sticky Header -->
+        <header class="sticky-header" role="banner">
+            <button class="back-btn" id="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <h1 class="header-title" id="header-title">Redeem Referral Code</h1>
         </header>
 
-        <!-- Main Content -->
-        <main class="page-content" id="main-content">
-            <!-- Loading state will be shown here initially -->
+        <!-- Scrollable Content -->
+        <main class="scrollable-content" id="main-content">
+            <!-- Full Page Loader -->
+            <div class="page-loader" id="page-loader">
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content (Hidden during loading) -->
+            <div class="page-content-wrapper" id="page-content-wrapper" style="display: none;">
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <div class="hero-image-placeholder"></div>
+                    <h1 class="hero-title" id="hero-title">Redeem Referral Invite Code</h1>
+                    <p class="hero-subtitle" id="hero-subtitle">Enter or paste the invite from your friend to continue.</p>
+                </section>
+
+                <!-- Redeem Form Section -->
+                <section class="redeem-form-section">
+                    <div class="input-group">
+                        <input type="text" class="redeem-input" id="redeem-input" placeholder="Enter Code" maxlength="20">
+                        <button class="paste-btn" id="paste-btn">Paste from Clipboard</button>
+                    </div>
+                </section>
+
+                <!-- How It Works Section -->
+                <section class="how-it-works">
+                    <h2 class="section-title">How it works</h2>
+                    <div class="steps-list" id="steps-list">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <p class="step-description" id="step-1">Copy the referral invitation sent by your friends or family</p>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <p class="step-description" id="step-2">Paste the referral invitation using the button above</p>
+                        </div>
+                        <div class="step-item highlight">
+                            <div class="step-number highlight-number">3</div>
+                            <p class="step-description" id="step-3">If the code is valid, you'll unlock a week of Premium</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="page-footer" id="footer-content">
-            <!-- Dynamic footer content will be loaded here -->
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+            <button class="primary-cta" id="primary-cta">Redeem Code</button>
         </footer>
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="referralData.js"></script>
     <script src="utils.js"></script>
     <script src="referralRedeem.js"></script>

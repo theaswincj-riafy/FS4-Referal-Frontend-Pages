@@ -10,31 +10,140 @@
 </head>
 <body>
     <div class="container">
-        <!-- Page Header -->
-        <header class="page-header" role="banner">
-            <div class="hero">
-                <img src="https://pixabay.com/get/gf994dffecd31e6235ab2a278591d970298f40a47dfdefd5c30726872dd313a2e0609bae49b2c2f92c80ecff4a6a9efea1b96c5e66bf112a074d6b8f1cac82be4_1280.jpg" alt="Progress tracking and gamification levels visualization" class="hero-image">
-                <h1 class="hero-title" id="hero-title">Loading...</h1>
-                <p class="hero-subtitle" id="hero-subtitle">Loading your progress...</p>
-            </div>
+        <!-- Sticky Header -->
+        <header class="sticky-header" role="banner">
+            <button class="back-btn" id="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <h1 class="header-title" id="header-title">My Referrals</h1>
         </header>
 
-        <!-- Main Content -->
-        <main class="page-content" id="main-content">
-            <!-- Loading state will be shown here initially -->
+        <!-- Scrollable Content -->
+        <main class="scrollable-content" id="main-content">
+            <!-- Full Page Loader -->
+            <div class="page-loader" id="page-loader">
+                <div class="loading-container">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content (Hidden during loading) -->
+            <div class="page-content-wrapper" id="page-content-wrapper" style="display: none;">
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <div class="hero-image-placeholder"></div>
+                    <h1 class="hero-title" id="level-title">Level 1</h1>
+                    <h2 class="level-subtitle" id="level-subtitle">The Kickoff</h2>
+                    <p class="hero-subtitle" id="level-message">Your first referral is in! Great work, John! You've started your Premium journey.</p>
+                    <div class="progress-display" id="progress-display">1 of 5 Completed</div>
+                    <button class="view-referrals-btn" id="invite-friends">
+                        <span>Invite Friends</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </section>
+
+                <!-- My Progress Section -->
+                <section class="progress-tracking">
+                    <h2 class="section-title">My Progress</h2>
+                    <div class="milestone-list" id="milestone-list">
+                        <div class="milestone-item completed" id="milestone-1">
+                            <div class="milestone-icon">✓</div>
+                            <div class="milestone-content">
+                                <h3>Level 1 - The Kickoff</h3>
+                                <p>Achieved on 9 August</p>
+                            </div>
+                        </div>
+                        <div class="milestone-item" id="milestone-2">
+                            <div class="milestone-icon">2</div>
+                            <div class="milestone-content">
+                                <h3>Level 2 - Building Momentum</h3>
+                                <p>Not Level</p>
+                            </div>
+                        </div>
+                        <div class="milestone-item" id="milestone-3">
+                            <div class="milestone-icon">3</div>
+                            <div class="milestone-content">
+                                <h3>Level 3 - Halfway Hero</h3>
+                                <p>Not Level</p>
+                            </div>
+                        </div>
+                        <div class="milestone-item" id="milestone-4">
+                            <div class="milestone-icon">4</div>
+                            <div class="milestone-content">
+                                <h3>Level 4 - Almost There</h3>
+                                <p>Not Level</p>
+                            </div>
+                        </div>
+                        <div class="milestone-item premium" id="milestone-5">
+                            <div class="milestone-icon">🎉</div>
+                            <div class="milestone-content">
+                                <h3>Level 5 - Premium Unlocked</h3>
+                                <p>Not Level</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQs Section -->
+                <section class="faq-section">
+                    <h2 class="section-title">FAQs</h2>
+                    <div class="faq-item">
+                        <h3>Do I see who redeemed?</h3>
+                        <p id="faq-1">No—only totals. We don't store redeemer identities.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>When do I get Premium?</h3>
+                        <p id="faq-2">Instantly after 5 redemptions. You'll get an in-app confirmation.</p>
+                    </div>
+                </section>
+
+                <!-- Progress Section -->
+                <section class="progress-section">
+                    <h3 class="progress-title" id="progress-title">Only 4 more levels to go!</h3>
+                    <p class="progress-subtitle" id="progress-subtitle">Each redemption brings you closer to Premium!</p>
+                </section>
+
+                <!-- Rotating Card Stack -->
+                <div class="card-stack-container" id="card-stack">
+                    <div class="benefit-card premium-access" data-index="0">
+                        <h4 class="benefit-card-title" id="benefit-1-title">Premium Access</h4>
+                        <p class="benefit-card-desc" id="benefit-1-desc">Ad-free experience, pro features, and priority support for 1 month.</p>
+                    </div>
+                    <div class="benefit-card win-together" data-index="1">
+                        <h4 class="benefit-card-title" id="benefit-2-title">Win Together</h4>
+                        <p class="benefit-card-desc" id="benefit-2-desc">Your friends get an exclusive newcomer perk when they join via your link.</p>
+                    </div>
+                    <div class="benefit-card fast-simple" data-index="2">
+                        <h4 class="benefit-card-title" id="benefit-3-title">Fast & Simple</h4>
+                        <p class="benefit-card-desc" id="benefit-3-desc">Share your link; they download and redeem. You progress instantly.</p>
+                    </div>
+                </div>
+
+                <!-- Tips Section -->
+                <section class="tips-section">
+                    <div class="tip-item">
+                        <div class="tip-icon"></div>
+                        <span id="tip-text">Remind friends it takes less than a minute to redeem.</span>
+                    </div>
+                </section>
+            </div>
         </main>
 
-        <!-- Footer Actions -->
-        <footer class="page-footer">
-            <div class="share-buttons" id="action-buttons">
-                <button class="btn btn-primary" id="share-again" disabled>Loading...</button>
-                <button class="btn btn-secondary" id="copy-link" disabled>Loading...</button>
-                <button class="btn btn-secondary" id="copy-code" disabled>Loading...</button>
-            </div>
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+            <button class="primary-cta" id="primary-cta">Invite Friends & Family</button>
         </footer>
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="referralData.js"></script>
     <script src="utils.js"></script>
     <script src="referralStatus.js"></script>
