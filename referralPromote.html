@@ -7,28 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <meta name="description" content="Invite friends and unlock 1 month of Premium">
     <meta name="theme-color" content="#667eea">
-    <script>
-        // Debug CSS loading
-        console.log('🎨 CSS Debug: Checking stylesheet loading...');
-        document.addEventListener('DOMContentLoaded', function() {
-            const stylesheets = document.styleSheets;
-            console.log('🎨 CSS Debug: Total stylesheets found:', stylesheets.length);
-            for (let i = 0; i < stylesheets.length; i++) {
-                const sheet = stylesheets[i];
-                console.log('🎨 CSS Debug: Stylesheet', i, '- href:', sheet.href);
-                console.log('🎨 CSS Debug: Stylesheet', i, '- rules count:', sheet.cssRules ? sheet.cssRules.length : 'Cannot access rules');
-            }
-
-            // Check if key CSS classes exist
-            const testElement = document.createElement('div');
-            testElement.className = 'container';
-            document.body.appendChild(testElement);
-            const computedStyle = window.getComputedStyle(testElement);
-            console.log('🎨 CSS Debug: .container background-color:', computedStyle.backgroundColor);
-            console.log('🎨 CSS Debug: .container display:', computedStyle.display);
-            document.body.removeChild(testElement);
-        });
-    </script>
 </head>
 <body>
     <div class="container">
