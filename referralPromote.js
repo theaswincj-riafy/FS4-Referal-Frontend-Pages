@@ -1,29 +1,38 @@
 // Referral Promote Page JavaScript
 class ReferralPromotePage {
     constructor() {
+        console.log('🚀 ReferralPromotePage: Constructor called');
         this.data = null;
         this.params = new URLSearchParams(window.location.search);
+        console.log('🚀 ReferralPromotePage: URL params:', Object.fromEntries(this.params.entries()));
         this.init();
     }
 
     init() {
+        console.log('🚀 ReferralPromotePage: Initializing...');
         this.loadData();
         this.bindEvents();
     }
 
     loadData() {
-        console.log('Loading data for language:', 'en');
-        console.log('Looking for key:', 'page1_referralPromote');
+        console.log('📊 Data Loading: Starting for language:', 'en');
+        console.log('📊 Data Loading: Looking for key:', 'page1_referralPromote');
+        console.log('📊 Data Loading: REFERRAL_DATA exists:', !!window.REFERRAL_DATA);
+        console.log('📊 Data Loading: REFERRAL_DATA.en exists:', !!window.REFERRAL_DATA?.en);
+        console.log('📊 Data Loading: Available keys in en:', window.REFERRAL_DATA?.en ? Object.keys(window.REFERRAL_DATA.en) : 'N/A');
 
         const rawData = window.REFERRAL_DATA?.en?.page1_referralPromote;
         if (!rawData) {
+            console.error('❌ Data Loading: Failed to load referral data');
             this.showError('Failed to load referral data');
             return;
         }
 
+        console.log('📊 Data Loading: Raw data loaded successfully:', rawData);
+
         // Interpolate template variables
         this.data = this.interpolateData(rawData);
-        console.log('Loaded and interpolated data:', this.data);
+        console.log('📊 Data Loading: Interpolated data:', this.data);
 
         this.render();
     }
@@ -49,11 +58,26 @@ class ReferralPromotePage {
     }
 
     render() {
+        console.log('🎨 Rendering: Starting page render...');
+        
         // Update header title
-        document.getElementById('header-title').textContent = this.data.hero.page_title;
+        const headerTitle = document.getElementById('header-title');
+        console.log('🎨 Rendering: Header title element found:', !!headerTitle);
+        if (headerTitle) {
+            headerTitle.textContent = this.data.hero.page_title;
+            console.log('🎨 Rendering: Header title set to:', this.data.hero.page_title);
+        }
 
         // Render main content
         const mainContent = document.getElementById('main-content');
+        console.log('🎨 Rendering: Main content element found:', !!mainContent);
+        
+        if (!mainContent) {
+            console.error('❌ Rendering: Main content element not found!');
+            return;
+        }
+
+        console.log('🎨 Rendering: About to set innerHTML...');
         mainContent.innerHTML = `
             <!-- Hero Section -->
             <section class="hero-section">
@@ -109,11 +133,39 @@ class ReferralPromotePage {
             </section>
         `;
 
+        console.log('🎨 Rendering: HTML content set successfully');
+        console.log('🎨 Rendering: Checking if CSS classes are applied...');
+        
+        // Debug CSS application
+        const heroSection = document.querySelector('.hero-section');
+        const stepsContainer = document.querySelector('.steps-list');
+        const benefitCards = document.querySelector('.card-stack-container');
+        
+        console.log('🎨 Rendering: Hero section found:', !!heroSection);
+        console.log('🎨 Rendering: Steps container found:', !!stepsContainer);
+        console.log('🎨 Rendering: Benefit cards container found:', !!benefitCards);
+        
+        if (heroSection) {
+            const heroStyles = window.getComputedStyle(heroSection);
+            console.log('🎨 Rendering: Hero section background:', heroStyles.backgroundColor);
+            console.log('🎨 Rendering: Hero section border-radius:', heroStyles.borderRadius);
+            console.log('🎨 Rendering: Hero section padding:', heroStyles.padding);
+        }
+
         // Update primary CTA
         const primaryCTA = document.getElementById('primary-cta');
-        primaryCTA.textContent = this.data.share.primary_cta;
-        primaryCTA.disabled = false;
-        primaryCTA.onclick = () => this.shareReferral();
+        console.log('🎨 Rendering: Primary CTA element found:', !!primaryCTA);
+        if (primaryCTA) {
+            primaryCTA.textContent = this.data.share.primary_cta;
+            primaryCTA.disabled = false;
+            primaryCTA.onclick = () => this.shareReferral();
+            console.log('🎨 Rendering: Primary CTA updated with text:', this.data.share.primary_cta);
+            
+            // Debug CTA styles
+            const ctaStyles = window.getComputedStyle(primaryCTA);
+            console.log('🎨 Rendering: CTA background:', ctaStyles.backgroundColor);
+            console.log('🎨 Rendering: CTA border-radius:', ctaStyles.borderRadius);
+        }
     }
 
     getBenefitClass(index) {
@@ -181,21 +233,38 @@ class ReferralPromotePage {
     }
 
     bindEvents() {
+        console.log('🔗 Events: Binding events...');
+        
         // Back button
-        document.getElementById('back-btn').addEventListener('click', () => {
-            window.history.back();
-        });
+        const backBtn = document.getElementById('back-btn');
+        console.log('🔗 Events: Back button found:', !!backBtn);
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                console.log('🔗 Events: Back button clicked');
+                window.history.back();
+            });
+        }
 
         // Add card rotation effect
         setTimeout(() => {
+            console.log('🔗 Events: Initializing card animations...');
             this.animateCards();
         }, 1000);
     }
 
     animateCards() {
         const cards = document.querySelectorAll('.benefit-card');
+        console.log('🎴 Animation: Benefit cards found:', cards.length);
+        
+        if (cards.length === 0) {
+            console.warn('⚠️ Animation: No benefit cards found for animation');
+            return;
+        }
+        
         cards.forEach((card, index) => {
+            console.log('🎴 Animation: Setting up card', index, 'with class:', card.className);
             card.addEventListener('click', () => {
+                console.log('🎴 Animation: Card', index, 'clicked - rotating all cards');
                 // Rotate cards when clicked
                 cards.forEach((c, i) => {
                     const newIndex = (i + 1) % cards.length;
@@ -209,5 +278,19 @@ class ReferralPromotePage {
 
 // Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🌟 Initialization: DOM Content Loaded');
+    console.log('🌟 Initialization: Body class list:', document.body.classList.toString());
+    console.log('🌟 Initialization: Container element exists:', !!document.querySelector('.container'));
+    
+    // Check if styles are loaded by testing a known CSS rule
+    const testDiv = document.createElement('div');
+    testDiv.className = 'btn btn-primary';
+    testDiv.style.display = 'none';
+    document.body.appendChild(testDiv);
+    const styles = window.getComputedStyle(testDiv);
+    console.log('🌟 Initialization: CSS test - btn-primary background:', styles.backgroundColor);
+    document.body.removeChild(testDiv);
+    
+    console.log('🌟 Initialization: Creating ReferralPromotePage instance...');
     new ReferralPromotePage();
 });
