@@ -141,6 +141,11 @@
             .param-input:focus {
                 scroll-margin: 0;
             }
+            
+            /* Completely prevent scrollIntoView on referral code input */
+            #referralCode {
+                scroll-margin: 0 !important;
+            }
 
             @media (max-width: 768px) {
                 .params-grid {
@@ -220,7 +225,7 @@
                         </div>
                         <div class="param-group" style="margin-top: 0.75rem;">
                             <label class="param-label" for="referralCode">Referral Code</label>
-                            <input type="text" id="referralCode" class="param-input" value="aju2586" placeholder="ABC123" onclick="event.stopPropagation();" onfocus="event.preventDefault(); this.scrollIntoView = function() {};">
+                            <input type="text" id="referralCode" class="param-input" value="aju2586" placeholder="ABC123" onclick="event.stopPropagation();">
                         </div>
                     </div>
                 </a>
@@ -265,6 +270,27 @@
 
                 window.location.href = `${page}?${params.toString()}`;
             }
+
+            // Prevent scroll behavior on referral code input
+            document.addEventListener('DOMContentLoaded', function() {
+                const referralCodeInput = document.getElementById('referralCode');
+                if (referralCodeInput) {
+                    // Override scrollIntoView for this specific input
+                    referralCodeInput.scrollIntoView = function() {};
+                    
+                    // Prevent default focus behavior that might cause scrolling
+                    referralCodeInput.addEventListener('focus', function(e) {
+                        // Store current scroll position
+                        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                        
+                        // Restore scroll position after any potential scrolling
+                        setTimeout(function() {
+                            window.scrollTo(scrollLeft, scrollTop);
+                        }, 0);
+                    });
+                }
+            });
 
             
         </script>
