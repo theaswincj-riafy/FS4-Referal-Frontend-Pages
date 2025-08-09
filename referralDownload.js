@@ -53,8 +53,9 @@ class ReferralDownloadPage {
     document.getElementById('app-title').textContent = app.name || app.title || 'Dance Workouts For Weight Loss';
 
     // Populate invitation section
+    const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
     document.getElementById('invitation-title').textContent = 
-      invitation.title || `${this.params.firstname} Invited You To Try This App`;
+      invitation.title || `${capitalizedName} Invited You To Try This App`;
     
     document.getElementById('invitation-subtitle').textContent = 
       invitation.subtitle || 'Download the app to claim your invite and get 1 week of Premium features for Free!';
@@ -69,7 +70,7 @@ class ReferralDownloadPage {
         if (stepElement) {
           let stepText = step.desc || step.description || step.text;
           // Replace placeholder with actual referrer name
-          stepText = stepText.replace(/\{referrer_name\}/g, this.params.firstname);
+          stepText = stepText.replace(/\{referrer_name\}/g, capitalizedName);
           stepElement.textContent = stepText;
         }
       });
@@ -78,7 +79,7 @@ class ReferralDownloadPage {
       const defaultSteps = [
         'Download the app from Google Play or Apple App Store',
         'Open the app and click on Redeem Referral Code',
-        `Paste ${this.params.firstname}'s referral code and hit redeem to unlock a week of Premium features for yourself!`
+        `Paste ${capitalizedName}'s referral code and hit redeem to unlock a week of Premium features for yourself!`
       ];
       
       defaultSteps.forEach((stepText, index) => {

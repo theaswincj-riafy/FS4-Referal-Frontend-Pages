@@ -65,7 +65,8 @@ class ReferralPromotePage {
 
     // Populate hero section
     document.getElementById('hero-title').textContent = hero.hero_title || hero.title || 'Invite & Unlock 1 Month Premium';
-    document.getElementById('hero-subtitle').textContent = hero.subtitle || `${this.params.firstname}, invite friends and get rewards!`;
+    const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
+    document.getElementById('hero-subtitle').textContent = hero.subtitle || `${capitalizedName}, invite friends and get rewards!`;
     document.getElementById('referral-code').textContent = hero.referral_code || pageData.referral_code || this.params.firstname.toUpperCase() + '1234';
     document.getElementById('view-referrals-text').textContent = hero.quickButtonText || 'View my referrals';
 

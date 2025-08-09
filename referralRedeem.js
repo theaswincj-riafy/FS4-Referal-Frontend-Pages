@@ -52,6 +52,7 @@ class ReferralRedeemPage {
     const pageData = this.data.data || this.data;
     const hero = pageData.hero || {};
     const steps = pageData.how_it_works || pageData.steps || [];
+    const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
 
     // Populate header
     document.getElementById('header-title').textContent = hero.page_title || pageData.page_title || 'Redeem Referral Code';

@@ -16,6 +16,14 @@ class ReferralUtils {
   }
 
   /**
+   * Capitalize first letter of a name
+   */
+  static capitalizeName(name) {
+    if (!name || typeof name !== 'string') return name;
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  }
+
+  /**
    * Token interpolation helper
    * Replaces {{token}} patterns with actual values
    */

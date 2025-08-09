@@ -72,7 +72,8 @@ class ReferralStatusPage {
     if (currentMilestone) {
       document.getElementById('level-title').textContent = `Level ${currentLevel}`;
       document.getElementById('level-subtitle').textContent = currentMilestone.title || 'Progress';
-      document.getElementById('level-message').textContent = currentMilestone.message || `Great work, ${this.params.firstname}! Keep going.`;
+      const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
+      document.getElementById('level-message').textContent = currentMilestone.message || `Great work, ${capitalizedName}! Keep going.`;
     }
 
     document.getElementById('progress-display').textContent = `${currentLevel} of ${targetLevel} Completed`;
