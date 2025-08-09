@@ -7,18 +7,11 @@ class ReferralUtils {
   static getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     return {
-      userId: params.get('userId') || 'user123',
-      appId: params.get('appId') || 'app1',
+      app_package_name: params.get('app_package_name') || 'com.firestorm.testApp1',
+      firstname: params.get('firstname') || 'aju', 
+      userId: params.get('userId') || '123',
       language: params.get('language') || 'en',
-      firstName: params.get('firstName') || 'John',
-      // Legacy support for old parameters with new mapping
-      referrer_name: params.get('firstName') || params.get('referrer_name') || 'John',
-      referral_code: params.get('referral_code') || `${(params.get('firstName') || 'JOHN').toUpperCase()}1234`,
-      referral_link: params.get('referral_link') || 'https://app.example.com/invite',
-      current_redemptions: parseInt(params.get('current_redemptions')) || 0,
-      pending_redemptions: 5 - (parseInt(params.get('current_redemptions')) || 0),
-      target_redemptions: parseInt(params.get('target_redemptions')) || 5,
-      show_recent_event: params.get('show_recent_event') === 'true'
+      referralCode: params.get('referralCode') || 'aju2586'
     };
   }
 
@@ -61,20 +54,42 @@ class ReferralUtils {
   }
 
   /**
-   * Simulate API loading with delay
+   * Make API calls to the referral system
    */
-  static async simulateApiCall(dataKey, delay = 800) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (window.REFERRAL_DATA && window.REFERRAL_DATA[dataKey]) {
-          const params = this.getUrlParams();
-          const data = this.interpolateObject(window.REFERRAL_DATA[dataKey], params);
-          resolve(data);
-        } else {
-          reject(new Error(`Failed to load ${dataKey} data`));
-        }
-      }, delay);
-    });
+  static async makeApiCall(endpoint, method = 'GET', body = null) {
+    const apiKey = 'HJVV4XapPZVVfPSiQThYGZdAXkRLUWvRfpNE5ITMfbC3A4Q';
+    const baseUrl = 'https://referral-system-o0yw.onrender.com';
+    
+    const config = {
+      method,
+      headers: {
+        'X-API-Key': apiKey,
+        'Content-Type': 'application/json'
+      }
+    };
+
+    if (body && method !== 'GET') {
+      config.body = JSON.stringify(body);
+    }
+
+    try {
+      const response = await fetch(`${baseUrl}${endpoint}`, config);
+      
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      // Handle different content types
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      } else {
+        return await response.text();
+      }
+    } catch (error) {
+      console.error('API call error:', error);
+      throw error;
+    }
   }
 
   /**

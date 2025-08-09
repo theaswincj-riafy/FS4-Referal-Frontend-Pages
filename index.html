@@ -1,190 +1,201 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Referral Boost</title>
-        <link rel="stylesheet" href="styles.css" />
-        <style>
-            .navigation-container {
-                max-width: 500px;
-                margin: 2rem auto;
-                padding: 2rem;
-                text-align: center;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral System Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .input-form {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1d1d1f;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #52C5F7;
+        }
+
+        .page-links {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .link-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .demo-link {
+            display: block;
+            padding: 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            text-decoration: none;
+            color: #1d1d1f;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .demo-link:hover {
+            border-color: #52C5F7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-link h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .demo-link p {
+            margin: 0;
+            color: #86868b;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
             }
-
-            .nav-title {
-                font-size: 2rem;
-                font-weight: 700;
-                margin-bottom: 1rem;
-                color: #2d3748;
-            }
-
-            .nav-subtitle {
-                font-size: 1.1rem;
-                color: #4a5568;
-                margin-bottom: 2rem;
-                line-height: 1.5;
-            }
-
-            .nav-buttons {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-                margin-bottom: 2rem;
-            }
-
-            .nav-btn {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 1rem 1.5rem;
-                background: white;
-                border: 2px solid #e2e8f0;
-                border-radius: 12px;
-                text-decoration: none;
-                color: #2d3748;
-                font-weight: 600;
-                transition: all 0.2s ease;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .nav-btn:hover {
-                border-color: #4299e1;
-                background: #f7fafc;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-            }
-
-            .nav-btn-icon {
-                font-size: 1.5rem;
-                margin-right: 1rem;
-            }
-
-            .nav-btn-content {
-                flex: 1;
-                text-align: left;
-            }
-
-            .nav-btn-title {
-                font-size: 1.1rem;
-                font-weight: 600;
-                margin-bottom: 0.25rem;
-            }
-
-            .nav-btn-desc {
-                font-size: 0.9rem;
-                color: #718096;
-                font-weight: 400;
-            }
-
-            .nav-btn-arrow {
-                font-size: 1.2rem;
-                color: #a0aec0;
-            }
-
-            .params-info {
-                background: #f7fafc;
-                border: 1px solid #e2e8f0;
-                border-radius: 8px;
-                padding: 1rem;
-                margin-top: 2rem;
-                text-align: left;
-            }
-
-            .params-title {
-                font-weight: 600;
-                color: #2d3748;
-                margin-bottom: 0.5rem;
-            }
-
-            .params-list {
-                font-size: 0.9rem;
-                color: #4a5568;
-                line-height: 1.4;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="navigation-container">
-            <h1 class="nav-title">Referral Boost</h1>
-            <p class="nav-subtitle">
-                Navigate through the complete referral flow with demo parameters
-            </p>
-
-            <div class="nav-buttons">
-                <a
-                    href="referralPromote.html?referrer_name=John&referral_code=DEMO123&referral_link=https://example.com/invite/DEMO123&current_redemptions=2&target_redemptions=5"
-                    class="nav-btn"
-                >
-                    <div class="nav-btn-icon">🚀</div>
-                    <div class="nav-btn-content">
-                        <div class="nav-btn-title">Promote Page</div>
-                        <div class="nav-btn-desc">
-                            Share your referral code and invite friends
-                        </div>
-                    </div>
-                    <div class="nav-btn-arrow">→</div>
-                </a>
-
-                <a
-                    href="referralStatus.html?referrer_name=John&referral_code=DEMO123&referral_link=https://example.com/invite/DEMO123&current_redemptions=3&target_redemptions=5&show_recent_event=true"
-                    class="nav-btn"
-                >
-                    <div class="nav-btn-icon">📊</div>
-                    <div class="nav-btn-content">
-                        <div class="nav-btn-title">Status Page</div>
-                        <div class="nav-btn-desc">
-                            Track your referral progress and achievements
-                        </div>
-                    </div>
-                    <div class="nav-btn-arrow">→</div>
-                </a>
-
-                <a
-                    href="referralDownload.html?referrer_name=John&referral_code=DEMO123&referral_link=https://example.com/invite/DEMO123"
-                    class="nav-btn"
-                >
-                    <div class="nav-btn-icon">📱</div>
-                    <div class="nav-btn-content">
-                        <div class="nav-btn-title">Download Page</div>
-                        <div class="nav-btn-desc">
-                            Landing page for new users to download the app
-                        </div>
-                    </div>
-                    <div class="nav-btn-arrow">→</div>
-                </a>
-
-                <a
-                    href="referralRedeem.html?referrer_name=John&referral_code=DEMO123"
-                    class="nav-btn"
-                >
-                    <div class="nav-btn-icon">🎯</div>
-                    <div class="nav-btn-content">
-                        <div class="nav-btn-title">Redeem Page</div>
-                        <div class="nav-btn-desc">
-                            Enter and redeem referral codes
-                        </div>
-                    </div>
-                    <div class="nav-btn-arrow">→</div>
-                </a>
-            </div>
-
-            <div class="params-info">
-                <div class="params-title">Demo Parameters Used:</div>
-                <div class="params-list">
-                    • <strong>referrer_name:</strong> John<br />
-                    • <strong>referral_code:</strong> DEMO123<br />
-                    •
-                    <strong>referral_link:</strong>
-                    https://example.com/invite/DEMO123<br />
-                    • <strong>current_redemptions:</strong> 2-3 (varies by
-                    page)<br />
-                    • <strong>target_redemptions:</strong> 5<br />
-                    • <strong>show_recent_event:</strong> true (status page
-                    only)
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; margin: 2rem 0;">Referral System Demo</h1>
+        
+        <div class="input-form">
+            <h2>Configuration</h2>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="app_package_name">App Package Name</label>
+                    <input type="text" id="app_package_name" value="com.firestorm.testApp1" placeholder="com.example.app">
+                </div>
+                
+                <div class="input-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" value="aju" placeholder="John">
+                </div>
+                
+                <div class="input-group">
+                    <label for="userId">User ID</label>
+                    <input type="text" id="userId" value="123" placeholder="user123">
+                </div>
+                
+                <div class="input-group">
+                    <label for="language">Language</label>
+                    <select id="language">
+                        <option value="en">English (en)</option>
+                        <option value="es">Spanish (es)</option>
+                        <option value="fr">French (fr)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group" id="referral-code-group" style="display: none;">
+                    <label for="referralCode">Referral Code (Download Page Only)</label>
+                    <input type="text" id="referralCode" value="aju2586" placeholder="ABC123">
                 </div>
             </div>
         </div>
-    </body>
+        
+        <div class="page-links">
+            <h2>Pages</h2>
+            <div class="link-grid">
+                <a href="#" class="demo-link" onclick="navigateToPage('referralPromote.html')">
+                    <h3>🚀 Referral Promote</h3>
+                    <p>Main sharing page for referrers</p>
+                </a>
+                
+                <a href="#" class="demo-link" onclick="navigateToPage('referralStatus.html')">
+                    <h3>📊 Referral Status</h3>
+                    <p>Progress tracking dashboard</p>
+                </a>
+                
+                <a href="#" class="demo-link" onclick="navigateToPage('referralDownload.html')" 
+                   onmouseenter="showReferralCode()" onmouseleave="hideReferralCode()">
+                    <h3>📱 Referral Download</h3>
+                    <p>App download landing page</p>
+                </a>
+                
+                <a href="#" class="demo-link" onclick="navigateToPage('referralRedeem.html')">
+                    <h3>🎯 Referral Redeem</h3>
+                    <p>Code redemption interface</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getFormData() {
+            return {
+                app_package_name: document.getElementById('app_package_name').value,
+                firstname: document.getElementById('firstname').value,
+                userId: document.getElementById('userId').value,
+                language: document.getElementById('language').value,
+                referralCode: document.getElementById('referralCode').value
+            };
+        }
+
+        function navigateToPage(page) {
+            const data = getFormData();
+            const params = new URLSearchParams({
+                app_package_name: data.app_package_name,
+                firstname: data.firstname,
+                userId: data.userId,
+                language: data.language
+            });
+
+            // Add referral code only for download page
+            if (page === 'referralDownload.html' && data.referralCode) {
+                params.append('referralCode', data.referralCode);
+            }
+
+            window.location.href = `${page}?${params.toString()}`;
+        }
+
+        function showReferralCode() {
+            document.getElementById('referral-code-group').style.display = 'block';
+        }
+
+        function hideReferralCode() {
+            // Keep it visible once shown, so user can fill it
+        }
+    </script>
+</body>
 </html>

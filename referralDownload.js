@@ -10,26 +10,26 @@ class ReferralDownloadPage {
     try {
       await this.loadPageData();
       if (this.data) {
-        this.renderPage();
+        this.populateContent();
+        this.hideLoader();
         this.bindEvents();
       } else {
         throw new Error('No data loaded');
       }
     } catch (error) {
       console.error('Failed to load page:', error);
-      this.showError('Failed to load invitation data. Please try again.');
+      this.showError('Failed to load page data. Please try again.');
     }
   }
 
   async loadPageData() {
-    // Show loading state
-    const mainContent = document.getElementById('main-content');
-    ReferralUtils.showLoading(mainContent);
-
     try {
-      // Simulate API call
-      this.data = await ReferralUtils.simulateApiCall('page3_referralDownload');
-      console.log('Loaded data:', this.data); // Debug log
+      const endpoint = `/share/${this.params.referralCode}`;
+      
+      console.log('Making API call to:', endpoint);
+      
+      this.data = await ReferralUtils.makeApiCall(endpoint, 'GET');
+      console.log('Loaded API data:', this.data);
     } catch (error) {
       console.error('API call error:', error);
       this.data = null;
@@ -37,224 +37,152 @@ class ReferralDownloadPage {
     }
   }
 
-  renderPage() {
-    this.renderHero();
-    this.renderMainContent();
-    this.renderFooter();
-  }
+  populateContent() {
+    if (!this.data) {
+      console.error('No data available for rendering');
+      return;
+    }
 
-  renderHero() {
-    document.getElementById('hero-title').textContent = this.data.hero.title;
-    document.getElementById('hero-subtitle').textContent = this.data.hero.subtitle;
-  }
+    // Extract data from API response structure
+    const pageData = this.data.data || this.data;
+    const app = pageData.app || {};
+    const invitation = pageData.invitation || {};
+    const steps = pageData.how_it_works || pageData.steps || [];
 
-  renderMainContent() {
-    const mainContent = document.getElementById('main-content');
+    // Populate app title
+    document.getElementById('app-title').textContent = app.name || app.title || 'Dance Workouts For Weight Loss';
+
+    // Populate invitation section
+    document.getElementById('invitation-title').textContent = 
+      invitation.title || `${this.params.firstname} Invited You To Try This App`;
     
-    mainContent.innerHTML = `
-      <!-- Feature Highlights -->
-      <section class="features-section" role="region" aria-labelledby="features-title">
-        <h2 id="features-title">Why you'll love this app</h2>
-        <div class="benefits">
-          ${this.data.feature_highlights.map(feature => `
-            <div class="card">
-              <h3 class="card-title">${feature.title}</h3>
-              <p class="card-desc">${feature.desc}</p>
-            </div>
-          `).join('')}
-        </div>
-      </section>
+    document.getElementById('invitation-subtitle').textContent = 
+      invitation.subtitle || 'Download the app to claim your invite and get 1 week of Premium features for Free!';
+    
+    document.getElementById('referral-code').textContent = 
+      invitation.referral_code || pageData.referral_code || this.params.referralCode;
 
-      <!-- Store Download Buttons -->
-      <section class="download-section" role="region" aria-labelledby="download-title">
-        <div class="card">
-          <h2 id="download-title">Download the App</h2>
-          <p class="card-desc">${this.data.store_ctas.device_hint}</p>
-          
-          <div class="store-buttons">
-            <a href="#" class="store-btn" id="play-store-btn" role="button" aria-label="Download from Google Play Store">
-              <span style="margin-right: 8px;">📱</span>
-              ${this.data.store_ctas.play_store_button}
-            </a>
-            <a href="#" class="store-btn" id="app-store-btn" role="button" aria-label="Download from Apple App Store">
-              <span style="margin-right: 8px;">🍎</span>
-              ${this.data.store_ctas.app_store_button}
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- How It Works -->
-      <section class="how-it-works-section" role="region" aria-labelledby="how-it-works-title">
-        <div class="card">
-          <h2 id="how-it-works-title">${this.data.how_it_works.title}</h2>
-          <ol class="steps-list">
-            ${this.data.how_it_works.steps.map(step => `
-              <li>${step}</li>
-            `).join('')}
-          </ol>
-          
-          <!-- Code Display -->
-          <div style="background: #f7fafc; padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 2px dashed #cbd5e0;">
-            <p style="text-align: center; color: #4a5568; margin-bottom: 0.5rem; font-size: 0.875rem;">Your invite code:</p>
-            <p style="text-align: center; font-family: 'Courier New', monospace; font-size: 1.25rem; font-weight: 600; color: #2d3748; letter-spacing: 2px;">${this.params.referral_code}</p>
-            <button class="btn btn-secondary" id="copy-code-preview" style="margin-top: 1rem;">
-              <span>📋</span> Copy Code
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Additional App Mockups -->
-      <section class="app-preview-section" role="region" aria-labelledby="preview-title">
-        <div class="card">
-          <h3 id="preview-title">See it in action</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: 1rem;">
-            <img src="https://pixabay.com/get/gc48115f76b9abd1f955781089569abbc7744c613c9d57e33bb411171f5614074416289c336fe12eb1f3f0580312cffed17c86411f3ac8fa6c1eba5d4e5775858_1280.jpg" alt="App interface preview showing clean design" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px;">
-            <img src="https://pixabay.com/get/ga26e3dd718cd12c89401968bb72dea8caa6cb688c5ef8b981f8e40dbffd9b54ab4918fb65e0c88140f8c8f712e348dcdeb79ba6293ce03bb716c223013af8231_1280.jpg" alt="Mobile app features and navigation" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px;">
-          </div>
-        </div>
-      </section>
-    `;
+    // Populate how it works steps
+    if (steps.length > 0) {
+      steps.forEach((step, index) => {
+        const stepElement = document.getElementById(`step-${index + 1}`);
+        if (stepElement) {
+          let stepText = step.desc || step.description || step.text;
+          // Replace placeholder with actual referrer name
+          stepText = stepText.replace(/\{referrer_name\}/g, this.params.firstname);
+          stepElement.textContent = stepText;
+        }
+      });
+    } else {
+      // Default steps if API doesn't provide them
+      const defaultSteps = [
+        'Download the app from Google Play or Apple App Store',
+        'Open the app and click on Redeem Referral Code',
+        `Paste ${this.params.firstname}'s referral code and hit redeem to unlock a week of Premium features for yourself!`
+      ];
+      
+      defaultSteps.forEach((stepText, index) => {
+        const stepElement = document.getElementById(`step-${index + 1}`);
+        if (stepElement) {
+          stepElement.textContent = stepText;
+        }
+      });
+    }
   }
 
-  renderFooter() {
-    document.getElementById('footer-smallprint').textContent = this.data.footer.smallprint;
+  hideLoader() {
+    const loader = document.getElementById('page-loader');
+    const content = document.getElementById('page-content-wrapper');
     
-    const secondaryCta = document.getElementById('secondary-cta');
-    secondaryCta.textContent = this.data.footer.secondary_cta.label;
-    secondaryCta.disabled = false;
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
   }
 
   bindEvents() {
-    // Store buttons
-    document.getElementById('play-store-btn').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.handleStoreDownload('play');
-    });
-
-    document.getElementById('app-store-btn').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.handleStoreDownload('app');
-    });
-
-    // Copy code button
-    document.getElementById('copy-code-preview').addEventListener('click', () => {
-      this.handleCopyCode();
-    });
-
-    // Secondary CTA (Already installed)
-    document.getElementById('secondary-cta').addEventListener('click', () => {
-      this.handleSecondaryAction();
-    });
-
-    // Keyboard navigation
-    this.setupKeyboardNavigation();
-
-    // Auto-detect platform and highlight appropriate store
-    this.detectAndHighlightPlatform();
-  }
-
-  handleStoreDownload(store) {
-    // In a real app, these would be actual store URLs
-    const storeUrls = {
-      play: 'https://play.google.com/store/apps/details?id=com.example.app',
-      app: 'https://apps.apple.com/app/example-app/id123456789'
-    };
-
-    // Show toast with instructions
-    ReferralUtils.showToast(`Opening ${store === 'play' ? 'Google Play' : 'App Store'}...`);
-
-    // In a real implementation, this would redirect to actual store
-    console.log(`Would redirect to: ${storeUrls[store]}`);
-    
-    // For demo, just show a message
-    setTimeout(() => {
-      ReferralUtils.showToast('Remember to use your invite code after installing!');
-    }, 2000);
-  }
-
-  async handleCopyCode() {
-    const success = await ReferralUtils.copyToClipboard(
-      this.params.referral_code,
-      'Code copied! Use it after installing the app.'
-    );
-    
-    if (success) {
-      // Add visual feedback
-      const button = document.getElementById('copy-code-preview');
-      const originalBg = button.style.background;
-      const originalColor = button.style.color;
-      
-      button.style.background = '#38a169';
-      button.style.color = 'white';
-      
-      setTimeout(() => {
-        button.style.background = originalBg;
-        button.style.color = originalColor;
-      }, 1000);
-    }
-  }
-
-  handleSecondaryAction() {
-    // Navigate to redeem page
-    ReferralUtils.navigateWithParams('referralRedeem.html');
-  }
-
-  detectAndHighlightPlatform() {
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
-    // Detect iOS
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      document.getElementById('app-store-btn').style.order = '-1';
-      document.getElementById('app-store-btn').style.background = '#007aff';
-    }
-    // Detect Android
-    else if (/android/i.test(userAgent)) {
-      document.getElementById('play-store-btn').style.order = '-1';
-      document.getElementById('play-store-btn').style.background = '#34a853';
-    }
-  }
-
-  setupKeyboardNavigation() {
-    // Add keyboard support for store buttons
-    const storeButtons = document.querySelectorAll('.store-btn');
-    storeButtons.forEach(button => {
-      button.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          button.click();
-        }
+    // Copy to clipboard button
+    const copyBtn = document.getElementById('copy-clipboard');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const referralCode = document.getElementById('referral-code').textContent;
+        this.copyToClipboard(referralCode);
       });
-    });
+    }
 
-    // Regular button keyboard support
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-      button.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          button.click();
-        }
+    // Download buttons
+    const googlePlayBtn = document.getElementById('download-google');
+    const appStoreBtn = document.getElementById('download-appstore');
+    
+    if (googlePlayBtn) {
+      googlePlayBtn.addEventListener('click', () => {
+        // Extract package name or use default Play Store search
+        const packageName = this.params.app_package_name;
+        const playStoreUrl = `https://play.google.com/store/apps/details?id=${packageName}`;
+        window.open(playStoreUrl, '_blank');
       });
-    });
+    }
+
+    if (appStoreBtn) {
+      appStoreBtn.addEventListener('click', () => {
+        // For App Store, we'd need the app ID, so we'll use a search instead
+        const appName = document.getElementById('app-title').textContent;
+        const appStoreUrl = `https://apps.apple.com/search?term=${encodeURIComponent(appName)}`;
+        window.open(appStoreUrl, '_blank');
+      });
+    }
+  }
+
+  copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        ReferralUtils.showToast('Code copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        this.fallbackCopyTextToClipboard(text);
+      });
+    } else {
+      this.fallbackCopyTextToClipboard(text);
+    }
+  }
+
+  fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.top = '0';
+    textArea.style.left = '0';
+    textArea.style.position = 'fixed';
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        ReferralUtils.showToast('Code copied to clipboard!');
+      } else {
+        console.error('Fallback: Copying text command was unsuccessful');
+      }
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
   }
 
   showError(message) {
-    const mainContent = document.getElementById('main-content');
-    ReferralUtils.showError(mainContent, message);
+    const loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.innerHTML = `
+        <div class="error-state">
+          <p class="error-message">${message}</p>
+          <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+        </div>
+      `;
+    }
   }
 }
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   new ReferralDownloadPage();
-});
-
-// Handle page visibility for potential refresh
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    // Page became visible
-    console.log('Download page visible again');
-  }
 });

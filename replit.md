@@ -2,7 +2,7 @@
 
 ## Overview
 
-A mobile-first referral system built with vanilla HTML, CSS, and JavaScript that enables users to share referral codes, track progress, and redeem invitations. The system consists of four interconnected pages that provide a complete referral flow from promotion to redemption, with personalized content and progress tracking capabilities.
+A mobile-first referral system built with vanilla HTML, CSS, and JavaScript that connects to live API endpoints for real-time referral data. The system consists of four interconnected pages that provide a complete referral flow from promotion to redemption, with dynamic content from external APIs and real user data.
 
 ## User Preferences
 
@@ -20,7 +20,7 @@ Preferred communication style: Simple, everyday language.
 - `referralDownload.html` - App download landing page
 - `referralRedeem.html` - Code redemption interface
 
-**Data Management**: Centralized JSON configuration in `referralData.js` that serves as a single source of truth for all page content, eliminating content duplication and ensuring consistency across pages.
+**Data Management**: Real-time API integration with authenticated endpoints that fetch live data for each page, replacing static JSON configuration with dynamic content from external services.
 
 **Responsive Design**: Mobile-first approach with progressive enhancement for desktop. On mobile devices, pages render full-screen for native app-like experience. On desktop, content is centered in a mobile container (430-480px width) with decorative background.
 
@@ -30,13 +30,17 @@ Preferred communication style: Simple, everyday language.
 
 **Shared Utilities**: `ReferralUtils` class provides common functionality including URL parameter parsing, token interpolation, progress calculations, and API simulation methods.
 
-**Token Interpolation System**: Dynamic content personalization using `{{token}}` syntax that replaces placeholders with actual values from URL parameters or fallback defaults.
+**API Integration System**: Live data fetching from authenticated REST APIs using custom parameters, with intelligent error handling and fallback content for failed requests.
 
 ### Data Flow
 
-**URL Parameter Driven**: Personalization relies on URL parameters (`referrer_name`, `referral_code`, `current_redemptions`, etc.) with sensible fallbacks to ensure pages function without parameters.
+**URL Parameter Driven**: Personalization relies on URL parameters (`app_package_name`, `firstname`, `userId`, `language`, and `referralCode` for download page) that feed directly into API requests for dynamic content.
 
-**Simulated API Layer**: `simulateApiCall` method mimics backend integration, making it easy to replace with actual API calls when backend is available.
+**Live API Integration**: Direct integration with authenticated REST endpoints:
+- Promote Page: POST /api/referral-promote with app package, username, and user ID
+- Status Page: POST /api/referral-status for tracking progress and milestones  
+- Download Page: GET /share/{referralCode} for invitation details
+- Redeem Page: POST /api/referral-redeem for code redemption functionality
 
 **Privacy-First Design**: System only displays referrer information and aggregate statistics, never storing or revealing individual redeemer identities for GDPR compliance.
 
@@ -59,4 +63,4 @@ Preferred communication style: Simple, everyday language.
 
 **No External Libraries**: Deliberately avoids external JavaScript libraries or CSS frameworks to maintain simplicity, reduce load times, and eliminate dependency management concerns.
 
-**Backend Integration Ready**: Architecture designed to easily integrate with REST APIs by replacing the `simulateApiCall` method with actual HTTP requests to backend services.
+**Production API Integration**: Complete integration with live referral system APIs using X-API-Key authentication, with comprehensive error handling and fallback content for network issues or API failures.

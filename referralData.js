@@ -1,320 +1,322 @@
 window.REFERRAL_DATA = {
-  appID: 1,
-  en: {
-    page1_referralPromote: {
-      page_id: "referral-promote",
-      personalization: {
-        referrer_name: "{{referrer_name}}",
-        referral_code: "{{referral_code}}",
-        target_redemptions: 5,
-        current_redemptions: "{{current_redemptions}}",
-        pending_redemptions: "{{pending_redemptions}}",
+  app_package_name: "com.firestorm.testApp1",
+  referral_json: {
+    en: {
+      page1_referralPromote: {
+        page_id: "referral-promote",
+        personalization: {
+          referrer_name: "{{referrer_name}}",
+          referral_code: "{{referral_code}}",
+          target_redemptions: 5,
+          current_redemptions: "{{current_redemptions}}",
+          pending_redemptions: "{{pending_redemptions}}",
+        },
+        hero: {
+          page_title: "Invite Friends",
+          hero_title: "Invite & Unlock 1 Month Premium",
+          subtitle:
+            "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code.",
+          referral_code: "{{referral_code}}",
+          quickButtonText: "View my referrals",
+        },
+        how_it_works: [
+          {
+            step: 1,
+            desc: "Invite your friends and family using your referral code",
+          },
+          {
+            step: 2,
+            desc: "After your friend has installed the app, they can redeem your code.",
+          },
+          {
+            step: 3,
+            desc: "On every successful redemption, you will gain a new level!",
+          },
+          {
+            step: 4,
+            desc: "Your friend receives a week of free premium as well!",
+          },
+          {
+            step: 5,
+            desc: "You can unlock a month of free premium on reaching level 5!",
+          },
+        ],
+        progress_teaser: {
+          title: "Only {{pending_redemptions}} more levels to go!",
+          subtitle: "Each redemption brings you closer to Premium!",
+        },
+        benefits: [
+          {
+            title: "Premium Access",
+            desc: "Ad-free experience, pro features, and priority support for 1 month.",
+          },
+          {
+            title: "Win Together",
+            desc: "Your friends get an exclusive newcomer perk when they join via your link.",
+          },
+          {
+            title: "Fast & Simple",
+            desc: "Share your link; they download and redeem. You progress instantly.",
+          },
+        ],
+        nudges: [
+          "Best results: share with 5–10 close contacts first.",
+          "Add a personal note: tell them why you like the app.",
+          "Post your link in a relevant group or community.",
+        ],
+        share: {
+          primary_cta: "Invite Friends & Family",
+          messages: {
+            default:
+              "{{referrer_name}} invited you to try this app. Get 1 week of Premium features for free using this referral: {{referral_link}}",
+          },
+        },
       },
-      hero: {
-        page_title: "Invite Friends",
-        hero_title: "Invite & Unlock 1 Month Premium",
-        subtitle:
-          "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code.",
-        referral_code: "{{referral_code}}",
-        quickButtonText: "View my referrals",
+      page2_referralStatus: {
+        page_id: "referral-status",
+        personalization: {
+          referrer_name: "{{referrer_name}}",
+          referral_code: "{{referral_code}}",
+          target_redemptions: 5,
+          current_redemptions: "{{current_redemptions}}",
+          pending_redemptions: "{{pending_redemptions}}",
+        },
+        hero: {
+          page_title: "My Referrals",
+          hero_title: "Invite & Unlock 1 Month Premium",
+          subtitle:
+            "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code.",
+          referral_code: "{{referral_code}}",
+          quickButtonText: "View my referrals",
+        },
+        status: {
+          current: "{{current_redemptions}}",
+          target: "{{target_redemptions}}",
+          progress_text:
+            "{{current_redemptions}} of {{target_redemptions}} completed",
+        },
+        notifications: {
+          recent_event_banner: {
+            visible: "{{show_recent_event}}",
+            text: "Nice! Someone redeemed your code. Your progress just moved to {{current_redemptions}}/{{target_redemptions}}.",
+          },
+        },
+        milestones: [
+          {
+            level: 0,
+            current_level: "Level {{current_redemptions}}",
+            title: "Let's Start",
+            message: "Waiting for your first referral! No redemptions yet.",
+            emoji: "🎉",
+            achievedOn: "Not Applicable",
+          },
+          {
+            level: 1,
+            current_level: "Level {{current_redemptions}}",
+            title: "The Kickoff",
+            message:
+              "Your first referral is in! You’ve started your Premium journey.",
+            emoji: "🎉",
+            achievedOn: "Achieved on 09 August",
+          },
+          {
+            level: 2,
+            current_level: "Level {{current_redemptions}}",
+            title: "Building Momentum",
+            message: "Two friends on board! You’re warming up nicely.",
+            emoji: "🎉",
+            achievedOn: "Pending",
+          },
+          {
+            level: 3,
+            current_level: "Level {{current_redemptions}}",
+            title: "Halfway Hero",
+            message: "Three redemptions—more than halfway to your goal!",
+            emoji: "🎉",
+            achievedOn: "Pending",
+          },
+          {
+            level: 4,
+            current_level: "Level {{current_redemptions}}",
+            title: "Almost There",
+            message: "Four done! Just one more to unlock Premium.",
+            emoji: "🎉",
+            achievedOn: "Pending",
+          },
+          {
+            level: 5,
+            current_level: "Level {{current_redemptions}}",
+            title: "Premium Unlocked 🎉",
+            message:
+              "Congratulations! You’ve completed your referral goal and earned 1 month of Premium.",
+            emoji: "🎉",
+            achievedOn: "Pending",
+          },
+        ],
+        faq: [
+          {
+            q: "Do I see who redeemed?",
+            a: "No—only totals. We don’t store redeemer identities.",
+          },
+          {
+            q: "When do I get Premium?",
+            a: "Instantly after {{target_redemptions}} redemptions. You’ll get an in-app confirmation.",
+          },
+        ],
+        progress_teaser: {
+          title: "Only {{pending_redemptions}} more levels to go!",
+          subtitle: "Each redemption brings you closer to Premium!",
+        },
+        benefits: [
+          {
+            title: "Premium Access",
+            desc: "Ad-free experience, pro features, and priority support for 1 month.",
+          },
+          {
+            title: "Win Together",
+            desc: "Your friends get an exclusive newcomer perk when they join via your link.",
+          },
+          {
+            title: "Fast & Simple",
+            desc: "Share your link; they download and redeem. You progress instantly.",
+          },
+        ],
+        nudges: [
+          "Best results: share with 5–10 close contacts first.",
+          "Add a personal note: tell them why you like the app.",
+          "Post your link in a relevant group or community.",
+        ],
       },
-      how_it_works: [
-        {
-          step: 1,
-          desc: "Invite your friends and family using your referral code",
+      page3_referralDownload: {
+        page_id: "referral-download",
+        personalization: {
+          referrer_name: "{{referrer_name}}",
+          referral_code: "{{referral_code}}",
+          play_store_link: "{{play_store_link}}",
+          app_store_link: "{{app_store_link}}",
+          app_name: "{{app_name}}",
         },
-        {
-          step: 2,
-          desc: "After your friend has installed the app, they can redeem your code.",
+        hero: {
+          page_title: "{{app_name}}",
+          hero_title: "{{referrer_name}} invited you",
+          subtitle:
+            "Download the app to claim your invite and get 1 week of Premium features for Free!",
+          referral_code: "{{referral_code}}",
+          quickButtonText: "Copy to clipboard",
         },
-        {
-          step: 3,
-          desc: "On every successful redemption, you will gain a new level!",
-        },
-        {
-          step: 4,
-          desc: "Your friend receives a week of free premium as well!",
-        },
-        {
-          step: 5,
-          desc: "You can unlock a month of free premium on reaching level 5!",
-        },
-      ],
-      progress_teaser: {
-        title: "Only {{pending_redemptions}} more levels to go!",
-        subtitle: "Each redemption brings you closer to Premium!",
-      },
-      benefits: [
-        {
-          title: "Premium Access",
-          desc: "Ad-free experience, pro features, and priority support for 1 month.",
-        },
-        {
-          title: "Win Together",
-          desc: "Your friends get an exclusive newcomer perk when they join via your link.",
-        },
-        {
-          title: "Fast & Simple",
-          desc: "Share your link; they download and redeem. You progress instantly.",
-        },
-      ],
-      nudges: [
-        "Best results: share with 5–10 close contacts first.",
-        "Add a personal note: tell them why you like the app.",
-        "Post your link in a relevant group or community.",
-      ],
-      share: {
-        primary_cta: "Invite Friends & Family",
-        messages: {
-          default:
-            "{{referrer_name}} invited you to try this app. Get 1 week of Premium features for free using this referral: {{referral_link}}",
+        how_it_works: [
+          {
+            step: 1,
+            desc: "Download the app from Google Play or Apple App Store",
+          },
+          {
+            step: 2,
+            desc: "Open the app and and click on Redeem Referral Code",
+          },
+          {
+            step: 3,
+            desc: "Paste {{referrer_name}}’s referral code and hit redeem to unlock a week of  Premium features for yourself!",
+          },
+        ],
+        store_ctas: {
+          play_store_button: "Get it on Google Play",
+          play_store_link: "{{play_store_link}}",
+          app_store_button: "Download on the App Store",
+          app_store_link: "{{app_store_link}}",
         },
       },
-    },
-    page2_referralStatus: {
-      page_id: "referral-status",
-      personalization: {
-        referrer_name: "{{referrer_name}}",
-        referral_code: "{{referral_code}}",
-        target_redemptions: 5,
-        current_redemptions: "{{current_redemptions}}",
-        pending_redemptions: "{{pending_redemptions}}",
-      },
-      hero: {
-        page_title: "My Referrals",
-        hero_title: "Invite & Unlock 1 Month Premium",
-        subtitle:
-          "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code.",
-        referral_code: "{{referral_code}}",
-        quickButtonText: "View my referrals",
-      },
-      status: {
-        current: "{{current_redemptions}}",
-        target: "{{target_redemptions}}",
-        progress_text:
-          "{{current_redemptions}} of {{target_redemptions}} completed",
+      page4_referralRedeem: {
+        page_id: "referral-redeem",
+        personalization: {
+          referrer_name: "{{referrer_name}}",
+          referral_code: "{{referral_code}}",
+          target_redemptions: 5,
+          current_redemptions: "{{current_redemptions}}",
+          pending_redemptions: "{{pending_redemptions}}",
+        },
+        hero: {
+          page_title: "Redeem Referral Code",
+          hero_title: "Redeem Referral Invite Code",
+          subtitle: "Enter or paste the invite from your friend to continue.",
+          referral_code: "Enter Code",
+          quickButtonText: "Paste from Clipboard",
+        },
+        how_it_works: [
+          {
+            step: 1,
+            desc: "Copy the referral invitation sent by your friends or family",
+          },
+          {
+            step: 2,
+            desc: "Paste the referral invitation using the button above",
+          },
+          {
+            step: 3,
+            desc: "If the code is valid, you’ll unlock a week of Premium",
+          },
+        ],
+        redeem: {
+          primary_cta: "Redeem Code",
+          messages: {
+            whatsapp:
+              "Hey! I’m using this app and it’s awesome. Use my code {{referral_code}} or link {{referral_link}} to join—helps me unlock 1 month Premium 🎉",
+            sms: "Join this app with my code {{referral_code}} (link: {{referral_link}}). You’ll love it—and you’ll help me unlock Premium!",
+            generic:
+              "{{referrer_name}} invited you to try this app. Redeem code {{referral_code}} via {{referral_link}}.",
+          },
+          validation: {
+            empty: "Please enter a code.",
+            invalid: "That code doesn’t look right. Check and try again.",
+            expired:
+              "This invite has expired. Ask {{referrer_name}} for a new one.",
+            success: "Success! Your invite is confirmed.",
+          },
+          redemptionSuccess: {
+            hero_title: "You’re all set!",
+            subtitle:
+              "You have redeemed a valid referral code from {{referrer_name}}! ",
+            nudges: [
+              "Your redemption also helps {{referrer_name}} progress toward a reward.",
+            ],
+            primary_cta: "Unlock 1 Week Premium 🎉",
+          },
+        },
       },
       notifications: {
-        recent_event_banner: {
-          visible: "{{show_recent_event}}",
-          text: "Nice! Someone redeemed your code. Your progress just moved to {{current_redemptions}}/{{target_redemptions}}.",
-        },
+        referrer: [
+          {
+            id: "referral_progress_4_left",
+            title: "🔥 First win!",
+            body: "Someone just joined using your code. 4 more and you’ll unlock a month of Premium!",
+            cta: "Check your progress",
+          },
+          {
+            id: "referral_progress_3_left",
+            title: "🚀 You’re gaining momentum",
+            body: "Another friend joined! Just 3 more redemptions to score your free Premium month.",
+            cta: "See who’s next",
+          },
+          {
+            id: "referral_progress_2_left",
+            title: "⚡ Almost halfway to the finish",
+            body: "You’ve got 3 redemptions now. Only 2 more to go for your Premium reward!",
+            cta: "View your status",
+          },
+          {
+            id: "referral_progress_1_left",
+            title: "🏁 One step away!",
+            body: "4 out of 5 done. Just 1 more friend and you’ve got your free month of Premium.",
+            cta: "Push for the last one",
+          },
+          {
+            id: "referral_reward_unlocked",
+            title: "🎉 You did it!",
+            body: "Congratulations! You’ve unlocked 1 month of free Premium through referrals.",
+            cta: "Redeem now",
+          },
+        ],
+        redeemer: [],
       },
-      milestones: [
-        {
-          level: 0,
-          current_level: "Level {{current_redemptions}}",
-          title: "Let's Start",
-          message: "Waiting for your first referral! No redemptions yet.",
-          emoji: "🎉",
-          achievedOn: "Not Applicable",
-        },
-        {
-          level: 1,
-          current_level: "Level {{current_redemptions}}",
-          title: "The Kickoff",
-          message:
-            "Your first referral is in! You’ve started your Premium journey.",
-          emoji: "🎉",
-          achievedOn: "Achieved on 09 August",
-        },
-        {
-          level: 2,
-          current_level: "Level {{current_redemptions}}",
-          title: "Building Momentum",
-          message: "Two friends on board! You’re warming up nicely.",
-          emoji: "🎉",
-          achievedOn: "Pending",
-        },
-        {
-          level: 3,
-          current_level: "Level {{current_redemptions}}",
-          title: "Halfway Hero",
-          message: "Three redemptions—more than halfway to your goal!",
-          emoji: "🎉",
-          achievedOn: "Pending",
-        },
-        {
-          level: 4,
-          current_level: "Level {{current_redemptions}}",
-          title: "Almost There",
-          message: "Four done! Just one more to unlock Premium.",
-          emoji: "🎉",
-          achievedOn: "Pending",
-        },
-        {
-          level: 5,
-          current_level: "Level {{current_redemptions}}",
-          title: "Premium Unlocked 🎉",
-          message:
-            "Congratulations! You’ve completed your referral goal and earned 1 month of Premium.",
-          emoji: "🎉",
-          achievedOn: "Pending",
-        },
-      ],
-      faq: [
-        {
-          q: "Do I see who redeemed?",
-          a: "No—only totals. We don’t store redeemer identities.",
-        },
-        {
-          q: "When do I get Premium?",
-          a: "Instantly after {{target_redemptions}} redemptions. You’ll get an in-app confirmation.",
-        },
-      ],
-      progress_teaser: {
-        title: "Only {{pending_redemptions}} more levels to go!",
-        subtitle: "Each redemption brings you closer to Premium!",
-      },
-      benefits: [
-        {
-          title: "Premium Access",
-          desc: "Ad-free experience, pro features, and priority support for 1 month.",
-        },
-        {
-          title: "Win Together",
-          desc: "Your friends get an exclusive newcomer perk when they join via your link.",
-        },
-        {
-          title: "Fast & Simple",
-          desc: "Share your link; they download and redeem. You progress instantly.",
-        },
-      ],
-      nudges: [
-        "Best results: share with 5–10 close contacts first.",
-        "Add a personal note: tell them why you like the app.",
-        "Post your link in a relevant group or community.",
-      ],
-    },
-    page3_referralDownload: {
-      page_id: "referral-download",
-      personalization: {
-        referrer_name: "{{referrer_name}}",
-        referral_code: "{{referral_code}}",
-        play_store_link: "{{play_store_link}}",
-        app_store_link: "{{app_store_link}}",
-        app_name: "{{app_name}}",
-      },
-      hero: {
-        page_title: "{{app_name}}",
-        hero_title: "{{referrer_name}} invited you",
-        subtitle:
-          "Download the app to claim your invite and get 1 week of Premium features for Free!",
-        referral_code: "{{referral_code}}",
-        quickButtonText: "Copy to clipboard",
-      },
-      how_it_works: [
-        {
-          step: 1,
-          desc: "Download the app from Google Play or Apple App Store",
-        },
-        {
-          step: 2,
-          desc: "Open the app and and click on Redeem Referral Code",
-        },
-        {
-          step: 3,
-          desc: "Paste {{referrer_name}}’s referral code and hit redeem to unlock a week of  Premium features for yourself!",
-        },
-      ],
-      store_ctas: {
-        play_store_button: "Get it on Google Play",
-        play_store_link: "{{play_store_link}}",
-        app_store_button: "Download on the App Store",
-        app_store_link: "{{app_store_link}}",
-      },
-    },
-    page4_referralRedeem: {
-      page_id: "referral-redeem",
-      personalization: {
-        referrer_name: "{{referrer_name}}",
-        referral_code: "{{referral_code}}",
-        target_redemptions: 5,
-        current_redemptions: "{{current_redemptions}}",
-        pending_redemptions: "{{pending_redemptions}}",
-      },
-      hero: {
-        page_title: "Redeem Referral Code",
-        hero_title: "Redeem Referral Invite Code",
-        subtitle: "Enter or paste the invite from your friend to continue.",
-        referral_code: "Enter Code",
-        quickButtonText: "Paste from Clipboard",
-      },
-      how_it_works: [
-        {
-          step: 1,
-          desc: "Copy the referral invitation sent by your friends or family",
-        },
-        {
-          step: 2,
-          desc: "Paste the referral invitation using the button above",
-        },
-        {
-          step: 3,
-          desc: "If the code is valid, you’ll unlock a week of Premium",
-        },
-      ],
-      redeem: {
-        primary_cta: "Redeem Code",
-        messages: {
-          whatsapp:
-            "Hey! I’m using this app and it’s awesome. Use my code {{referral_code}} or link {{referral_link}} to join—helps me unlock 1 month Premium 🎉",
-          sms: "Join this app with my code {{referral_code}} (link: {{referral_link}}). You’ll love it—and you’ll help me unlock Premium!",
-          generic:
-            "{{referrer_name}} invited you to try this app. Redeem code {{referral_code}} via {{referral_link}}.",
-        },
-        validation: {
-          empty: "Please enter a code.",
-          invalid: "That code doesn’t look right. Check and try again.",
-          expired:
-            "This invite has expired. Ask {{referrer_name}} for a new one.",
-          success: "Success! Your invite is confirmed.",
-        },
-        redemptionSuccess: {
-          hero_title: "You’re all set!",
-          subtitle:
-            "You have redeemed a valid referral code from {{referrer_name}}! ",
-          nudges: [
-            "Your redemption also helps {{referrer_name}} progress toward a reward.",
-          ],
-          primary_cta: "Unlock 1 Week Premium 🎉",
-        },
-      },
-    },
-    notifications: {
-      referrer: [
-        {
-          id: "referral_progress_4_left",
-          title: "🔥 First win!",
-          body: "Someone just joined using your code. 4 more and you’ll unlock a month of Premium!",
-          cta: "Check your progress",
-        },
-        {
-          id: "referral_progress_3_left",
-          title: "🚀 You’re gaining momentum",
-          body: "Another friend joined! Just 3 more redemptions to score your free Premium month.",
-          cta: "See who’s next",
-        },
-        {
-          id: "referral_progress_2_left",
-          title: "⚡ Almost halfway to the finish",
-          body: "You’ve got 3 redemptions now. Only 2 more to go for your Premium reward!",
-          cta: "View your status",
-        },
-        {
-          id: "referral_progress_1_left",
-          title: "🏁 One step away!",
-          body: "4 out of 5 done. Just 1 more friend and you’ve got your free month of Premium.",
-          cta: "Push for the last one",
-        },
-        {
-          id: "referral_reward_unlocked",
-          title: "🎉 You did it!",
-          body: "Congratulations! You’ve unlocked 1 month of free Premium through referrals.",
-          cta: "Redeem now",
-        },
-      ],
-      redeemer: [],
     },
   },
 };

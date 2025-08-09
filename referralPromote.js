@@ -26,24 +26,18 @@ class ReferralPromotePage {
 
   async loadPageData() {
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const endpoint = `/api/referral-promote?lang=${this.params.language}`;
+      const body = {
+        app_package_name: this.params.app_package_name,
+        username: this.params.firstname,
+        user_id: this.params.userId
+      };
+
+      console.log('Making API call to:', endpoint);
+      console.log('Request body:', body);
       
-      // Get data from the correct language section
-      const language = this.params.language || 'en';
-      const dataKey = `page1_referralPromote`;
-      
-      console.log('Loading data for language:', language);
-      console.log('Looking for key:', dataKey);
-      
-      // Simulate API call - look for data in the language section
-      if (window.REFERRAL_DATA && window.REFERRAL_DATA[language] && window.REFERRAL_DATA[language][dataKey]) {
-        const rawData = window.REFERRAL_DATA[language][dataKey];
-        this.data = ReferralUtils.interpolateObject(rawData, this.params);
-        console.log('Loaded and interpolated data:', this.data);
-      } else {
-        throw new Error(`No data found for ${language}.${dataKey}`);
-      }
+      this.data = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
+      console.log('Loaded API data:', this.data);
     } catch (error) {
       console.error('API call error:', error);
       this.data = null;
@@ -57,46 +51,55 @@ class ReferralPromotePage {
       return;
     }
 
+    // Extract data from API response structure
+    const pageData = this.data.data || this.data;
+    const hero = pageData.hero || {};
+    const steps = pageData.how_it_works || pageData.steps || [];
+    const progress = pageData.progress_teaser || pageData.progress || {};
+    const benefits = pageData.benefits || [];
+    const tips = pageData.nudges || pageData.tips || [];
+    const share = pageData.share || {};
+
     // Populate header
-    document.getElementById('header-title').textContent = this.data.hero?.page_title || 'Invite Friends';
+    document.getElementById('header-title').textContent = hero.page_title || pageData.page_title || 'Invite Friends';
 
     // Populate hero section
-    document.getElementById('hero-title').textContent = this.data.hero?.hero_title || 'Invite & Unlock 1 Month Premium';
-    document.getElementById('hero-subtitle').textContent = this.data.hero?.subtitle || 'Loading...';
-    document.getElementById('referral-code').textContent = this.data.hero?.referral_code || 'CODE123';
-    document.getElementById('view-referrals-text').textContent = this.data.hero?.quickButtonText || 'View my referrals';
+    document.getElementById('hero-title').textContent = hero.hero_title || hero.title || 'Invite & Unlock 1 Month Premium';
+    document.getElementById('hero-subtitle').textContent = hero.subtitle || `${this.params.firstname}, invite friends and get rewards!`;
+    document.getElementById('referral-code').textContent = hero.referral_code || pageData.referral_code || this.params.firstname.toUpperCase() + '1234';
+    document.getElementById('view-referrals-text').textContent = hero.quickButtonText || 'View my referrals';
 
     // Populate how it works steps
-    if (this.data.how_it_works) {
-      this.data.how_it_works.forEach((step, index) => {
-        const stepElement = document.getElementById(`step-${step.step}`);
+    if (steps.length > 0) {
+      steps.forEach((step, index) => {
+        const stepElement = document.getElementById(`step-${index + 1}`);
         if (stepElement) {
-          stepElement.textContent = step.desc;
+          stepElement.textContent = step.desc || step.description || step.text;
         }
       });
     }
 
     // Populate progress section
-    document.getElementById('progress-title').textContent = this.data.progress_teaser?.title || 'Almost there!';
-    document.getElementById('progress-subtitle').textContent = this.data.progress_teaser?.subtitle || 'Keep sharing!';
+    document.getElementById('progress-title').textContent = progress.title || 'Almost there!';
+    document.getElementById('progress-subtitle').textContent = progress.subtitle || 'Keep sharing!';
 
     // Populate benefits cards
-    if (this.data.benefits) {
-      this.data.benefits.forEach((benefit, index) => {
+    if (benefits.length > 0) {
+      benefits.forEach((benefit, index) => {
         const titleElement = document.getElementById(`benefit-${index + 1}-title`);
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
         if (titleElement) titleElement.textContent = benefit.title;
-        if (descElement) descElement.textContent = benefit.desc;
+        if (descElement) descElement.textContent = benefit.desc || benefit.description;
       });
     }
 
     // Populate tip
-    if (this.data.nudges && this.data.nudges.length > 0) {
-      document.getElementById('tip-text').textContent = this.data.nudges[0];
+    if (tips.length > 0) {
+      document.getElementById('tip-text').textContent = tips[0].text || tips[0];
     }
 
     // Populate footer CTA
-    document.getElementById('primary-cta').textContent = this.data.share?.primary_cta || 'Invite Friends & Family';
+    document.getElementById('primary-cta').textContent = share.primary_cta || 'Invite Friends & Family';
   }
 
   hideLoader() {
