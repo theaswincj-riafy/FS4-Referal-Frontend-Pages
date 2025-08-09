@@ -3,6 +3,7 @@ class ReferralPromotePage {
   constructor() {
     this.data = null;
     this.params = ReferralUtils.getUrlParams();
+    this.currentCardIndex = 0;
     this.init();
   }
 
@@ -11,6 +12,7 @@ class ReferralPromotePage {
       await this.loadPageData();
       if (this.data) {
         this.renderPage();
+        this.initCardStack();
         this.bindEvents();
       } else {
         throw new Error('No data loaded');
@@ -27,14 +29,21 @@ class ReferralPromotePage {
     ReferralUtils.showLoading(mainContent);
 
     try {
-      // Debug logs
-      console.log('REFERRAL_DATA exists:', !!window.REFERRAL_DATA);
-      console.log('Available keys:', window.REFERRAL_DATA ? Object.keys(window.REFERRAL_DATA) : 'none');
-      console.log('Looking for key: page1_referralPromote');
+      // Get data from the correct language section
+      const language = this.params.language || 'en';
+      const dataKey = `page1_referralPromote`;
       
-      // Simulate API call
-      this.data = await ReferralUtils.simulateApiCall('page1_referralPromote');
-      console.log('Loaded data:', this.data);
+      console.log('Loading data for language:', language);
+      console.log('Looking for key:', dataKey);
+      
+      // Simulate API call - look for data in the language section
+      if (window.REFERRAL_DATA && window.REFERRAL_DATA[language] && window.REFERRAL_DATA[language][dataKey]) {
+        const rawData = window.REFERRAL_DATA[language][dataKey];
+        this.data = ReferralUtils.interpolateObject(rawData, this.params);
+        console.log('Loaded and interpolated data:', this.data);
+      } else {
+        throw new Error(`No data found for ${language}.${dataKey}`);
+      }
     } catch (error) {
       console.error('API call error:', error);
       this.data = null;
@@ -43,19 +52,8 @@ class ReferralPromotePage {
   }
 
   renderPage() {
-    this.renderHero();
     this.renderMainContent();
     this.renderFooter();
-  }
-
-  renderHero() {
-    if (!this.data || !this.data.hero) {
-      console.error('No hero data available');
-      return;
-    }
-    document.getElementById('hero-title').textContent = this.data.hero.title || 'Loading...';
-    document.getElementById('hero-subtitle').textContent = this.data.hero.subtitle || 'Loading...';
-    document.getElementById('hero-badge').textContent = this.data.hero.badge || 'Loading...';
   }
 
   renderMainContent() {
@@ -67,223 +65,223 @@ class ReferralPromotePage {
     const mainContent = document.getElementById('main-content');
     
     mainContent.innerHTML = `
-      <!-- Benefits Section -->
-      <section class="benefits" role="region" aria-labelledby="benefits-title">
-        <h2 id="benefits-title">Why Share Your Code?</h2>
-        ${this.data.benefits ? this.data.benefits.map(benefit => `
-          <div class="card">
-            <h3 class="card-title">${benefit.title}</h3>
-            <p class="card-desc">${benefit.desc}</p>
-          </div>
-        `).join('') : '<p>Loading benefits...</p>'}
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="hero-image-placeholder"></div>
+        <h1 class="hero-title">${this.data.hero?.hero_title || 'Invite & Unlock'}</h1>
+        <p class="hero-subtitle">${this.data.hero?.subtitle || 'Loading...'}</p>
+        <div class="referral-code-display">${this.data.hero?.referral_code || 'CODE123'}</div>
+        <button class="view-referrals-btn" id="view-referrals">
+          ${this.data.hero?.quickButtonText || 'View my referrals'}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </section>
 
-      <!-- Progress Teaser -->
-      <section class="progress-section" role="region" aria-labelledby="progress-title">
-        <div class="card">
-          <h3 id="progress-title">${this.data.progress_teaser.label}</h3>
-          <div class="progress-bar-container" role="progressbar" aria-valuenow="${this.params.current_redemptions}" aria-valuemin="0" aria-valuemax="${this.params.target_redemptions}">
-            <div class="progress-bar" style="width: ${ReferralUtils.getProgressPercentage(this.params.current_redemptions, this.params.target_redemptions)}%"></div>
-          </div>
-          <p class="progress-text">${this.data.progress_teaser.value}</p>
-          <p class="card-desc">${this.data.progress_teaser.hint}</p>
+      <!-- How It Works Section -->
+      <section class="how-it-works">
+        <h2 class="section-title">How it works</h2>
+        <div class="steps-list">
+          ${this.data.how_it_works ? this.data.how_it_works.map(step => `
+            <div class="step-item">
+              <div class="step-number">${step.step}</div>
+              <p class="step-description">${step.desc}</p>
+            </div>
+          `).join('') : ''}
         </div>
       </section>
 
-      <!-- Share Section -->
-      <section class="share-section" role="region" aria-labelledby="share-title">
-        <div class="card">
-          <h3 id="share-title">${this.data.share.section_title}</h3>
-          
-          <div class="share-buttons">
-            <button class="btn btn-primary" id="share-invite" aria-describedby="share-help">
-              <span>📤</span> ${this.data.share.primary_cta}
-            </button>
-            
-            <button class="btn btn-secondary" id="copy-code">
-              <span>📋</span> ${this.data.share.copy_code_cta}
-            </button>
-            
-            <button class="btn btn-secondary" id="copy-link">
-              <span>🔗</span> ${this.data.share.copy_link_cta}
-            </button>
+      <!-- Progress Section -->
+      <section class="progress-section">
+        <h3 class="progress-title">${this.data.progress_teaser?.title || 'Almost there!'}</h3>
+        <p class="progress-subtitle">${this.data.progress_teaser?.subtitle || 'Keep sharing!'}</p>
+      </section>
+
+      <!-- Rotating Card Stack -->
+      <div class="card-stack-container" id="card-stack">
+        ${this.data.benefits ? this.data.benefits.map((benefit, index) => `
+          <div class="benefit-card ${this.getCardClass(benefit.title)}" data-index="${index}">
+            <h4 class="benefit-card-title">${benefit.title}</h4>
+            <p class="benefit-card-desc">${benefit.desc}</p>
           </div>
-
-          <div class="share-quick">
-            <button class="btn share-btn whatsapp" id="share-whatsapp">
-              <span>💬</span> WhatsApp
-            </button>
-            <button class="btn share-btn sms" id="share-sms">
-              <span>💬</span> SMS
-            </button>
-          </div>
-
-          <div id="share-help" class="sr-only">Share your invite through various channels to help friends join</div>
-        </div>
-      </section>
-
-      <!-- Social Proof -->
-      <section class="social-proof" role="region" aria-labelledby="social-proof-title">
-        <div class="card">
-          <h3 id="social-proof-title">${this.data.social_proof ? this.data.social_proof.title : 'Why people join'}</h3>
-          <ul class="bullet-list">
-            ${this.data.social_proof && this.data.social_proof.bullets ? this.data.social_proof.bullets.map(bullet => `
-              <li>${bullet}</li>
-            `).join('') : '<li>Loading...</li>'}
-          </ul>
-        </div>
-      </section>
-
-      <!-- Nudges -->
-      <section class="nudges" role="region" aria-labelledby="nudges-title">
-        <div class="card">
-          <h3 id="nudges-title">Pro Tips</h3>
-          <ul class="bullet-list">
-            ${this.data.nudges ? this.data.nudges.map(nudge => `
-              <li>${nudge}</li>
-            `).join('') : '<li>Loading tips...</li>'}
-          </ul>
-        </div>
-      </section>
-
-      <!-- Privacy Note -->
-      <div class="privacy-note" role="note">
-        ${this.data.privacy_note || 'Loading privacy information...'}
+        `).join('') : ''}
       </div>
+
+      <!-- Tips Section -->
+      <section class="tips-section">
+        ${this.data.nudges && this.data.nudges.length > 0 ? `
+          <div class="tip-item">
+            <div class="tip-icon"></div>
+            <span>${this.data.nudges[0]}</span>
+          </div>
+        ` : ''}
+      </section>
     `;
   }
 
-  renderFooter() {
-    if (!this.data || !this.data.footer_cta) {
-      console.error('No footer data available');
-      return;
-    }
-    const footerCta = document.getElementById('footer-cta');
-    footerCta.textContent = this.data.footer_cta.label || 'Continue';
-    footerCta.disabled = false;
-    footerCta.className = 'btn btn-primary';
+  getCardClass(title) {
+    if (title.toLowerCase().includes('premium')) return 'premium-access';
+    if (title.toLowerCase().includes('together')) return 'win-together';
+    return 'fast-simple';
   }
 
-  bindEvents() {
-    // Share invite button
-    document.getElementById('share-invite').addEventListener('click', () => {
-      this.handleShareInvite();
-    });
+  initCardStack() {
+    if (!this.data.benefits || this.data.benefits.length === 0) return;
 
-    // Copy code button
-    document.getElementById('copy-code').addEventListener('click', () => {
-      this.handleCopyCode();
-    });
+    const cards = document.querySelectorAll('.benefit-card');
+    if (cards.length === 0) return;
 
-    // Copy link button
-    document.getElementById('copy-link').addEventListener('click', () => {
-      this.handleCopyLink();
-    });
+    // Position cards in stack
+    this.positionCards(cards);
 
-    // WhatsApp share
-    document.getElementById('share-whatsapp').addEventListener('click', () => {
-      this.handleSharePlatform('whatsapp');
-    });
-
-    // SMS share
-    document.getElementById('share-sms').addEventListener('click', () => {
-      this.handleSharePlatform('sms');
-    });
-
-    // Footer CTA
-    document.getElementById('footer-cta').addEventListener('click', () => {
-      this.handleFooterAction();
-    });
-
-    // Keyboard navigation
-    this.setupKeyboardNavigation();
+    // Add touch/swipe support
+    this.addTouchSupport();
   }
 
-  handleShareInvite() {
-    // Show share guidance toast
-    ReferralUtils.showToast('Choose a sharing method below or copy your code/link');
-  }
-
-  async handleCopyCode() {
-    const success = await ReferralUtils.copyToClipboard(
-      this.params.referral_code,
-      this.data.share.success_toast
-    );
-    
-    if (success) {
-      // Add visual feedback
-      const button = document.getElementById('copy-code');
-      button.style.background = '#38a169';
-      button.style.color = 'white';
-      setTimeout(() => {
-        button.style.background = '';
-        button.style.color = '';
-      }, 1000);
-    }
-  }
-
-  async handleCopyLink() {
-    const success = await ReferralUtils.copyToClipboard(
-      this.params.referral_link,
-      this.data.share.success_toast
-    );
-    
-    if (success) {
-      // Add visual feedback
-      const button = document.getElementById('copy-link');
-      button.style.background = '#38a169';
-      button.style.color = 'white';
-      setTimeout(() => {
-        button.style.background = '';
-        button.style.color = '';
-      }, 1000);
-    }
-  }
-
-  handleSharePlatform(platform) {
-    const message = this.data.share.messages[platform];
-    const shareUrl = ReferralUtils.generateShareUrl(platform, message, this.params.referral_link);
-    
-    if (shareUrl) {
-      window.open(shareUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      // Fallback: copy message to clipboard
-      ReferralUtils.copyToClipboard(message, 'Share message copied!');
-    }
-  }
-
-  handleFooterAction() {
-    ReferralUtils.navigateWithParams('referralStatus.html');
-  }
-
-  setupKeyboardNavigation() {
-    // Add keyboard support for custom buttons
-    const buttons = document.querySelectorAll('.btn');
-    buttons.forEach(button => {
-      button.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          button.click();
-        }
+  positionCards(cards) {
+    cards.forEach((card, index) => {
+      const offset = index - this.currentCardIndex;
+      
+      gsap.set(card, {
+        zIndex: cards.length - Math.abs(offset),
+        x: offset * 20,
+        y: offset * 10,
+        rotation: offset * 5,
+        scale: 1 - Math.abs(offset) * 0.05
       });
     });
   }
 
+  rotateCards(direction) {
+    const cards = document.querySelectorAll('.benefit-card');
+    if (cards.length === 0) return;
+
+    if (direction === 'next') {
+      this.currentCardIndex = (this.currentCardIndex + 1) % cards.length;
+    } else {
+      this.currentCardIndex = (this.currentCardIndex - 1 + cards.length) % cards.length;
+    }
+
+    this.positionCards(cards);
+  }
+
+  addTouchSupport() {
+    const container = document.getElementById('card-stack');
+    if (!container) return;
+
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+
+    // Touch events
+    container.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isDragging = true;
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+
+    container.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const deltaX = endX - startX;
+      const deltaY = endY - startY;
+
+      // Check if it's a horizontal swipe (not vertical scroll)
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+        if (deltaX > 0) {
+          this.rotateCards('prev');
+        } else {
+          this.rotateCards('next');
+        }
+      }
+      
+      isDragging = false;
+    }, { passive: true });
+
+    // Click events for cards
+    container.addEventListener('click', (e) => {
+      const card = e.target.closest('.benefit-card');
+      if (card) {
+        const index = parseInt(card.dataset.index);
+        if (index !== this.currentCardIndex) {
+          this.currentCardIndex = index;
+          this.positionCards(document.querySelectorAll('.benefit-card'));
+        }
+      }
+    });
+  }
+
+  renderFooter() {
+    const primaryCta = document.getElementById('primary-cta');
+    if (primaryCta && this.data.share) {
+      primaryCta.textContent = this.data.share.primary_cta || 'Invite Friends & Family';
+      primaryCta.disabled = false;
+    }
+  }
+
+  bindEvents() {
+    // Back button
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        window.history.back();
+      });
+    }
+
+    // View referrals button
+    const viewReferralsBtn = document.getElementById('view-referrals');
+    if (viewReferralsBtn) {
+      viewReferralsBtn.addEventListener('click', () => {
+        window.location.href = `referralStatus.html?${new URLSearchParams(this.params).toString()}`;
+      });
+    }
+
+    // Primary CTA button
+    const primaryCta = document.getElementById('primary-cta');
+    if (primaryCta) {
+      primaryCta.addEventListener('click', () => {
+        this.shareInvite();
+      });
+    }
+  }
+
+  shareInvite() {
+    const shareData = {
+      title: 'Join me on this app!',
+      text: this.data.share?.messages?.default || `${this.params.firstName} invited you to try this app. Get 1 week of Premium features for free!`,
+      url: this.params.referral_link || window.location.origin
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch(console.error);
+    } else {
+      // Fallback to copying link
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareData.text + ' ' + shareData.url);
+        ReferralUtils.showToast('Link copied to clipboard!');
+      }
+    }
+  }
+
   showError(message) {
     const mainContent = document.getElementById('main-content');
-    ReferralUtils.showError(mainContent, message);
+    mainContent.innerHTML = `
+      <div class="error-state">
+        <p class="error-message">${message}</p>
+        <button class="btn btn-primary" onclick="location.reload()">Try Again</button>
+      </div>
+    `;
   }
 }
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   new ReferralPromotePage();
-});
-
-// Handle page visibility for potential refresh
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    // Page became visible - could refresh data here
-    console.log('Page visible again');
-  }
 });

@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share & Unlock Premium - Referral Promote</title>
+    <title>Invite Friends - Referral Promote</title>
     <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="Share your referral code and unlock 1 month of Premium when 5 friends join">
+    <meta name="description" content="Invite friends and unlock 1 month of Premium">
     <meta name="theme-color" content="#667eea">
 </head>
 <body>
     <div class="container">
-        <!-- Page Header -->
-        <header class="page-header" role="banner">
-            <div class="hero">
-                <img src="https://pixabay.com/get/gaf36c2cd486c57c242fda5dc63d4f5b1e7d90babafe1862bc397e7f5e1836b73ef48e1491dabc87971284e9a15416c3b11ddee5845cd52e1cbeb1aed0cc86110_1280.jpg" alt="Celebrating invitation sharing with friends" class="hero-image">
-                <h1 class="hero-title" id="hero-title">Loading...</h1>
-                <p class="hero-subtitle" id="hero-subtitle">Loading your personalized invite...</p>
-                <span class="hero-badge" id="hero-badge">Loading...</span>
-            </div>
+        <!-- Sticky Header -->
+        <header class="sticky-header" role="banner">
+            <button class="back-btn" id="back-btn" aria-label="Go back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <h1 class="header-title" id="header-title">Invite Friends</h1>
         </header>
 
-        <!-- Main Content -->
-        <main class="page-content" id="main-content">
+        <!-- Scrollable Content -->
+        <main class="scrollable-content" id="main-content">
             <!-- Loading state will be shown here initially -->
         </main>
 
-        <!-- Footer -->
-        <footer class="page-footer">
-            <button class="btn btn-secondary" id="footer-cta" disabled>Loading...</button>
+        <!-- Sticky Footer -->
+        <footer class="sticky-footer">
+            <button class="primary-cta" id="primary-cta" disabled>Loading...</button>
         </footer>
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="referralData.js"></script>
     <script src="utils.js"></script>
     <script src="referralPromote.js"></script>

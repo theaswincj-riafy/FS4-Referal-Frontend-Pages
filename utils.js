@@ -7,10 +7,16 @@ class ReferralUtils {
   static getUrlParams() {
     const params = new URLSearchParams(window.location.search);
     return {
-      referrer_name: params.get('referrer_name') || 'Friend',
-      referral_code: params.get('referral_code') || 'WELCOME123',
+      userId: params.get('userId') || 'user123',
+      appId: params.get('appId') || 'app1',
+      language: params.get('language') || 'en',
+      firstName: params.get('firstName') || 'John',
+      // Legacy support for old parameters with new mapping
+      referrer_name: params.get('firstName') || params.get('referrer_name') || 'John',
+      referral_code: params.get('referral_code') || `${(params.get('firstName') || 'JOHN').toUpperCase()}1234`,
       referral_link: params.get('referral_link') || 'https://app.example.com/invite',
       current_redemptions: parseInt(params.get('current_redemptions')) || 0,
+      pending_redemptions: 5 - (parseInt(params.get('current_redemptions')) || 0),
       target_redemptions: parseInt(params.get('target_redemptions')) || 5,
       show_recent_event: params.get('show_recent_event') === 'true'
     };
