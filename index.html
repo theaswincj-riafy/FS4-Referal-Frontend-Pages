@@ -78,19 +78,7 @@
                 box-shadow: 0 0 0 3px rgba(82, 197, 247, 0.1);
             }
 
-            .special-param {
-                grid-column: span 2;
-                background: #fff7ed;
-                border: 1.5px dashed #fb923c;
-                border-radius: 8px;
-                padding: 0.75rem;
-                margin-top: 0.5rem;
-                display: none;
-            }
-
-            .special-param.visible {
-                display: block;
-            }
+            
 
             .nav-buttons {
                 display: flex;
@@ -154,9 +142,7 @@
                     grid-template-columns: 1fr;
                 }
                 
-                .special-param {
-                    grid-column: span 1;
-                }
+                
             }
         </style>
     </head>
@@ -193,13 +179,6 @@
                             <option value="fr">French (fr)</option>
                         </select>
                     </div>
-                    
-                    <div class="special-param" id="referral-code-group">
-                        <div class="param-group">
-                            <label class="param-label" for="referralCode">Referral Code (Download Only)</label>
-                            <input type="text" id="referralCode" class="param-input" value="aju2586" placeholder="ABC123">
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -226,13 +205,16 @@
                     <div class="nav-btn-arrow">→</div>
                 </a>
 
-                <a href="#" class="nav-btn" onclick="navigateToPage('referralDownload.html')" 
-                   onmouseenter="showReferralCode()" onmouseleave="hideReferralCode()">
+                <a href="#" class="nav-btn" onclick="navigateToPage('referralDownload.html')">
                     <div class="nav-btn-icon">📱</div>
                     <div class="nav-btn-content">
                         <div class="nav-btn-title">Download Page</div>
                         <div class="nav-btn-desc">
                             Landing page for new users to download the app
+                        </div>
+                        <div class="param-group" style="margin-top: 0.75rem;">
+                            <label class="param-label" for="referralCode">Referral Code</label>
+                            <input type="text" id="referralCode" class="param-input" value="aju2586" placeholder="ABC123" onclick="event.stopPropagation();">
                         </div>
                     </div>
                     <div class="nav-btn-arrow">→</div>
@@ -279,23 +261,7 @@
                 window.location.href = `${page}?${params.toString()}`;
             }
 
-            function showReferralCode() {
-                const referralCodeGroup = document.getElementById('referral-code-group');
-                referralCodeGroup.classList.add('visible');
-            }
-
-            function hideReferralCode() {
-                // Keep it visible once shown for better UX
-            }
-
-            // Show referral code field on page load for download page
-            document.addEventListener('DOMContentLoaded', function() {
-                // Optional: Auto-show referral code field if user seems to be testing download
-                const downloadBtn = document.querySelector('[onclick*="referralDownload"]');
-                if (downloadBtn) {
-                    downloadBtn.addEventListener('click', showReferralCode);
-                }
-            });
+            
         </script>
     </body>
 </html>
