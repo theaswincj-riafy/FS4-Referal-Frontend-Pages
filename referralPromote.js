@@ -636,6 +636,35 @@ class ReferralPromotePage {
       });
     }
 
+    // Referral code copy functionality
+    const referralCodeElement = document.getElementById('referral-code');
+    if (referralCodeElement) {
+      referralCodeElement.style.cursor = 'pointer';
+      referralCodeElement.addEventListener('click', async () => {
+        try {
+          const codeText = referralCodeElement.textContent || referralCodeElement.innerText;
+          const lowercaseCode = codeText.toLowerCase();
+          
+          if (navigator.clipboard) {
+            await navigator.clipboard.writeText(lowercaseCode);
+            ReferralUtils.showToast('Code copied to clipboard!');
+          } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = lowercaseCode;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            ReferralUtils.showToast('Code copied to clipboard!');
+          }
+        } catch (error) {
+          console.error('Failed to copy code:', error);
+          ReferralUtils.showToast('Failed to copy code. Please try again.');
+        }
+      });
+    }
+
   }
 
   shareInvite() {
