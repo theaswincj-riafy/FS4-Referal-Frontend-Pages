@@ -726,6 +726,8 @@ p {
 .combined-card-section .bottom-status-pill {
   margin: 0;
   padding: 0 20px 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .combined-card-section .pill-content {
@@ -733,13 +735,14 @@ p {
   border-radius: 9999px;
   padding: 12px 18px;
   min-height: 44px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
   font-size: 1rem;
   color: #86868b;
   line-height: 1.5;
   font-weight: 500;
+  max-width: fit-content;
 }
 
 .combined-card-section .tip-icon {
