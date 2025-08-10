@@ -919,32 +919,41 @@ class ReferralStatusPage {
   }
 
   bindEvents() {
-    console.log('[BIND EVENTS] bindEvents called');
-    
+    console.log("[BIND EVENTS] bindEvents called");
+
     // Back button
-    const backBtn = document.getElementById('back-btn');
-    console.log('[BIND EVENTS] backBtn element found:', !!backBtn);
-    
+    const backBtn = document.getElementById("back-btn");
+    console.log("[BIND EVENTS] backBtn element found:", !!backBtn);
+
     if (backBtn) {
       // Remove any existing listeners first
       backBtn.replaceWith(backBtn.cloneNode(true));
-      const freshBackBtn = document.getElementById('back-btn');
-      
-      console.log('[BIND EVENTS] Adding click listener to back button');
-      freshBackBtn.addEventListener('click', (e) => {
-        console.log('[BACK BUTTON] referralStatus back button clicked');
-        console.log('[BACK BUTTON] alreadyRedeemed state:', this.data?.alreadyRedeemed || false);
-        console.log('[BACK BUTTON] userId:', this.params.userId);
-        console.log('[BACK BUTTON] event object:', e);
-        console.log('[BACK BUTTON] redirecting to index.html');
-        window.location.href = 'index.html';
+      const freshBackBtn = document.getElementById("back-btn");
+
+      console.log("[BIND EVENTS] Adding click listener to back button");
+      freshBackBtn.addEventListener("click", (e) => {
+        console.log("[BACK BUTTON] referralStatus back button clicked");
+        console.log(
+          "[BACK BUTTON] alreadyRedeemed state:",
+          this.data?.alreadyRedeemed || false,
+        );
+        console.log("[BACK BUTTON] userId:", this.params.userId);
+        console.log("[BACK BUTTON] event object:", e);
+        console.log("[BACK BUTTON] redirecting to index.html");
+        window.location.href = "index.html";
       });
-      
+
       // Test if element is clickable
-      console.log('[BIND EVENTS] Back button styles:', window.getComputedStyle(freshBackBtn).pointerEvents);
-      console.log('[BIND EVENTS] Back button display:', window.getComputedStyle(freshBackBtn).display);
+      console.log(
+        "[BIND EVENTS] Back button styles:",
+        window.getComputedStyle(freshBackBtn).pointerEvents,
+      );
+      console.log(
+        "[BIND EVENTS] Back button display:",
+        window.getComputedStyle(freshBackBtn).display,
+      );
     } else {
-      console.error('[BIND EVENTS] Back button not found!');
+      console.error("[BIND EVENTS] Back button not found!");
     }
 
     // Invite friends button
@@ -1015,7 +1024,7 @@ class ReferralStatusPage {
 
     // Create mock redemption success data as specified
     const successData = {
-      hero_title: "You're all set!",
+      hero_title: "{{firstname}}, you have done it!",
       subtitle:
         "You have succesfully unlocked a whole month of Premium features. Claim your prize now! ",
       nudges: [
@@ -1121,11 +1130,14 @@ class ReferralStatusPage {
 
   // Test function to check back button
   testBackButton() {
-    const backBtn = document.getElementById('back-btn');
-    console.log('[TEST] Back button element:', backBtn);
-    console.log('[TEST] Back button visible:', backBtn ? window.getComputedStyle(backBtn).display !== 'none' : false);
+    const backBtn = document.getElementById("back-btn");
+    console.log("[TEST] Back button element:", backBtn);
+    console.log(
+      "[TEST] Back button visible:",
+      backBtn ? window.getComputedStyle(backBtn).display !== "none" : false,
+    );
     if (backBtn) {
-      console.log('[TEST] Triggering click event programmatically');
+      console.log("[TEST] Triggering click event programmatically");
       backBtn.click();
     }
   }
