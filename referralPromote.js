@@ -110,20 +110,14 @@ class ReferralPromotePage {
     if (heroSubtitleElement && hero.subtitle) {
       let subtitleText = replaceVariables(hero.subtitle);
       
-      // Add smart line breaks based on content length
+      // Add line break only for exactly 2 lines (4-7 words)
       const words = subtitleText.split(' ');
-      if (words.length >= 8) {
-        // For 3 lines: place breaks at 1/3 points
-        const firstBreak = Math.floor(words.length / 3);
-        const secondBreak = Math.floor((words.length * 2) / 3);
-        subtitleText = words.slice(0, firstBreak).join(' ') + '<br><br>' + 
-                     words.slice(firstBreak, secondBreak).join(' ') + '<br><br>' + 
-                     words.slice(secondBreak).join(' ');
-      } else if (words.length >= 4) {
-        // For 2 lines: place break in the middle
+      if (words.length >= 4 && words.length <= 7) {
+        // For exactly 2 lines: place break in the middle
         const midPoint = Math.floor(words.length / 2);
         subtitleText = words.slice(0, midPoint).join(' ') + '<br>' + words.slice(midPoint).join(' ');
       }
+      // For 3+ lines (8+ words), do nothing - keep original text
       
       heroSubtitleElement.innerHTML = subtitleText;
     }
