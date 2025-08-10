@@ -165,38 +165,87 @@ class ReferralPromotePage {
     const cards = document.querySelectorAll('.benefit-card');
     if (cards.length === 0) return;
 
-    // Position cards in stack
-    this.positionCards(cards);
+    // Initial card setup with fade-in animation
+    this.setupInitialCards(cards);
 
     // Add touch/swipe support
     this.addTouchSupport();
   }
 
-  positionCards(cards) {
+  setupInitialCards(cards) {
+    // Set initial properties and animate in
     cards.forEach((card, index) => {
-      const offset = index - this.currentCardIndex;
-      
+      // Set initial state (invisible and slightly scaled down)
       gsap.set(card, {
-        zIndex: cards.length - Math.abs(offset),
-        x: offset * 20,
-        y: offset * 10,
-        rotation: offset * 5,
-        scale: 1 - Math.abs(offset) * 0.05
+        opacity: 0,
+        scale: 0.98
+      });
+      
+      // Animate in with stagger
+      gsap.to(card, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        delay: index * 0.08,
+        ease: "power2.out"
       });
     });
   }
 
-  rotateCards(direction) {
+  swipeCard(direction) {
+    const topCard = document.querySelector('.benefit-card.top-card');
+    if (!topCard) return;
+
+    // Animate the top card out
+    const swipeDistance = direction === 'left' ? -400 : 400;
+    const tiltAngle = direction === 'left' ? -10 : 10;
+    
+    gsap.to(topCard, {
+      x: swipeDistance,
+      y: -20,
+      rotation: tiltAngle,
+      opacity: 0,
+      duration: 0.35,
+      ease: "power2.in",
+      onComplete: () => {
+        // Promote cards and add new back card
+        this.promoteCards();
+      }
+    });
+  }
+
+  promoteCards() {
     const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length === 0) return;
+    if (cards.length < 3) return;
 
-    if (direction === 'next') {
-      this.currentCardIndex = (this.currentCardIndex + 1) % cards.length;
-    } else {
-      this.currentCardIndex = (this.currentCardIndex - 1 + cards.length) % cards.length;
-    }
+    // Get current cards
+    const topCard = document.querySelector('.benefit-card.top-card');
+    const middleCard = document.querySelector('.benefit-card.middle-card');
+    const backCard = document.querySelector('.benefit-card.back-card');
 
-    this.positionCards(cards);
+    if (!topCard || !middleCard || !backCard) return;
+
+    // Reset the swiped card and move to back
+    gsap.set(topCard, {
+      x: 0,
+      y: 0,
+      rotation: 0,
+      opacity: 1
+    });
+
+    // Change classes to promote cards
+    topCard.className = topCard.className.replace('top-card', 'back-card');
+    middleCard.className = middleCard.className.replace('middle-card', 'top-card');
+    backCard.className = backCard.className.replace('back-card', 'middle-card');
+
+    // Update the data-index to maintain card cycling
+    const newTopIndex = parseInt(middleCard.dataset.index);
+    const newMiddleIndex = parseInt(backCard.dataset.index);
+    const newBackIndex = parseInt(topCard.dataset.index);
+    
+    document.querySelector('.benefit-card.top-card').dataset.index = newTopIndex;
+    document.querySelector('.benefit-card.middle-card').dataset.index = newMiddleIndex;
+    document.querySelector('.benefit-card.back-card').dataset.index = newBackIndex;
   }
 
   addTouchSupport() {
@@ -229,26 +278,56 @@ class ReferralPromotePage {
       // Check if it's a horizontal swipe (not vertical scroll)
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
         if (deltaX > 0) {
-          this.rotateCards('prev');
+          this.swipeCard('right');
         } else {
-          this.rotateCards('next');
+          this.swipeCard('left');
         }
       }
       
       isDragging = false;
     }, { passive: true });
 
-    // Click events for cards
+    // Click events for cards - advance to next card on tap
     container.addEventListener('click', (e) => {
       const card = e.target.closest('.benefit-card');
-      if (card) {
-        const index = parseInt(card.dataset.index);
-        if (index !== this.currentCardIndex) {
-          this.currentCardIndex = index;
-          this.positionCards(document.querySelectorAll('.benefit-card'));
-        }
+      if (card && card.classList.contains('top-card')) {
+        // Tap on top card to advance
+        this.swipeCard('left');
       }
     });
+
+    // Add press effect for top card
+    const topCard = document.querySelector('.benefit-card.top-card');
+    if (topCard) {
+      topCard.addEventListener('mousedown', this.addPressEffect);
+      topCard.addEventListener('touchstart', this.addPressEffect, { passive: true });
+      topCard.addEventListener('mouseup', this.removePressEffect);
+      topCard.addEventListener('touchend', this.removePressEffect, { passive: true });
+    }
+  }
+
+  addPressEffect = (e) => {
+    const card = e.target.closest('.benefit-card.top-card');
+    if (card) {
+      gsap.to(card, {
+        y: -2,
+        boxShadow: "0 12px 40px rgba(0, 0, 0, 0.18)",
+        duration: 0.1,
+        ease: "power2.out"
+      });
+    }
+  }
+
+  removePressEffect = (e) => {
+    const card = e.target.closest('.benefit-card.top-card');
+    if (card) {
+      gsap.to(card, {
+        y: 0,
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+        duration: 0.1,
+        ease: "power2.out"
+      });
+    }
   }
 
   bindEvents() {
@@ -275,6 +354,31 @@ class ReferralPromotePage {
         this.shareInvite();
       });
     }
+
+    // View All Cards link in bottom pill
+    const viewAllLink = document.getElementById('view-all-cards');
+    if (viewAllLink) {
+      viewAllLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Cycle through cards quickly to show all of them
+        this.showAllCards();
+      });
+    }
+  }
+
+  showAllCards() {
+    // Quick demonstration of all cards
+    let cycleCount = 0;
+    const maxCycles = 3; // Show 3 cards
+    
+    const cycleInterval = setInterval(() => {
+      this.swipeCard('left');
+      cycleCount++;
+      
+      if (cycleCount >= maxCycles) {
+        clearInterval(cycleInterval);
+      }
+    }, 800); // 800ms between each card
   }
 
   shareInvite() {
