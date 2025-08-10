@@ -783,7 +783,7 @@ class ReferralStatusPage {
     const backBtn = document.getElementById('back-btn');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        window.history.back();
+        window.location.href = 'index.html';
       });
     }
 
