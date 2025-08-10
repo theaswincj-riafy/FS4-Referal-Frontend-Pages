@@ -93,53 +93,43 @@ class ReferralRedeemPage {
     const hero = pageData.hero || {};
     const steps = pageData.how_it_works || pageData.steps || [];
     const redeem = pageData.redeem || {};
-    const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
 
-    // Populate header
-    document.getElementById('header-title').textContent = hero.page_title || 'Redeem Referral Code';
+    // Populate header - use page_title for header-title
+    document.getElementById('header-title').textContent = hero.page_title || 'This is a placeholder';
 
-    // Populate hero section
-    document.getElementById('hero-title').textContent = hero.hero_title || 'Redeem Referral Invite Code';
-    document.getElementById('hero-subtitle').textContent = hero.subtitle || 'Enter or paste the invite from your friend to continue.';
+    // Populate hero section - use hero_title for hero-title
+    document.getElementById('hero-title').textContent = hero.hero_title || 'This is a placeholder';
     
-    // Update input placeholder
+    // Use subtitle for hero-subtitle
+    document.getElementById('hero-subtitle').textContent = hero.subtitle || 'This is a placeholder';
+    
+    // Update input placeholder - use referral_code as placeholder value
     const redeemInput = document.getElementById('redeem-input');
     if (redeemInput) {
-      redeemInput.placeholder = hero.referral_code || 'Enter Code';
+      redeemInput.placeholder = hero.referral_code || 'This is a placeholder';
     }
 
-    // Update paste button text
+    // Update paste button text - use quickButtonText for paste-btn
     const pasteBtn = document.getElementById('paste-btn');
     if (pasteBtn) {
-      pasteBtn.textContent = hero.quickButtonText || 'Paste from Clipboard';
+      pasteBtn.textContent = hero.quickButtonText || 'This is a placeholder';
     }
 
-    // Update primary CTA button
+    // Update primary CTA button - use primary_cta for primary-cta
     const primaryCta = document.getElementById('primary-cta');
     if (primaryCta) {
-      primaryCta.textContent = redeem.primary_cta || 'Redeem Code';
+      primaryCta.textContent = redeem.primary_cta || 'This is a placeholder';
     }
+
+    // Store validation messages for later use
+    this.validationMessages = redeem.validation || {};
 
     // Populate how it works steps (only 3 steps as per API)
     if (steps.length > 0) {
       steps.forEach((step, index) => {
         const stepElement = document.getElementById(`step-${index + 1}`);
         if (stepElement && index < 3) {
-          stepElement.textContent = step.desc || step.description || step.text;
-        }
-      });
-    } else {
-      // Default steps if API doesn't provide them
-      const defaultSteps = [
-        'Find the referral invitation sent to you by your friend.',
-        'Paste the referral code using the button, or type it in.',
-        'Unlock a week of Premium access to Book Summaries App!'
-      ];
-      
-      defaultSteps.forEach((stepText, index) => {
-        const stepElement = document.getElementById(`step-${index + 1}`);
-        if (stepElement) {
-          stepElement.textContent = stepText;
+          stepElement.textContent = step.desc || step.description || step.text || 'This is a placeholder';
         }
       });
     }
@@ -247,8 +237,10 @@ class ReferralRedeemPage {
     const input = document.getElementById('redeem-input');
     const redeemBtn = document.getElementById('primary-cta');
     
+    // Use validation messages from API
     if (!input || !input.value.trim()) {
-      ReferralUtils.showToast('Please enter a referral code');
+      const emptyMessage = this.validationMessages?.empty || 'Please enter a referral code';
+      ReferralUtils.showToast(emptyMessage);
       return;
     }
 
@@ -274,7 +266,14 @@ class ReferralRedeemPage {
       if (result.success || result.status === 'success') {
         this.showSuccessState(result);
       } else {
-        throw new Error(result.message || 'Failed to redeem code');
+        // Handle different validation states
+        let errorMessage = result.message;
+        if (result.validation_state === 'expired') {
+          errorMessage = this.validationMessages?.expired || errorMessage;
+        } else if (result.validation_state === 'invalid') {
+          errorMessage = this.validationMessages?.invalid || errorMessage;
+        }
+        throw new Error(errorMessage || 'Failed to redeem code');
       }
     } catch (error) {
       console.error('Redeem error:', error);
@@ -283,45 +282,60 @@ class ReferralRedeemPage {
       // Re-enable button
       if (redeemBtn) {
         redeemBtn.disabled = false;
-        redeemBtn.textContent = 'Redeem Code';
+        const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
+        const redeem = pageData.redeem || {};
+        redeemBtn.textContent = redeem.primary_cta || 'This is a placeholder';
       }
     }
   }
 
   showSuccessState(result) {
     // Extract success data from API response
-    const pageData = result.data || result;
-    const successData = pageData.page4_referralRedeem?.redeem?.redemptionSuccess || {};
+    const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
+    const successData = pageData.redeem?.redemptionSuccess || {};
     
-    // Get content wrapper and clear it
+    // Update hero-title with redemptionSuccess.hero_title
+    const heroTitle = document.getElementById('hero-title');
+    if (heroTitle) {
+      heroTitle.textContent = successData.hero_title || 'This is a placeholder';
+    }
+    
+    // Update hero-subtitle with redemptionSuccess.subtitle
+    const heroSubtitle = document.getElementById('hero-subtitle');
+    if (heroSubtitle) {
+      heroSubtitle.textContent = successData.subtitle || 'This is a placeholder';
+    }
+    
+    // Get content wrapper and add success nudge if it doesn't exist
     const contentWrapper = document.getElementById('page-content-wrapper');
-    if (!contentWrapper) return;
-    
-    // Update the entire content to success state
-    contentWrapper.innerHTML = `
-      <!-- Hero Section - Success State -->
-      <section class="hero-section">
-        <div class="hero-image-placeholder"></div>
-        <h1 class="hero-title" id="hero-title">${successData.hero_title || "You're all set!"}</h1>
-        <p class="hero-subtitle" id="hero-subtitle">${successData.subtitle || "You have redeemed a valid referral code!"}</p>
-        
-        <!-- Success Nudge -->
-        <div class="success-nudge">
+    if (contentWrapper && !contentWrapper.querySelector('.success-nudge')) {
+      const heroSection = contentWrapper.querySelector('.hero-section');
+      if (heroSection) {
+        const successNudge = document.createElement('div');
+        successNudge.className = 'success-nudge';
+        successNudge.innerHTML = `
           <div class="nudge-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
               <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <span class="nudge-text">${(successData.nudges && successData.nudges[0]) || "Your redemption helps your friend progress toward a reward."}</span>
-        </div>
-      </section>
-    `;
+          <span class="nudge-text">${(successData.nudges && successData.nudges[0]) || "This is a placeholder"}</span>
+        `;
+        heroSection.appendChild(successNudge);
+      }
+    } else if (contentWrapper) {
+      // Update existing nudge text
+      const nudgeText = contentWrapper.querySelector('.nudge-text');
+      if (nudgeText) {
+        nudgeText.textContent = (successData.nudges && successData.nudges[0]) || "This is a placeholder";
+      }
+    }
     
-    // Update footer CTA
+    // Update footer CTA with redemptionSuccess.primary_cta
     const footerCTA = document.getElementById('primary-cta');
-    if (footerCTA && successData.primary_cta) {
-      footerCTA.textContent = successData.primary_cta;
+    if (footerCTA) {
+      footerCTA.textContent = successData.primary_cta || 'This is a placeholder';
       footerCTA.disabled = false;
     }
   }
