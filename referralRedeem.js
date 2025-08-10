@@ -155,6 +155,8 @@ class ReferralRedeemPage {
           this.loadThemeColors();
           this.hideLoader();
           this.renderAlreadyRedeemedState();
+          // Replace button after rendering
+          setTimeout(() => this.replacePrimaryCTAButton(), 100);
           return;
         }
       }
@@ -486,14 +488,8 @@ class ReferralRedeemPage {
     this.data.alreadyRedeemed = true;
     this.saveRedemptionData(true);
     
-    // Update the primary CTA button immediately before rendering
-    const primaryCta = document.getElementById('primary-cta');
-    if (primaryCta) {
-      const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
-      const successData = pageData.redeem?.redemptionSuccess || {};
-      primaryCta.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
-      console.log('Updated primary CTA button text to:', primaryCta.textContent);
-    }
+    // Replace primary CTA button immediately
+    this.replacePrimaryCTAButton();
     
     // Replace the entire page content with success state
     this.renderAlreadyRedeemedState();
@@ -541,6 +537,38 @@ class ReferralRedeemPage {
         </div>
       `;
     }
+  }
+
+  // Replace primary CTA button based on redemption status
+  replacePrimaryCTAButton() {
+    const primaryCta = document.getElementById('primary-cta');
+    if (!primaryCta) return;
+    
+    const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
+    const successData = pageData.redeem?.redemptionSuccess || {};
+    
+    // Create new premium button
+    const premiumButton = document.createElement('button');
+    premiumButton.id = 'primary-cta-premium';
+    premiumButton.className = primaryCta.className; // Copy existing classes
+    premiumButton.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
+    
+    // Copy styles from original button
+    premiumButton.style.cssText = primaryCta.style.cssText;
+    premiumButton.style.background = 'linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%)';
+    premiumButton.style.color = 'white';
+    premiumButton.style.fontWeight = '600';
+    
+    // Add click handler for deeplink
+    premiumButton.addEventListener('click', () => {
+      const deeplink = 'riafy.me/buy1weekpremium';
+      ReferralUtils.showToast(deeplink);
+      console.log('Premium button clicked, deeplink:', deeplink);
+    });
+    
+    // Replace the button
+    primaryCta.parentNode.replaceChild(premiumButton, primaryCta);
+    console.log('Replaced primary-cta with primary-cta-premium');
   }
 
   // Render the already redeemed state (success page)
@@ -598,21 +626,17 @@ class ReferralRedeemPage {
       </section>
     `;
     
-    // Update footer CTA with success button text and styling
+    // Check if we need to replace the footer CTA button
     const footerCTA = document.getElementById('primary-cta');
-    if (footerCTA) {
-      footerCTA.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
-      footerCTA.disabled = false;
-      
-      // Update button style for success state
-      footerCTA.style.background = 'linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%)';
-      footerCTA.style.color = 'white';
-      footerCTA.style.fontWeight = '600';
-      
-      // Add click handler for the CTA in success state
-      footerCTA.onclick = () => {
-        ReferralUtils.showToast('Premium access activated!');
-      };
+    const footerPremiumCTA = document.getElementById('primary-cta-premium');
+    
+    if (footerCTA && !footerPremiumCTA) {
+      // Replace with premium button if not already replaced
+      this.replacePrimaryCTAButton();
+    } else if (footerPremiumCTA) {
+      // Update existing premium button
+      footerPremiumCTA.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
+      footerPremiumCTA.disabled = false;
     }
     
     console.log('Successfully rendered already redeemed state');
