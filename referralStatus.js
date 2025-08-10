@@ -410,7 +410,7 @@ class ReferralStatusPage {
               if (iconElement) iconElement.textContent = "✓";
             } else {
               milestoneElement.classList.remove("completed");
-              if (iconElement) iconElement.textContent = milestone.level;
+              if (iconElement) iconElement.textContent = "🔒";
             }
 
             // Add premium class only to milestone-5 if current_redemptions equals 5
