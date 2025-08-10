@@ -603,6 +603,8 @@ p {
   width: 100%;
   min-height: 80px;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 }
 
 /* Step number image positioning */
@@ -611,7 +613,8 @@ p {
   width: 56px;
   height: 60px;
   object-fit: contain;
-  top: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 10;
 }
 
@@ -632,7 +635,7 @@ p {
 
 .step-row.step-right .step-card {
   margin-right: 72px; /* 56px width + 16px gap */
-  text-align: right;
+  text-align: left;
 }
 
 /* Card styling */
