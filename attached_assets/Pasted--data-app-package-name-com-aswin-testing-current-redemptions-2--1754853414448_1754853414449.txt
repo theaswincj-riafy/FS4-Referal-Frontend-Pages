@@ -1,0 +1,121 @@
+{
+    "data": {
+        "app_package_name": "com.aswin.testing",
+        "current_redemptions": 2,
+        "page2_referralStatus": {
+            "benefits": [
+                {
+                    "desc": "Ad-free experience, pro features, and priority support for 1 month.",
+                    "title": "Premium Access"
+                },
+                {
+                    "desc": "Your friends get an exclusive newcomer perk when they join via your link.",
+                    "title": "Win Together"
+                },
+                {
+                    "desc": "Share your link; they download and redeem. You progress instantly.",
+                    "title": "Fast & Simple"
+                }
+            ],
+            "faq": [
+                {
+                    "a": "When a new redemption occurs, you will get a notification. However, the identity of the referrer won't be available.",
+                    "q": "Do I see who redeemed?"
+                },
+                {
+                    "a": "Instantly after {{target_redemptions}} redemptions. You\u2019ll get an in-app confirmation.",
+                    "q": "When do I get Premium?"
+                }
+            ],
+            "hero": {
+                "hero_title": "Invite & Unlock 1 Month Premium",
+                "page_title": "My Referrals",
+                "quickButtonText": "View my referrals",
+                "referral_code": "{{referral_code}}",
+                "subtitle": "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code."
+            },
+            "milestones": [
+                {
+                    "achievedOn": "Not Applicable",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 0,
+                    "message": "Ready to share the joy of summarized books? Send your referral code and start earning your free month of Premium!",
+                    "title": "Let's Start"
+                },
+                {
+                    "achievedOn": "Achieved on 09 August",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 1,
+                    "message": "Awesome! Your first friend has redeemed your code. Keep sharing to unlock more!",
+                    "title": "The Kickoff"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 2,
+                    "message": "Two redemptions! You're on your way to enjoying ad-free summaries and more with Premium.",
+                    "title": "Building Momentum"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 3,
+                    "message": "Three friends are enjoying Book Summaries App thanks to you! Just two more for Premium.",
+                    "title": "Halfway Hero"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 4,
+                    "message": "Just one more redemption to unlock 1 month of Premium on Book Summaries App! You're so close!",
+                    "title": "Almost There"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 5,
+                    "message": "Congratulations! You\u2019ve unlocked 1 month of Premium on Book Summaries App. Enjoy ad-free summaries and more!",
+                    "title": "Premium Unlocked \ud83c\udf89"
+                }
+            ],
+            "notifications": {
+                "recent_event_banner": {
+                    "text": "Nice! Someone redeemed your code. Your progress just moved to {{current_redemptions}}/{{target_redemptions}}.",
+                    "visible": "{{show_recent_event}}"
+                }
+            },
+            "nudges": [
+                "Best results: share with 5\u201310 close contacts first.",
+                "Add a personal note: tell them why you like the Book Summaries App.",
+                "Post your link in a relevant group or community."
+            ],
+            "page_id": "referral-status",
+            "progress_teaser": {
+                "subtitle": "Each redemption brings you closer to Premium access on Book Summaries App!",
+                "title": "Only {{pending_redemptions}} more levels to go!"
+            },
+            "status": {
+                "current": "{{current_redemptions}}",
+                "progress_text": "{{current_redemptions}} of {{target_redemptions}} completed",
+                "target": "{{target_redemptions}}"
+            }
+        },
+        "pending_redemptions": 3,
+        "redeem_dates": {
+            "date_1": "10 August 2025",
+            "date_2": "10 August 2025"
+        },
+        "referral_code": "aswin1886",
+        "referrer_name": "Aswin",
+        "target_redemptions": 5,
+        "user_id": "1579123"
+    },
+    "message": "Referral stats fetched",
+    "status": "success"
+}
