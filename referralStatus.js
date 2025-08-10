@@ -138,8 +138,12 @@ class ReferralStatusPage {
                              .replace(/\{\{referrer_name\}\}/g, referrerName);
     document.getElementById('level-message').textContent = heroMessage;
 
-    // Use status.progress_text for progress display
-    document.getElementById('progress-display').textContent = status.progress_text || 'This is a placeholder';
+    // Use status.progress_text for progress display with template replacement
+    let progressText = status.progress_text || 'This is a placeholder';
+    progressText = progressText.replace(/\{\{current_redemptions\}\}/g, currentRedemptions)
+                              .replace(/\{\{target_redemptions\}\}/g, 5)
+                              .replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions);
+    document.getElementById('progress-display').textContent = progressText;
     
     // Use hero.quickButtonText for invite button
     document.getElementById('invite-friends').querySelector('span').textContent = hero.quickButtonText || 'This is a placeholder';
@@ -165,10 +169,12 @@ class ReferralStatusPage {
             const titleElement = contentElement.querySelector('h3');
             const statusElement = contentElement.querySelector('p');
             
-            // 2b. String combine current_level + title for h3 tag
+            // 2b. String combine milestone's current_level + title for h3 tag
             if (titleElement) {
+              // Use the actual milestone level, not current_redemptions
               let levelTitle = milestone.current_level || `Level ${milestone.level}`;
-              levelTitle = levelTitle.replace(/\{\{current_redemptions\}\}/g, currentRedemptions);
+              // Replace template variables with actual milestone level, not current_redemptions
+              levelTitle = levelTitle.replace(/\{\{current_redemptions\}\}/g, milestone.level);
               titleElement.textContent = `${levelTitle} - ${milestone.title}`;
             }
             
@@ -202,22 +208,26 @@ class ReferralStatusPage {
       });
     }
 
-    // 5. Populate progress section using progress_teaser
-    document.getElementById('progress-title').textContent = progress.title || 'This is a placeholder';
+    // 5. Populate progress section using progress_teaser with template replacement
+    let progressTitle = progress.title || 'This is a placeholder';
+    progressTitle = progressTitle.replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions)
+                                .replace(/\{\{current_redemptions\}\}/g, currentRedemptions);
+    document.getElementById('progress-title').textContent = progressTitle;
+    
     let progressSubtitle = progress.subtitle || 'This is a placeholder';
     progressSubtitle = progressSubtitle.replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions)
                                      .replace(/\{\{current_redemptions\}\}/g, currentRedemptions);
     document.getElementById('progress-subtitle').textContent = progressSubtitle;
 
-    // 6. Populate benefits cards - API has title/desc mapping reversed according to specification
+    // 6. Populate benefits cards with correct title/desc mapping
     if (benefits.length > 0) {
       benefits.forEach((benefit, index) => {
         const titleElement = document.getElementById(`benefit-${index + 1}-title`);
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
         
-        // According to mapping: benefit.desc goes to title element, benefit.title goes to desc element
-        if (titleElement) titleElement.textContent = benefit.desc || 'This is a placeholder';
-        if (descElement) descElement.textContent = benefit.title || 'This is a placeholder';
+        // Correct mapping: benefit.title goes to title element, benefit.desc goes to desc element
+        if (titleElement) titleElement.textContent = benefit.title || 'This is a placeholder';
+        if (descElement) descElement.textContent = benefit.desc || 'This is a placeholder';
       });
     }
 
