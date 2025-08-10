@@ -1,0 +1,50 @@
+{
+    "data": {
+        "page4_referralRedeem": {
+            "hero": {
+                "hero_title": "Redeem Referral Invite Code",
+                "page_title": "Redeem Referral Code",
+                "quickButtonText": "Paste from Clipboard",
+                "referral_code": "Enter Code",
+                "subtitle": "Your friend wants you to enjoy Book Summaries App Premium! Enter or paste their invite code below."
+            },
+            "how_it_works": [
+                {
+                    "desc": "Find the referral invitation sent to you by your friend.",
+                    "step": 1
+                },
+                {
+                    "desc": "Paste the referral code using the button, or type it in.",
+                    "step": 2
+                },
+                {
+                    "desc": "Unlock a week of Premium access to Book Summaries App!",
+                    "step": 3
+                }
+            ],
+            "page_id": "referral-redeem",
+            "redeem": {
+                "messages": {
+                    "default": "{{referrer_name}} invited you to try Book Summaries App! Redeem code {{referral_code}} via {{referral_link}}."
+                },
+                "primary_cta": "Redeem Code",
+                "redemptionSuccess": {
+                    "hero_title": "Premium Access Granted!",
+                    "nudges": [
+                        "Your redemption also helps {{referrer_name}} get closer to unlocking their reward."
+                    ],
+                    "primary_cta": "Unlock 1 Week Premium \ud83c\udf89",
+                    "subtitle": "You've successfully redeemed {{referrer_name}}'s referral code and unlocked 1 Week of Premium features in Book Summaries App!"
+                },
+                "validation": {
+                    "empty": "Please enter a referral code to redeem.",
+                    "expired": "This invite is no longer valid. Ask {{referrer_name}} to send you a new one!",
+                    "invalid": "Oops! That doesn't seem to be a valid code. Double-check and try again.",
+                    "success": "Invite confirmed! You're one step closer to unlocking Premium."
+                }
+            }
+        }
+    },
+    "message": "Redeem data fetched",
+    "status": "success"
+}

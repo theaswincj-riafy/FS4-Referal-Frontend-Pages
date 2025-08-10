@@ -790,6 +790,18 @@ p {
   font-size: 12px;
 }
 
+#invite-friends{
+  font-size: 12px;
+}
+
+#paste-btn{
+  font-size: 12px;
+}
+
+#copy-clipboard{
+  font-size: 12px;
+}
+
 #progress-subtitle{
   margin-bottom:0px;
 }

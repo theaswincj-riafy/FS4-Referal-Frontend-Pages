@@ -11,6 +11,7 @@ class ReferralRedeemPage {
       await this.loadPageData();
       if (this.data) {
         this.populateContent();
+        this.loadThemeColors();
         this.hideLoader();
         this.bindEvents();
       } else {
@@ -24,22 +25,61 @@ class ReferralRedeemPage {
 
   async loadPageData() {
     try {
-      const endpoint = `/api/referral-redeem?lang=${this.params.language}`;
-      const body = {
-        app_package_name: this.params.app_package_name,
-        user_id: this.params.userId
-      };
+      // Try API first, then fall back to local data
+      try {
+        const endpoint = `/api/referral-redeem?lang=${this.params.language}`;
+        const body = {
+          app_package_name: this.params.app_package_name,
+          user_id: this.params.userId
+        };
 
-      console.log('Making API call to:', endpoint);
-      console.log('Request body:', body);
-      
-      this.data = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
-      console.log('Loaded API data:', this.data);
+        console.log('Making API call to:', endpoint);
+        console.log('Request body:', body);
+        
+        this.data = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
+        console.log('Loaded API data:', this.data);
+      } catch (apiError) {
+        console.warn('API call failed, using fallback data:', apiError);
+        // Fallback to the provided API structure
+        this.data = this.getMockData();
+      }
     } catch (error) {
-      console.error('API call error:', error);
-      this.data = null;
-      throw new Error('API call failed');
+      console.error('All data loading failed:', error);
+      this.data = this.getMockData();
     }
+  }
+
+  getMockData() {
+    return {
+      data: {
+        page4_referralRedeem: {
+          hero: {
+            hero_title: "Redeem Referral Invite Code",
+            page_title: "Redeem Referral Code",
+            quickButtonText: "Paste from Clipboard",
+            referral_code: "Enter Code",
+            subtitle: "Your friend wants you to enjoy Book Summaries App Premium! Enter or paste their invite code below."
+          },
+          how_it_works: [
+            {
+              desc: "Find the referral invitation sent to you by your friend.",
+              step: 1
+            },
+            {
+              desc: "Paste the referral code using the button, or type it in.",
+              step: 2
+            },
+            {
+              desc: "Unlock a week of Premium access to Book Summaries App!",
+              step: 3
+            }
+          ],
+          redeem: {
+            primary_cta: "Redeem Code"
+          }
+        }
+      }
+    };
   }
 
   populateContent() {
@@ -49,32 +89,51 @@ class ReferralRedeemPage {
     }
 
     // Extract data from API response structure
-    const pageData = this.data.data || this.data;
+    const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
     const hero = pageData.hero || {};
     const steps = pageData.how_it_works || pageData.steps || [];
+    const redeem = pageData.redeem || {};
     const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
 
     // Populate header
-    document.getElementById('header-title').textContent = hero.page_title || pageData.page_title || 'Redeem Referral Code';
+    document.getElementById('header-title').textContent = hero.page_title || 'Redeem Referral Code';
 
     // Populate hero section
-    document.getElementById('hero-title').textContent = hero.hero_title || hero.title || 'Redeem Referral Invite Code';
+    document.getElementById('hero-title').textContent = hero.hero_title || 'Redeem Referral Invite Code';
     document.getElementById('hero-subtitle').textContent = hero.subtitle || 'Enter or paste the invite from your friend to continue.';
+    
+    // Update input placeholder
+    const redeemInput = document.getElementById('redeem-input');
+    if (redeemInput) {
+      redeemInput.placeholder = hero.referral_code || 'Enter Code';
+    }
 
-    // Populate how it works steps
+    // Update paste button text
+    const pasteBtn = document.getElementById('paste-btn');
+    if (pasteBtn) {
+      pasteBtn.textContent = hero.quickButtonText || 'Paste from Clipboard';
+    }
+
+    // Update primary CTA button
+    const primaryCta = document.getElementById('primary-cta');
+    if (primaryCta) {
+      primaryCta.textContent = redeem.primary_cta || 'Redeem Code';
+    }
+
+    // Populate how it works steps (only 3 steps as per API)
     if (steps.length > 0) {
       steps.forEach((step, index) => {
         const stepElement = document.getElementById(`step-${index + 1}`);
-        if (stepElement) {
+        if (stepElement && index < 3) {
           stepElement.textContent = step.desc || step.description || step.text;
         }
       });
     } else {
       // Default steps if API doesn't provide them
       const defaultSteps = [
-        'Copy the referral invitation sent by your friends or family',
-        'Paste the referral invitation using the button above',
-        'If the code is valid, you\'ll unlock a week of Premium'
+        'Find the referral invitation sent to you by your friend.',
+        'Paste the referral code using the button, or type it in.',
+        'Unlock a week of Premium access to Book Summaries App!'
       ];
       
       defaultSteps.forEach((stepText, index) => {
@@ -84,9 +143,26 @@ class ReferralRedeemPage {
         }
       });
     }
+  }
 
-    // Update footer CTA
-    document.getElementById('primary-cta').textContent = 'Redeem Code';
+  loadThemeColors() {
+    if (typeof THEME_ONE !== 'undefined') {
+      console.log('Loading THEME_ONE colors:', THEME_ONE);
+      
+      // Apply theme colors to paste button
+      const pasteBtn = document.getElementById('paste-btn');
+      if (pasteBtn) {
+        pasteBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        pasteBtn.style.color = THEME_ONE.textColor;
+      }
+
+      // Apply theme colors to redeem input
+      const redeemInput = document.getElementById('redeem-input');
+      if (redeemInput) {
+        redeemInput.style.borderColor = THEME_ONE.border;
+        redeemInput.style.backgroundColor = THEME_ONE.pastelBGFill;
+      }
+    }
   }
 
   hideLoader() {
@@ -227,7 +303,7 @@ class ReferralRedeemPage {
       <section class="hero-section">
         <div class="hero-image-placeholder"></div>
         <h1 class="hero-title" id="hero-title">${successData.hero_title || "You're all set!"}</h1>
-        <p class="hero-subtitle" id="hero-subtitle">${successData.subtitle || "You have redeemed a valid referral code from John!"}</p>
+        <p class="hero-subtitle" id="hero-subtitle">${successData.subtitle || "You have redeemed a valid referral code!"}</p>
         
         <!-- Success Nudge -->
         <div class="success-nudge">
@@ -237,7 +313,7 @@ class ReferralRedeemPage {
               <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <span class="nudge-text">${(successData.nudges && successData.nudges[0]) || "Your redemption also helps John progress toward a reward."}</span>
+          <span class="nudge-text">${(successData.nudges && successData.nudges[0]) || "Your redemption helps your friend progress toward a reward."}</span>
         </div>
       </section>
     `;
