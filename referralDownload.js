@@ -70,38 +70,46 @@ class ReferralDownloadPage {
     console.log('How it works data:', howItWorksData);
     console.log('Store CTAs:', storeCtas);
 
+    // Helper function to replace all placeholders in text
+    const replacePlaceholders = (text) => {
+      if (!text) return text;
+      
+      return text
+        .replace(/\{\{referrer_name\}\}/g, apiData.referrer_name || '')
+        .replace(/\{\{referral_code\}\}/g, (apiData.referral_code || '').toUpperCase())
+        .replace(/\{\{app_name\}\}/g, apiData.app_name || '')
+        .replace(/\{\{app_store_link\}\}/g, 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130')
+        .replace(/\{\{play_store_link\}\}/g, 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1');
+    };
+
     // Populate app title using page_title
     const appTitleElement = document.getElementById('app-title');
     if (appTitleElement && heroData.page_title) {
-      appTitleElement.textContent = heroData.page_title;
+      appTitleElement.textContent = replacePlaceholders(heroData.page_title);
     }
 
-    // Populate invitation title, replacing {{referrer_name}} with actual referrer name
+    // Populate invitation title
     const invitationTitleElement = document.getElementById('invitation-title');
     if (invitationTitleElement && heroData.hero_title) {
-      let heroTitle = heroData.hero_title;
-      if (apiData.referrer_name) {
-        heroTitle = heroTitle.replace(/\{\{referrer_name\}\}/g, apiData.referrer_name);
-      }
-      invitationTitleElement.textContent = heroTitle;
+      invitationTitleElement.textContent = replacePlaceholders(heroData.hero_title);
     }
     
     // Populate invitation subtitle
     const invitationSubtitleElement = document.getElementById('invitation-subtitle');
     if (invitationSubtitleElement && heroData.subtitle) {
-      invitationSubtitleElement.textContent = heroData.subtitle;
+      invitationSubtitleElement.textContent = replacePlaceholders(heroData.subtitle);
     }
     
-    // Populate referral code
+    // Populate referral code with uppercase
     const referralCodeElement = document.getElementById('referral-code');
-    if (referralCodeElement && heroData.referral_code) {
-      referralCodeElement.textContent = heroData.referral_code;
+    if (referralCodeElement && apiData.referral_code) {
+      referralCodeElement.textContent = apiData.referral_code.toUpperCase();
     }
     
     // Populate copy button text
     const copyButtonElement = document.getElementById('copy-clipboard');
     if (copyButtonElement && heroData.quickButtonText) {
-      copyButtonElement.textContent = heroData.quickButtonText;
+      copyButtonElement.textContent = replacePlaceholders(heroData.quickButtonText);
     }
 
     // Populate how it works steps
@@ -109,12 +117,7 @@ class ReferralDownloadPage {
       howItWorksData.forEach((stepData, index) => {
         const stepElement = document.getElementById(`step-${stepData.step || index + 1}`);
         if (stepElement && stepData.desc) {
-          let stepText = stepData.desc;
-          // Replace {{referrer_name}} placeholder with actual referrer name
-          if (apiData.referrer_name) {
-            stepText = stepText.replace(/\{\{referrer_name\}\}/g, apiData.referrer_name);
-          }
-          stepElement.textContent = stepText;
+          stepElement.textContent = replacePlaceholders(stepData.desc);
         }
       });
     }
@@ -124,16 +127,73 @@ class ReferralDownloadPage {
     const appStoreBtn = document.getElementById('download-appstore');
     
     if (googlePlayBtn && storeCtas.play_store_button) {
-      googlePlayBtn.textContent = storeCtas.play_store_button;
+      googlePlayBtn.textContent = replacePlaceholders(storeCtas.play_store_button);
     }
     
     if (appStoreBtn && storeCtas.app_store_button) {
-      appStoreBtn.textContent = storeCtas.app_store_button;
+      appStoreBtn.textContent = replacePlaceholders(storeCtas.app_store_button);
     }
     
-    // Store the download links for event binding
-    this.playStoreLink = storeCtas.play_store_link || apiData.play_store_link;
-    this.appStoreLink = storeCtas.app_store_link || apiData.app_store_link;
+    // Use the hardcoded store links as requested
+    this.playStoreLink = 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1';
+    this.appStoreLink = 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130';
+    
+    // Apply theme colors after populating content
+    this.applyThemeColors();
+  }
+
+  // Apply theme colors from appTheme.js
+  applyThemeColors() {
+    console.log('ReferralDownloadPage: Applying theme colors');
+    
+    if (typeof THEME_ONE === 'undefined') {
+      console.warn('THEME_ONE not available, skipping theme application');
+      return;
+    }
+    
+    console.log('Using THEME_ONE colors:', THEME_ONE);
+    
+    // Hero section background
+    const heroSection = document.getElementById('hero-section');
+    if (heroSection) {
+      heroSection.style.backgroundColor = THEME_ONE.pastelBG;
+      heroSection.style.padding = '4rem 20px';
+    }
+    
+    // Referral code display styling
+    const referralCodeDisplay = document.getElementById('referral-code');
+    if (referralCodeDisplay) {
+      referralCodeDisplay.style.border = `2px solid ${THEME_ONE.border}`;
+      referralCodeDisplay.style.backgroundColor = THEME_ONE.pastelBGFill;
+      referralCodeDisplay.style.color = THEME_ONE.textColor;
+    }
+    
+    // Invitation subtitle color
+    const invitationSubtitle = document.getElementById('invitation-subtitle');
+    if (invitationSubtitle) {
+      invitationSubtitle.style.color = THEME_ONE.secondaryTextColor;
+    }
+    
+    // Copy clipboard button styling
+    const copyButton = document.getElementById('copy-clipboard');
+    if (copyButton) {
+      copyButton.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+      copyButton.style.color = THEME_ONE.textColor;
+    }
+    
+    // Download buttons styling
+    const googlePlayBtn = document.getElementById('download-google');
+    const appStoreBtn = document.getElementById('download-appstore');
+    
+    if (googlePlayBtn) {
+      googlePlayBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+      googlePlayBtn.style.color = THEME_ONE.textColor;
+    }
+    
+    if (appStoreBtn) {
+      appStoreBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+      appStoreBtn.style.color = THEME_ONE.textColor;
+    }
   }
 
   hideLoader() {
@@ -150,6 +210,16 @@ class ReferralDownloadPage {
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
         const referralCode = document.getElementById('referral-code').textContent;
+        this.copyToClipboard(referralCode);
+      });
+    }
+    
+    // Also make referral code itself clickable for copying
+    const referralCodeDisplay = document.getElementById('referral-code');
+    if (referralCodeDisplay) {
+      referralCodeDisplay.style.cursor = 'pointer';
+      referralCodeDisplay.addEventListener('click', () => {
+        const referralCode = referralCodeDisplay.textContent;
         this.copyToClipboard(referralCode);
       });
     }
