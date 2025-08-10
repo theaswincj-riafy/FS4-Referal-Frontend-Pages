@@ -100,46 +100,54 @@ class ReferralStatusPage {
       return;
     }
 
-    // Extract data from API response structure
+    // Extract data from API response structure according to the mapping specification
     const pageData = this.data.data || this.data;
     const referralStatusData = pageData.page2_referralStatus || {};
     const hero = referralStatusData.hero || {};
     const status = referralStatusData.status || {};
     const milestones = referralStatusData.milestones || [];
-    const faqs = referralStatusData.faq || pageData.faqs || [];
-    const progress = referralStatusData.progress_teaser || pageData.progress || {};
+    const faqs = referralStatusData.faq || [];
+    const progress = referralStatusData.progress_teaser || {};
     const benefits = referralStatusData.benefits || [];
-    const tips = referralStatusData.nudges || pageData.tips || [];
+    const nudges = referralStatusData.nudges || [];
 
-    // Populate header
-    document.getElementById('header-title').textContent = hero.page_title || 'My Referrals';
-
-    // Get current redemptions from the API
+    // Get template replacement values
     const currentRedemptions = pageData.current_redemptions || 0;
-    const targetLevel = pageData.target_redemptions || 5;
+    const pendingRedemptions = pageData.pending_redemptions || 0;
+    const referrerName = pageData.referrer_name || 'You';
+
+    // 1. Populate header with hero.page_title
+    document.getElementById('header-title').textContent = hero.page_title || 'This is a placeholder';
+
+    // 2. Find current milestone for hero section using milestones array
+    const currentMilestone = milestones.find(m => m.level === currentRedemptions) || milestones[0] || {};
     
-    // Find the milestone that matches current redemptions
-    const currentMilestone = milestones.find(m => m.level === currentRedemptions) || milestones[0];
+    // Use hero.hero_title for level-title with template replacement
+    let heroTitle = hero.hero_title || currentMilestone.current_level || 'This is a placeholder';
+    heroTitle = heroTitle.replace(/\{\{current_redemptions\}\}/g, currentRedemptions)
+                        .replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions)
+                        .replace(/\{\{referrer_name\}\}/g, referrerName);
+    document.getElementById('level-title').textContent = heroTitle;
 
-    if (currentMilestone) {
-      // For level 0, don't show "Level 0", just show the title
-      if (currentRedemptions === 0) {
-        document.getElementById('level-title').textContent = currentMilestone.title || 'Let\'s Start';
-      } else {
-        document.getElementById('level-title').textContent = `Level ${currentRedemptions}`;
-      }
-      document.getElementById('level-subtitle').textContent = currentMilestone.title || 'Progress';
-      const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
-      document.getElementById('level-message').textContent = currentMilestone.message || `Great work, ${capitalizedName}! Keep going.`;
-    }
+    // Use currentMilestone title and message for subtitle and message
+    document.getElementById('level-subtitle').textContent = currentMilestone.title || 'This is a placeholder';
+    
+    let heroMessage = hero.subtitle || currentMilestone.message || 'This is a placeholder';
+    heroMessage = heroMessage.replace(/\{\{current_redemptions\}\}/g, currentRedemptions)
+                             .replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions)
+                             .replace(/\{\{referrer_name\}\}/g, referrerName);
+    document.getElementById('level-message').textContent = heroMessage;
 
-    document.getElementById('progress-display').textContent = `${currentRedemptions} of ${targetLevel} Completed`;
+    // Use status.progress_text for progress display
+    document.getElementById('progress-display').textContent = status.progress_text || 'This is a placeholder';
+    
+    // Use hero.quickButtonText for invite button
+    document.getElementById('invite-friends').querySelector('span').textContent = hero.quickButtonText || 'This is a placeholder';
 
-    // Populate milestones - filter out level 0 for the progress section
-    const progressMilestones = milestones.filter(m => m.level > 0);
-    if (progressMilestones.length > 0) {
-      progressMilestones.forEach((milestone, index) => {
-        const milestoneElement = document.getElementById(`milestone-${index + 1}`);
+    // 3. Populate milestones (levels 1-5 only, ignore level 0)
+    if (milestones.length > 0) {
+      milestones.filter(milestone => milestone.level >= 1 && milestone.level <= 5).forEach((milestone) => {
+        const milestoneElement = document.getElementById(`milestone-${milestone.level}`);
         if (milestoneElement) {
           const iconElement = milestoneElement.querySelector('.milestone-icon');
           const contentElement = milestoneElement.querySelector('.milestone-content');
@@ -156,57 +164,71 @@ class ReferralStatusPage {
           if (contentElement) {
             const titleElement = contentElement.querySelector('h3');
             const statusElement = contentElement.querySelector('p');
-            if (titleElement) titleElement.textContent = `Level ${milestone.level} - ${milestone.title}`;
+            
+            // 2b. String combine current_level + title for h3 tag
+            if (titleElement) {
+              let levelTitle = milestone.current_level || `Level ${milestone.level}`;
+              levelTitle = levelTitle.replace(/\{\{current_redemptions\}\}/g, currentRedemptions);
+              titleElement.textContent = `${levelTitle} - ${milestone.title}`;
+            }
+            
+            // 2c. Use achievedOn value for p tag
             if (statusElement) {
-              if (milestone.level <= currentRedemptions) {
-                // Show achievedOn if available and not "Pending"
-                const achievedText = milestone.achievedOn && milestone.achievedOn !== "Pending" ? 
-                  milestone.achievedOn : 'Achieved';
-                statusElement.textContent = achievedText;
-              } else {
-                statusElement.textContent = 'Not Level';
-              }
+              statusElement.textContent = milestone.achievedOn || 'This is a placeholder';
             }
           }
         }
       });
     }
 
-    // Populate FAQs
+    // 4. Populate FAQs with correct mapping (q for h3, a for p)
     if (faqs.length > 0) {
       faqs.forEach((faq, index) => {
-        const faqElement = document.getElementById(`faq-${index + 1}`);
-        if (faqElement) {
-          faqElement.textContent = faq.a || faq.answer;
+        const faqItem = document.querySelectorAll('.faq-item')[index];
+        if (faqItem) {
+          const questionElement = faqItem.querySelector('h3');
+          const answerElement = faqItem.querySelector('p');
+          
+          if (questionElement) questionElement.textContent = faq.q || 'This is a placeholder';
+          if (answerElement) {
+            let answer = faq.a || 'This is a placeholder';
+            // Replace template variables in FAQ answers
+            answer = answer.replace(/\{\{target_redemptions\}\}/g, 5)
+                          .replace(/\{\{current_redemptions\}\}/g, currentRedemptions)
+                          .replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions);
+            answerElement.textContent = answer;
+          }
         }
       });
     }
 
-    // Populate progress section  
-    const remaining = targetLevel - currentRedemptions;
-    let progressTitle = progress.title || `Only ${remaining} more levels to go!`;
-    // Replace template variables
-    progressTitle = progressTitle.replace(/\{\{pending_redemptions\}\}/g, remaining);
-    document.getElementById('progress-title').textContent = progressTitle;
-    document.getElementById('progress-subtitle').textContent = progress.subtitle || 'Each redemption brings you closer to Premium!';
+    // 5. Populate progress section using progress_teaser
+    document.getElementById('progress-title').textContent = progress.title || 'This is a placeholder';
+    let progressSubtitle = progress.subtitle || 'This is a placeholder';
+    progressSubtitle = progressSubtitle.replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions)
+                                     .replace(/\{\{current_redemptions\}\}/g, currentRedemptions);
+    document.getElementById('progress-subtitle').textContent = progressSubtitle;
 
-    // Populate benefits cards
+    // 6. Populate benefits cards - API has title/desc mapping reversed according to specification
     if (benefits.length > 0) {
       benefits.forEach((benefit, index) => {
         const titleElement = document.getElementById(`benefit-${index + 1}-title`);
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
-        if (titleElement) titleElement.textContent = benefit.title;
-        if (descElement) descElement.textContent = benefit.desc || benefit.description;
+        
+        // According to mapping: benefit.desc goes to title element, benefit.title goes to desc element
+        if (titleElement) titleElement.textContent = benefit.desc || 'This is a placeholder';
+        if (descElement) descElement.textContent = benefit.title || 'This is a placeholder';
       });
     }
 
-    // Populate tip
-    if (tips.length > 0) {
-      document.getElementById('tip-text').textContent = tips[0].text || tips[0];
+    // 7. Randomly select one nudge for tip text
+    if (nudges.length > 0) {
+      const randomNudge = nudges[Math.floor(Math.random() * nudges.length)];
+      document.getElementById('tip-text').textContent = randomNudge || 'This is a placeholder';
     }
 
-    // Update footer CTA
-    document.getElementById('primary-cta').textContent = 'Invite Friends & Family';
+    // 8. Update footer CTA with quickButtonText
+    document.getElementById('primary-cta').textContent = hero.quickButtonText || 'This is a placeholder';
   }
 
   hideLoader() {

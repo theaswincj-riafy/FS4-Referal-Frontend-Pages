@@ -1,0 +1,108 @@
+{
+    "data": {
+        "current_redemptions": "use this key to replace the variable {{current_redemptions}} in any of the above texts",
+        "page2_referralStatus": {
+           "benefits": [
+                {
+                    "desc": "Use this key to replace id=benefit-1-title",
+                    "title": "Use this key to replace id=benefit-1-desc"
+                },
+                {
+                    "desc": "Use this key to replace id=benefit-2-title",
+                    "title": "Use this key to replace id=benefit-2-desc"
+                },
+                {
+                    "desc": "Use this key to replace id=benefit-3-title",
+                    "title": "Use this key to replace id=benefit-3-desc"
+                }
+            ],
+            "faq": [
+                {
+                    "a": "Use this key to replace class=faq-item[0] p",
+                    "q": "Use this key to replace class=faq-item[0] h3"
+                },
+                {
+                         "a": "Use this key to replace class=faq-item[1] p",
+                    "q": "Use this key to replace class=faq-item[1] h3"
+                }
+            ],
+            "hero": {
+                "hero_title": "Use this key to replace id=level-title",
+                "page_title": "Use this key to replace id=header-title ",
+                "quickButtonText": "Use this key to replace id=invite-friends",
+                "subtitle": "Use this key to replace id=level-message"
+            },
+            "milestones": [
+                USE this milestones array in 2 methods.
+                1. based on the current_redemptions, compare it with the level key in each of this array object. then use the current_level key for id=level-title & message key for id=level-message & title key for id=level-subtitle
+                2a. In my Progress section, show levels 1-5 (ignore level 0)   
+                    2b. in the class=milestone-content h3 tag for each milestone, string combine current_level + title 
+                    2c. in the class=milestone-content p tag for each milestone, use the value of achievedOn key
+                {
+                    "achievedOn": "Not Applicable",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 0,
+                    "message": "Ready to share the joy of summarized books? Send your referral code and start earning your free month of Premium!",
+                    "title": "Let's Start"
+                },
+                {
+                    "achievedOn": "Achieved on 09 August",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 1,
+                    "message": "Awesome! Your first friend has redeemed your code. Keep sharing to unlock more!",
+                    "title": "The Kickoff"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 2,
+                    "message": "Two redemptions! You're on your way to enjoying ad-free summaries and more with Premium.",
+                    "title": "Building Momentum"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 3,
+                    "message": "Three friends are enjoying Book Summaries App thanks to you! Just two more for Premium.",
+                    "title": "Halfway Hero"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 4,
+                    "message": "Just one more redemption to unlock 1 month of Premium on Book Summaries App! You're so close!",
+                    "title": "Almost There"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 5,
+                    "message": "Congratulations! You\u2019ve unlocked 1 month of Premium on Book Summaries App. Enjoy ad-free summaries and more!",
+                    "title": "Premium Unlocked \ud83c\udf89"
+                }
+            ],
+            "nudges": [
+          "randomly select any 1 string from this array and replace value in id=tip-text with this text",
+                "randomly select any 1 string from this array and replace value in id=tip-text with this text",
+                "randomly select any 1 string from this array and replace value in id=tip-text with this text",
+            ],
+            "progress_teaser": {
+                "subtitle": "Use this key to replace id=progress-subtitle",
+                "title": "Use this key to replace id=progress-title"
+            },
+            "status": {
+                "progress_text": "Use this key to replace id=progress-display",
+            }
+        },
+        "pending_redemptions": "use this key to replace the variable {{pending_redemptions}} in any of the above texts",
+        "referrer_name": "use this key to replace the variable {{referrer_name}} in any of the above texts",
+    },
+    "message": "Referral stats fetched",
+    "status": "success"
+}
