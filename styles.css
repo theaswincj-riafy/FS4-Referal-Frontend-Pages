@@ -983,7 +983,7 @@ p {
 
 /* Progress tracking styles */
 .progress-tracking {
-  margin-bottom: 0;
+  margin-bottom: 32px;
 }
 
 .milestone-list {
@@ -1135,23 +1135,21 @@ p {
 /* Progress display */
 .progress-display {
   display: inline-block;
-  background: transparent;
-  color: #1d1d1f;
-  padding: 16px 20px;
+  background: #f0f9ff;
+  border: 1px solid #52C5F7;
   border-radius: 12px;
-  font-size: 1.125rem;
+  padding: 8px 16px;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  border: 2px dashed #52C5F7;
-  margin: 0;
+  color: #1d1d1f;
+  margin-bottom: 16px;
 }
 
 .level-subtitle {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #1d1d1f;
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.01em;
+  margin-bottom: 8px;
 }
 
 /* Highlight styles for steps */
@@ -1938,7 +1936,7 @@ p {
 
 /* FAQ Section */
 .faq-section {
-  margin-bottom: 0;
+  margin-bottom: 2rem;
 }
 
 .faq-card {
@@ -1960,7 +1958,7 @@ p {
 }
 
 .faq-item {
-  border-bottom: none;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .faq-item:last-child {
