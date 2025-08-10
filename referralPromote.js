@@ -80,7 +80,14 @@ class ReferralPromotePage {
     // Populate hero section using data mapping
     const heroTitleElement = document.getElementById('hero-title');
     if (heroTitleElement && hero.hero_title) {
-      heroTitleElement.textContent = replaceVariables(hero.hero_title);
+      let titleText = replaceVariables(hero.hero_title);
+      // Add line break for 2-line titles to split into equal halves
+      const words = titleText.split(' ');
+      if (words.length >= 4 && words.length <= 8) {
+        const midPoint = Math.ceil(words.length / 2);
+        titleText = words.slice(0, midPoint).join(' ') + '<br>' + words.slice(midPoint).join(' ');
+      }
+      heroTitleElement.innerHTML = titleText;
     }
 
     const heroSubtitleElement = document.getElementById('hero-subtitle');
