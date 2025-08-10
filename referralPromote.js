@@ -13,7 +13,6 @@ class ReferralPromotePage {
       if (this.data) {
         this.populateContent();
         this.hideLoader();
-        this.debugHowItWorksSection(); // Move debug after hideLoader
         this.initCardStack();
         this.bindEvents();
       } else {
@@ -101,33 +100,11 @@ class ReferralPromotePage {
 
     // Populate how it works steps using data mapping
     if (steps.length > 0) {
-      console.log('[HOW IT WORKS DEBUG] Processing steps:', steps);
       steps.forEach((step) => {
         const stepElement = document.getElementById(`step-${step.step}`);
-        const stepRow = stepElement?.closest('.step-row');
-        
-        console.log(`[HOW IT WORKS DEBUG] Step ${step.step}:`, {
-          stepElement: stepElement,
-          stepRow: stepRow,
-          stepRowClasses: stepRow?.className,
-          stepDesc: step.desc
-        });
-        
         if (stepElement && step.desc) {
           stepElement.textContent = replaceVariables(step.desc);
         }
-      });
-      
-      // Debug all step rows to see their classes
-      const allStepRows = document.querySelectorAll('.step-row');
-      console.log('[HOW IT WORKS DEBUG] All step rows and their classes:');
-      allStepRows.forEach((row, index) => {
-        console.log(`Row ${index + 1}:`, {
-          element: row,
-          classes: row.className,
-          isLeft: row.classList.contains('step-left'),
-          isRight: row.classList.contains('step-right')
-        });
       });
     }
 
@@ -493,60 +470,7 @@ class ReferralPromotePage {
     }
   }
 
-  debugHowItWorksSection() {
-    console.log('=== HOW IT WORKS DEBUG START ===');
-    
-    // Wait a bit for DOM to be fully rendered
-    setTimeout(() => {
-      // Check if steps container exists
-      const stepsContainer = document.getElementById('steps-container');
-      console.log('[DEBUG] Steps container:', stepsContainer);
-      
-      // Check all step rows
-      const stepRows = document.querySelectorAll('.step-row');
-      console.log('[DEBUG] Found step rows:', stepRows.length);
-      
-      stepRows.forEach((row, index) => {
-        const stepNumber = index + 1;
-        const img = row.querySelector('.step-number-image');
-        const card = row.querySelector('.step-card');
-        const description = row.querySelector('.step-description');
-        const computedStyles = window.getComputedStyle(row);
-        
-        console.log(`[DEBUG] === STEP ${stepNumber} ===`);
-        console.log(`[DEBUG] Element:`, row);
-        console.log(`[DEBUG] Classes:`, row.className);
-        console.log(`[DEBUG] Computed flex-direction:`, computedStyles.flexDirection);
-        console.log(`[DEBUG] Computed display:`, computedStyles.display);
-        console.log(`[DEBUG] Image src:`, img?.src);
-        console.log(`[DEBUG] Description text:`, description?.textContent);
-        console.log(`[DEBUG] Is step-left:`, row.classList.contains('step-left'));
-        console.log(`[DEBUG] Is step-right:`, row.classList.contains('step-right'));
-        
-        // Check if flex-direction is actually being applied
-        if (row.classList.contains('step-right') && computedStyles.flexDirection !== 'row-reverse') {
-          console.warn(`[DEBUG] WARNING: Step ${stepNumber} should be row-reverse but is ${computedStyles.flexDirection}`);
-        }
-        if (row.classList.contains('step-left') && computedStyles.flexDirection !== 'row') {
-          console.warn(`[DEBUG] WARNING: Step ${stepNumber} should be row but is ${computedStyles.flexDirection}`);
-        }
-      });
-      
-      // Check step elements by ID
-      for (let i = 1; i <= 5; i++) {
-        const stepElement = document.getElementById(`step-${i}`);
-        const parentRow = stepElement?.closest('.step-row');
-        console.log(`[DEBUG] Step ${i} element:`, {
-          element: stepElement,
-          text: stepElement?.textContent?.substring(0, 50) + '...',
-          parentRow: parentRow,
-          parentClasses: parentRow?.className
-        });
-      }
-      
-      console.log('=== HOW IT WORKS DEBUG END ===');
-    }, 100);
-  }
+  
 
   showError(message) {
     const loader = document.getElementById('page-loader');
