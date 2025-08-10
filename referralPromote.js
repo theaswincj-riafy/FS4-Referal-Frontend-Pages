@@ -187,20 +187,17 @@ class ReferralPromotePage {
 
   initReferralCardSwiper(container) {
     const cards = Array.from(container.querySelectorAll('.benefit-card'));
-    console.log('[CARD SWIPER] Initializing card swiper for container:', container, 'with cards:', cards.length);
+    console.log('[CARD SWIPER] Initializing simple card swiper with', cards.length, 'cards');
 
-    // Handle single card case immediately
+    // Handle single card case
     if (cards.length <= 1) {
-      console.log('[CARD SWIPER] Single card case detected');
       const card = cards[0];
       if (card) {
-        // Wait for container to have dimensions then position single card
         const waitForSingleCard = () => {
           const containerWidth = container.offsetWidth;
           if (containerWidth && containerWidth > 0) {
             const cardWidth = 180;
             const centerX = (containerWidth - cardWidth) / 2;
-            console.log('[CARD SWIPER] Single card positioning - containerWidth:', containerWidth, 'centerX:', centerX);
             gsap.set(card, {
               x: centerX,
               y: 40,
@@ -223,332 +220,172 @@ class ReferralPromotePage {
       return;
     }
 
-    // Multi-card setup with improved initialization
     let currentIndex = 0;
     let isAnimating = false;
-    let isInitialized = false;
-    let containerWidth = 0;
-    let cardPositions = {};
-    let lastContainerWidth = 0;
 
-    // Calculate fixed positions once container is ready
+    // Calculate card positions
     function calculatePositions() {
-      containerWidth = container.offsetWidth;
-      if (!containerWidth || containerWidth <= 0) return false;
+      const containerWidth = container.offsetWidth;
+      if (!containerWidth || containerWidth <= 0) return null;
 
       const cardWidth = 180;
-      const centerX = (containerWidth - cardWidth) / 2; // Properly center the card in container
+      const centerX = (containerWidth - cardWidth) / 2;
       const centerY = 40;
-      const maxOffset = Math.min(60, (containerWidth - cardWidth) / 3); // Increased offset for better separation
-      const baseOffset = Math.min(maxOffset, Math.max(35, containerWidth * 0.12)); // Increased base offset
-      const sideCardOffset = Math.min(20, Math.max(10, containerWidth * 0.035)); // Increased vertical offset
-      const sideCardRotation = 18; // 18 degrees for better visibility
+      const baseOffset = Math.min(60, Math.max(35, containerWidth * 0.12));
+      const sideCardOffset = Math.min(20, Math.max(10, containerWidth * 0.035));
+      const sideCardRotation = 18;
 
-      cardPositions = {
+      return {
         center: { x: centerX, y: centerY, rotation: 0, zIndex: 100, scale: 1, opacity: 1 },
         right: { x: centerX + baseOffset, y: centerY + sideCardOffset, rotation: sideCardRotation, zIndex: 50, scale: 0.92, opacity: 0.8 },
         left: { x: centerX - baseOffset, y: centerY + sideCardOffset, rotation: -sideCardRotation, zIndex: 50, scale: 0.92, opacity: 0.8 },
         hidden: { x: centerX, y: centerY + Math.min(25, containerWidth * 0.05), rotation: 0, zIndex: 1, scale: 0.88, opacity: 0.5 }
       };
-
-      console.log('[CARD SWIPER] Positions calculated for width:', containerWidth, cardPositions);
-      return true;
     }
 
-    // Core positioning function - stable and precise
+    // Position cards based on current index
     function positionCards(animate = false) {
-      if (isAnimating && animate) {
-        console.log('[CARD SWIPER] positionCards() blocked - animation in progress');
-        return;
-      }
-
-      if (!calculatePositions()) {
-        console.log('[CARD SWIPER] Container dimensions not ready, skipping positioning');
-        return;
-      }
-
-      console.log('[CARD SWIPER] positionCards() called - currentIndex:', currentIndex, 'animate:', animate);
+      const positions = calculatePositions();
+      if (!positions) return;
 
       cards.forEach((card, index) => {
         const relativeIndex = (index - currentIndex + cards.length) % cards.length;
         let position;
 
         if (relativeIndex === 0) {
-          position = cardPositions.center;
+          position = positions.center;
         } else if (relativeIndex === 1) {
-          position = cardPositions.right;
+          position = positions.right;
         } else if (relativeIndex === cards.length - 1) {
-          position = cardPositions.left;
+          position = positions.left;
         } else {
-          position = cardPositions.hidden;
+          position = positions.hidden;
         }
 
         if (animate) {
           gsap.to(card, {
             ...position,
             duration: 0.4,
-            ease: "power2.out",
-            onComplete: () => {
-              if (index === cards.length - 1) {
-                setupDraggable();
-              }
-            }
+            ease: "power2.out"
           });
         } else {
           gsap.set(card, position);
         }
-
-        console.log(`[CARD SWIPER] Card ${index} (rel: ${relativeIndex}) animating to:`, position);
       });
     }
 
-    function animateToPosition() {
-      if (isAnimating) {
-        console.log('[CARD SWIPER] animateToPosition() blocked - animation already in progress');
-        return;
-      }
-
-      console.log('[CARD SWIPER] Starting animation to new position');
+    // Rotate to next card
+    function rotateNext() {
+      if (isAnimating) return;
       isAnimating = true;
-
-      positionCards(true);
-
-      // Reset animation flag after duration
-      setTimeout(() => {
-        console.log('[CARD SWIPER] Animation completed, resetting flag');
-        isAnimating = false;
-      }, 400);
-    }
-
-    function swipeToNext() {
-      console.log('[CARD SWIPER] swipeToNext() called - currentIndex:', currentIndex);
-      if (isAnimating) {
-        console.log('[CARD SWIPER] swipeToNext() blocked - animation in progress');
-        return;
-      }
-
       currentIndex = (currentIndex + 1) % cards.length;
-      console.log('[CARD SWIPER] New currentIndex:', currentIndex);
-      animateToPosition();
+      console.log('[CARD SWIPER] Rotating to next - currentIndex:', currentIndex);
+      positionCards(true);
+      setTimeout(() => { isAnimating = false; }, 400);
     }
 
-    function swipeToPrev() {
-      console.log('[CARD SWIPER] swipeToPrev() called - currentIndex:', currentIndex);
-      if (isAnimating) {
-        console.log('[CARD SWIPER] swipeToPrev() blocked - animation in progress');
-        return;
-      }
-
+    // Rotate to previous card
+    function rotatePrev() {
+      if (isAnimating) return;
+      isAnimating = true;
       currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-      console.log('[CARD SWIPER] New currentIndex:', currentIndex);
-      animateToPosition();
+      console.log('[CARD SWIPER] Rotating to previous - currentIndex:', currentIndex);
+      positionCards(true);
+      setTimeout(() => { isAnimating = false; }, 400);
     }
 
-    function setupDraggable() {
-      if (!isInitialized) {
-        console.log('[CARD SWIPER] setupDraggable() skipped - not initialized:', isInitialized);
-        return;
-      }
-
-      console.log('[CARD SWIPER] Setting up gesture detection for currentIndex:', currentIndex);
-
-      // Clean up previous event listeners
-      cards.forEach(card => {
-        // Reset interactions
-        card.style.cursor = 'default';
-        card.onclick = null;
-        // Remove any existing touch/mouse listeners
-        card.removeEventListener('touchstart', card._touchStartHandler);
-        card.removeEventListener('touchmove', card._touchMoveHandler);
-        card.removeEventListener('touchend', card._touchEndHandler);
-        card.removeEventListener('mousedown', card._mouseDownHandler);
-        card.removeEventListener('mousemove', card._mouseMoveHandler);
-        card.removeEventListener('mouseup', card._mouseUpHandler);
-      });
-
-      // Setup interactions based on current card positions
+    // Setup simple interactions
+    function setupInteractions() {
       cards.forEach((card, index) => {
-        const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+        // Clean up existing listeners
+        card.onclick = null;
+        card.removeEventListener('touchstart', card._touchStartHandler);
+        card.removeEventListener('touchend', card._touchEndHandler);
 
-        if (relativeIndex === 0) {
-          // Center card - setup gesture detection
-          card.style.cursor = 'grab';
+        // Simple click handler - always rotate to next
+        card.style.cursor = 'pointer';
+        card.onclick = (e) => {
+          e.stopPropagation();
+          rotateNext();
+        };
+
+        // Simple swipe detection
+        let startX = 0;
+        let startTime = 0;
+        
+        const handleTouchStart = (e) => {
+          startX = e.touches[0].clientX;
+          startTime = Date.now();
+        };
+
+        const handleTouchEnd = (e) => {
+          const endX = e.changedTouches[0].clientX;
+          const deltaX = endX - startX;
+          const deltaTime = Date.now() - startTime;
           
-          let startX = 0, startY = 0, isDragging = false;
-          const swipeThreshold = 50;
-
-          const handleStart = (e) => {
-            if (isAnimating) return;
-            
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            
-            if (clientX === undefined || clientY === undefined) return;
-            
-            startX = clientX;
-            startY = clientY;
-            isDragging = true;
-            card.style.cursor = 'grabbing';
-            card.classList.add('dragging');
-            
-            console.log('[CARD SWIPER] Drag started at:', { startX, startY });
-            e.preventDefault();
-          };
-
-          const handleMove = (e) => {
-            if (!isDragging || isAnimating) return;
-            
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            
-            if (clientX === undefined || clientY === undefined) return;
-            
-            const deltaX = clientX - startX;
-            const deltaY = clientY - startY;
-            
-            // Only track horizontal movement with some tolerance for vertical
-            if (Math.abs(deltaX) > Math.abs(deltaY) || Math.abs(deltaX) > 10) {
-              gsap.set(card, {
-                x: cardPositions.center.x + deltaX * 0.3,
-                rotation: deltaX * 0.05 // Subtle rotation based on drag
-              });
-              e.preventDefault();
-            }
-          };
-
-          const handleEnd = (e) => {
-            if (!isDragging) return;
-            
-            const clientX = e.clientX || e.changedTouches[0].clientX;
-            const deltaX = clientX - startX;
-            
-            isDragging = false;
-            card.style.cursor = 'grab';
-            card.classList.remove('dragging');
-            
-            console.log('[CARD SWIPER] Drag ended with deltaX:', deltaX);
-            
-            if (Math.abs(deltaX) > swipeThreshold) {
-              if (deltaX > 0) {
-                console.log('[CARD SWIPER] Swiping to previous (right swipe)');
-                swipeToPrev();
-              } else {
-                console.log('[CARD SWIPER] Swiping to next (left swipe)');
-                swipeToNext();
-              }
+          // Only consider swipes that are fast enough and long enough
+          if (Math.abs(deltaX) > 30 && deltaTime < 300) {
+            if (deltaX > 0) {
+              rotatePrev(); // Swipe right = previous
             } else {
-              console.log('[CARD SWIPER] Snap back to center');
-              gsap.to(card, {
-                x: cardPositions.center.x,
-                rotation: cardPositions.center.rotation,
-                duration: 0.3,
-                ease: "power2.out"
-              });
+              rotateNext(); // Swipe left = next
             }
-          };
+          } else {
+            rotateNext(); // Default to next on tap/slow swipe
+          }
+        };
 
-          // Store handlers for cleanup
-          card._touchStartHandler = handleStart;
-          card._touchMoveHandler = handleMove;
-          card._touchEndHandler = handleEnd;
-          card._mouseDownHandler = handleStart;
-          card._mouseMoveHandler = handleMove;
-          card._mouseUpHandler = handleEnd;
+        // Store handlers for cleanup
+        card._touchStartHandler = handleTouchStart;
+        card._touchEndHandler = handleTouchEnd;
 
-          // Touch events
-          card.addEventListener('touchstart', handleStart, { passive: false });
-          card.addEventListener('touchmove', handleMove, { passive: false });
-          card.addEventListener('touchend', handleEnd, { passive: true });
-
-          // Mouse events
-          card.addEventListener('mousedown', handleStart);
-          document.addEventListener('mousemove', handleMove);
-          document.addEventListener('mouseup', handleEnd);
-
-        } else if (relativeIndex === 1) {
-          // Right card - click to go to next
-          card.style.cursor = 'pointer';
-          card.onclick = (e) => {
-            e.stopPropagation();
-            console.log('[CARD SWIPER] Right card clicked - going to next');
-            swipeToNext();
-          };
-        } else if (relativeIndex === cards.length - 1) {
-          // Left card - click to go to previous
-          card.style.cursor = 'pointer';
-          card.onclick = (e) => {
-            e.stopPropagation();
-            console.log('[CARD SWIPER] Left card clicked - going to previous');
-            swipeToPrev();
-          };
-        }
+        // Add touch event listeners
+        card.addEventListener('touchstart', handleTouchStart, { passive: true });
+        card.addEventListener('touchend', handleTouchEnd, { passive: true });
       });
     }
 
-    // Debounced resize handler to prevent drift
-    let resizeTimeout;
-    function handleResize() {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const currentWidth = container.offsetWidth;
-        if (currentWidth && currentWidth !== lastContainerWidth) {
-          lastContainerWidth = currentWidth;
-          console.log('[CARD SWIPER] Handling resize to width:', currentWidth);
-          // Force recalculation to prevent drift
-          containerWidth = 0;
-          cardPositions = {};
-          positionCards(false);
-          setupDraggable(); // Re-setup after resize
-        }
-      }, 200);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    // Initialize cards with proper timing and single positioning call
+    // Initialize
     function initialize() {
-      const currentWidth = container.offsetWidth;
-      if (currentWidth && currentWidth > 0) {
-        console.log('[CARD SWIPER] Initializing with container width:', currentWidth);
-        lastContainerWidth = currentWidth;
-
-        // Calculate positions and set initial state (no animation)
-        if (calculatePositions()) {
-          positionCards(false);
-
-          // Animate cards in with entrance effect
-          console.log('[CARD SWIPER] Starting entrance animations');
-          cards.forEach((card, index) => {
-            gsap.from(card, {
-              opacity: 0,
-              scale: 0.8,
-              duration: 0.6,
-              delay: index * 0.1,
-              ease: "back.out(1.7)",
-              onComplete: () => {
-                if (index === cards.length - 1) {
-                  isInitialized = true;
-                  setupDraggable();
-                  console.log('[CARD SWIPER] Initialization complete');
-                }
+      const containerWidth = container.offsetWidth;
+      if (containerWidth && containerWidth > 0) {
+        console.log('[CARD SWIPER] Initializing with container width:', containerWidth);
+        
+        // Set initial positions
+        positionCards(false);
+        
+        // Animate cards in
+        cards.forEach((card, index) => {
+          gsap.from(card, {
+            opacity: 0,
+            scale: 0.8,
+            duration: 0.6,
+            delay: index * 0.1,
+            ease: "back.out(1.7)",
+            onComplete: () => {
+              if (index === cards.length - 1) {
+                setupInteractions();
+                console.log('[CARD SWIPER] Simple swiper initialization complete');
               }
-            });
+            }
           });
-        }
+        });
       } else {
-        console.log('[CARD SWIPER] Container not ready, waiting...');
         setTimeout(initialize, 50);
       }
     }
 
-    // Start initialization with a single call
-    requestAnimationFrame(() => {
-      setTimeout(initialize, 10);
+    // Handle resize
+    window.addEventListener('resize', () => {
+      setTimeout(() => positionCards(false), 200);
     });
 
-    // Store methods for external access if needed
-    this.swipeToNext = swipeToNext;
-    this.swipeToPrev = swipeToPrev;
+    // Start initialization
+    requestAnimationFrame(() => setTimeout(initialize, 10));
+
+    // Store methods for external access
+    this.rotateNext = rotateNext;
+    this.rotatePrev = rotatePrev;
   }
 
   bindEvents() {
