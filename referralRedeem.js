@@ -46,11 +46,19 @@ class ReferralRedeemPage {
     }
   }
 
-  // Generate encrypted localStorage key
+  // Generate localStorage key based on user and app (simple base64 encoding)
   getStorageKey() {
-    const encryptedUserId = this.encrypt(this.params.userId);
-    const encryptedAppName = this.encrypt(this.params.app_package_name);
-    return `referralRedeem_${encryptedUserId}_${encryptedAppName}`;
+    const userId = btoa(this.params.userId);
+    const appName = btoa(this.params.app_package_name);
+    return `referralRedeem_${userId}_${appName}`;
+  }
+  
+  // Clean up any duplicate localStorage entries for this user
+  cleanupStorageKeys() {
+    const baseKey = this.getStorageKey();
+    // Remove any fallback entries
+    localStorage.removeItem(baseKey + '_fallback');
+    console.log('Cleaned up localStorage for user:', this.params.userId);
   }
 
   // Check if user has already redeemed
@@ -62,22 +70,14 @@ class ReferralRedeemPage {
     
     if (storedData) {
       try {
-        const decryptedData = JSON.parse(this.decrypt(storedData));
-        console.log('Successfully decrypted data, alreadyRedeemed:', decryptedData.alreadyRedeemed);
-        return decryptedData.alreadyRedeemed === true;
+        // Parse as plain JSON (no encryption needed for this simple case)
+        const parsedData = JSON.parse(storedData);
+        console.log('Successfully parsed data, alreadyRedeemed:', parsedData.alreadyRedeemed);
+        return parsedData.alreadyRedeemed === true;
       } catch (error) {
         console.error('Failed to parse stored redemption data:', error);
-        // Try fallback
-        const fallbackData = localStorage.getItem(storageKey + '_fallback');
-        if (fallbackData) {
-          try {
-            const fallbackParsed = JSON.parse(fallbackData);
-            console.log('Using fallback data, alreadyRedeemed:', fallbackParsed.alreadyRedeemed);
-            return fallbackParsed.alreadyRedeemed === true;
-          } catch (fallbackError) {
-            console.error('Fallback parsing also failed:', fallbackError);
-          }
-        }
+        // Clean up corrupted data
+        localStorage.removeItem(storageKey);
         return false;
       }
     }
@@ -95,26 +95,23 @@ class ReferralRedeemPage {
       appName: this.params.app_package_name
     };
     
+    // Clean up any existing fallback entries first
+    const fallbackKey = storageKey + '_fallback';
+    localStorage.removeItem(fallbackKey);
+    
     try {
       const jsonString = JSON.stringify(dataToStore);
-      console.log('Attempting to encrypt JSON string of length:', jsonString.length);
-      const encryptedData = this.encrypt(jsonString);
-      localStorage.setItem(storageKey, encryptedData);
+      console.log('Attempting to save localStorage data with alreadyRedeemed:', alreadyRedeemed);
+      
+      // Try to save as plain JSON first (simpler and more reliable)
+      localStorage.setItem(storageKey, jsonString);
       console.log('Redemption data saved to localStorage with key:', storageKey);
-      console.log('Data stored with alreadyRedeemed:', alreadyRedeemed);
       
       // Verify the save worked
       const verification = localStorage.getItem(storageKey);
       console.log('Verification - stored data exists:', !!verification);
     } catch (error) {
       console.error('Failed to save redemption data:', error);
-      // Fallback: save without encryption
-      try {
-        localStorage.setItem(storageKey + '_fallback', JSON.stringify(dataToStore));
-        console.log('Saved fallback data without encryption');
-      } catch (fallbackError) {
-        console.error('Even fallback save failed:', fallbackError);
-      }
     }
   }
 
@@ -125,20 +122,13 @@ class ReferralRedeemPage {
     
     if (storedData) {
       try {
-        const decryptedData = JSON.parse(this.decrypt(storedData));
-        return decryptedData.data || decryptedData; // Return the actual data part
+        // Parse as plain JSON
+        const parsedData = JSON.parse(storedData);
+        return parsedData.data || parsedData; // Return the actual data part
       } catch (error) {
         console.error('Failed to parse stored redemption data:', error);
-        // Try fallback
-        const fallbackData = localStorage.getItem(storageKey + '_fallback');
-        if (fallbackData) {
-          try {
-            const fallbackParsed = JSON.parse(fallbackData);
-            return fallbackParsed.data || fallbackParsed;
-          } catch (fallbackError) {
-            console.error('Fallback parsing also failed:', fallbackError);
-          }
-        }
+        // Clean up corrupted data
+        localStorage.removeItem(storageKey);
         return null;
       }
     }
@@ -148,6 +138,9 @@ class ReferralRedeemPage {
   async init() {
     try {
       console.log('ReferralRedeemPage: Starting init with params:', this.params);
+      
+      // Clean up any old localStorage entries first
+      this.cleanupStorageKeys();
       
       // Check if user has already redeemed
       const alreadyRedeemed = this.checkAlreadyRedeemed();
