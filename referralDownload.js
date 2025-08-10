@@ -74,8 +74,12 @@ class ReferralDownloadPage {
     const replacePlaceholders = (text) => {
       if (!text) return text;
       
+      // Capitalize first letter of referrer name
+      const capitalizedReferrerName = apiData.referrer_name ? 
+        apiData.referrer_name.charAt(0).toUpperCase() + apiData.referrer_name.slice(1).toLowerCase() : '';
+      
       return text
-        .replace(/\{\{referrer_name\}\}/g, apiData.referrer_name || '')
+        .replace(/\{\{referrer_name\}\}/g, capitalizedReferrerName)
         .replace(/\{\{referral_code\}\}/g, (apiData.referral_code || '').toUpperCase())
         .replace(/\{\{app_name\}\}/g, apiData.app_name || '')
         .replace(/\{\{app_store_link\}\}/g, 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130')
@@ -163,7 +167,7 @@ class ReferralDownloadPage {
     // Referral code display styling
     const referralCodeDisplay = document.getElementById('referral-code');
     if (referralCodeDisplay) {
-      referralCodeDisplay.style.border = `2px solid ${THEME_ONE.border}`;
+      referralCodeDisplay.style.border = '2px dashed rgb(255, 165, 0)';
       referralCodeDisplay.style.backgroundColor = THEME_ONE.pastelBGFill;
       referralCodeDisplay.style.color = THEME_ONE.textColor;
     }
