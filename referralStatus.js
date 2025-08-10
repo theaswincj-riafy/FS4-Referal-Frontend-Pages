@@ -12,6 +12,7 @@ class ReferralStatusPage {
       await this.loadPageData();
       if (this.data) {
         this.populateContent();
+        this.loadThemeColors();
         this.hideLoader();
         this.initCardStack();
         this.bindEvents();
@@ -605,6 +606,27 @@ class ReferralStatusPage {
       primaryCta.addEventListener('click', () => {
         window.location.href = `referralPromote.html?${new URLSearchParams(this.params).toString()}`;
       });
+    }
+  }
+
+  loadThemeColors() {
+    if (typeof THEME_ONE !== 'undefined') {
+      console.log('Loading THEME_ONE colors:', THEME_ONE);
+      
+      // Apply theme colors to progress-display
+      const progressDisplay = document.getElementById('progress-display');
+      if (progressDisplay) {
+        progressDisplay.style.borderColor = THEME_ONE.border;
+        progressDisplay.style.backgroundColor = THEME_ONE.pastelBGFill;
+        progressDisplay.style.color = THEME_ONE.textColor;
+      }
+
+      // Apply theme colors to invite-friends button
+      const inviteFriendsBtn = document.getElementById('invite-friends');
+      if (inviteFriendsBtn) {
+        inviteFriendsBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        inviteFriendsBtn.style.color = THEME_ONE.textColor;
+      }
     }
   }
 
