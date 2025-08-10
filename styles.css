@@ -601,14 +601,25 @@ p {
   align-items: flex-start;
   gap: 16px;
   position: relative;
+  margin-bottom: 20px;
 }
 
 .step-row.step-left {
   flex-direction: row;
+  justify-content: flex-start;
 }
 
 .step-row.step-right {
   flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+.step-row.step-right .step-card {
+  text-align: right;
+}
+
+.step-row.step-left .step-card {
+  text-align: left;
 }
 
 .step-card {
@@ -617,6 +628,7 @@ p {
   padding: 20px;
   flex: 1;
   margin: 0;
+  max-width: calc(100% - 76px); /* Account for image width + gap */
 }
 
 .step-number-image {
@@ -643,17 +655,6 @@ p {
 .premium-step .step-number-image {
   width: 60px;
   height: 60px;
-}
-  color: white;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-}
-
-.step-description {
-  flex: 1;
-  font-size: 0.95rem;
-  color: #1d1d1f;
-  line-height: 1.5;
-  margin-top: 4px;
 }
 
 /* Progress Section */
