@@ -324,11 +324,23 @@ class ReferralPromotePage {
         card.removeEventListener('touchstart', card._touchStartHandler);
         card.removeEventListener('touchend', card._touchEndHandler);
 
-        // Simple click handler - always rotate to next
+        // Click handler based on card position
         card.style.cursor = 'pointer';
         card.onclick = (e) => {
           e.stopPropagation();
-          rotateNext();
+          
+          const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+          
+          if (relativeIndex === 0) {
+            // Center card - rotate left (to next)
+            rotateNext();
+          } else if (relativeIndex === 1) {
+            // Right card - rotate left (to next)
+            rotateNext();
+          } else if (relativeIndex === cards.length - 1) {
+            // Left card - rotate right (to previous)
+            rotatePrev();
+          }
         };
 
         // Simple swipe detection
