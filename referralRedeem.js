@@ -608,9 +608,6 @@ class ReferralRedeemPage {
   renderAlreadyRedeemedState() {
     console.log('ReferralRedeemPage: Rendering already redeemed state');
     
-    // Remove vertical scroll when showing success state
-    document.body.style.overflow = 'hidden';
-    
     // Get redemption success data
     const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
     const successData = pageData.redeem?.redemptionSuccess || {};
