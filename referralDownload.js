@@ -126,17 +126,9 @@ class ReferralDownloadPage {
       });
     }
     
-    // Populate download button texts and store links
+    // Store links are set but don't populate text content since we're using badge images
     const googlePlayBtn = document.getElementById('download-google');
     const appStoreBtn = document.getElementById('download-appstore');
-    
-    if (googlePlayBtn && storeCtas.play_store_button) {
-      googlePlayBtn.textContent = replacePlaceholders(storeCtas.play_store_button);
-    }
-    
-    if (appStoreBtn && storeCtas.app_store_button) {
-      appStoreBtn.textContent = replacePlaceholders(storeCtas.app_store_button);
-    }
     
     // Use the hardcoded store links as requested
     this.playStoreLink = 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1';

@@ -587,21 +587,25 @@ p {
 
 .download-btn {
   width: 100%;
-  background: #52C5F7;
+  background: transparent;
   color: white;
   border: none;
-  border-radius: 16px;
-  padding: 16px 24px;
+  border-radius: 0;
+  padding: 0;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-decoration: none;
 }
 
 .download-btn:hover {
-  background: #2ba7e3;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(82, 197, 247, 0.3);
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.download-btn img {
+  transition: all 0.2s ease;
 }
 
 /* Sticky Footer Updates */
