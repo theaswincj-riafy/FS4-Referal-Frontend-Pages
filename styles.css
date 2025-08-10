@@ -745,7 +745,6 @@ p {
 /* Page-specific styles */
 .download-content {
   flex: 1;
-  padding: 40px 20px 140px;
   background: #f8f9fa;
 }
 

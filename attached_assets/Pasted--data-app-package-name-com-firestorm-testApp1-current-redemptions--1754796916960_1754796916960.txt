@@ -1,0 +1,124 @@
+{
+    "data": {
+        "app_package_name": "com.firestorm.testApp1",
+        "current_redemptions": 0,
+        "page2_referralStatus": {
+            "benefits": [
+                {
+                    "desc": "Ad-free experience, pro features, and priority support for 1 month.",
+                    "title": "Premium Access"
+                },
+                {
+                    "desc": "Your friends get an exclusive newcomer perk when they join via your link.",
+                    "title": "Win Together"
+                },
+                {
+                    "desc": "Share your link; they download and redeem. You progress instantly.",
+                    "title": "Fast & Simple"
+                }
+            ],
+            "faq": [
+                {
+                    "a": "No\u2014only totals. We don\u2019t store redeemer identities.",
+                    "q": "Do I see who redeemed?"
+                },
+                {
+                    "a": "Instantly after {{target_redemptions}} redemptions. You\u2019ll get an in-app confirmation.",
+                    "q": "When do I get Premium?"
+                }
+            ],
+            "hero": {
+                "hero_title": "Invite & Unlock 1 Month Premium",
+                "page_title": "My Referrals",
+                "quickButtonText": "View my referrals",
+                "referral_code": "{{referral_code}}",
+                "subtitle": "{{referrer_name}}, invite friends and get 1 month of Premium when 5 people redeem your code."
+            },
+            "milestones": [
+                {
+                    "achievedOn": "Not Applicable",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 0,
+                    "message": "Waiting for your first referral! No redemptions yet.",
+                    "title": "Let's Start"
+                },
+                {
+                    "achievedOn": "Achieved on 09 August",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 1,
+                    "message": "Your first referral is in! You\u2019ve started your Premium journey.",
+                    "title": "The Kickoff"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 2,
+                    "message": "Two friends on board! You\u2019re warming up nicely.",
+                    "title": "Building Momentum"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 3,
+                    "message": "Three redemptions\u2014more than halfway to your goal!",
+                    "title": "Halfway Hero"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 4,
+                    "message": "Four done! Just one more to unlock Premium.",
+                    "title": "Almost There"
+                },
+                {
+                    "achievedOn": "Pending",
+                    "current_level": "Level {{current_redemptions}}",
+                    "emoji": "\ud83c\udf89",
+                    "level": 5,
+                    "message": "Congratulations! You\u2019ve completed your referral goal and earned 1 month of Premium.",
+                    "title": "Premium Unlocked \ud83c\udf89"
+                }
+            ],
+            "notifications": {
+                "recent_event_banner": {
+                    "text": "Nice! Someone redeemed your code. Your progress just moved to {{current_redemptions}}/{{target_redemptions}}.",
+                    "visible": "{{show_recent_event}}"
+                }
+            },
+            "nudges": [
+                "Best results: share with 5\u201310 close contacts first.",
+                "Add a personal note: tell them why you like the app.",
+                "Post your link in a relevant group or community."
+            ],
+            "page_id": "referral-status",
+            "personalization": {
+                "current_redemptions": "{{current_redemptions}}",
+                "pending_redemptions": "{{pending_redemptions}}",
+                "referral_code": "{{referral_code}}",
+                "referrer_name": "{{referrer_name}}",
+                "target_redemptions": 5
+            },
+            "progress_teaser": {
+                "subtitle": "Each redemption brings you closer to Premium!",
+                "title": "Only {{pending_redemptions}} more levels to go!"
+            },
+            "status": {
+                "current": "{{current_redemptions}}",
+                "progress_text": "{{current_redemptions}} of {{target_redemptions}} completed",
+                "target": "{{target_redemptions}}"
+            }
+        },
+        "pending_redemptions": 5,
+        "referral_code": "aju8343",
+        "referrer_name": "aju",
+        "target_redemptions": 5,
+        "user_id": "123"
+    },
+    "message": "Referral stats fetched",
+    "status": "success"
+}
