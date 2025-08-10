@@ -919,16 +919,32 @@ class ReferralStatusPage {
   }
 
   bindEvents() {
+    console.log('[BIND EVENTS] bindEvents called');
+    
     // Back button
     const backBtn = document.getElementById('back-btn');
+    console.log('[BIND EVENTS] backBtn element found:', !!backBtn);
+    
     if (backBtn) {
-      backBtn.addEventListener('click', () => {
+      // Remove any existing listeners first
+      backBtn.replaceWith(backBtn.cloneNode(true));
+      const freshBackBtn = document.getElementById('back-btn');
+      
+      console.log('[BIND EVENTS] Adding click listener to back button');
+      freshBackBtn.addEventListener('click', (e) => {
         console.log('[BACK BUTTON] referralStatus back button clicked');
         console.log('[BACK BUTTON] alreadyRedeemed state:', this.data?.alreadyRedeemed || false);
         console.log('[BACK BUTTON] userId:', this.params.userId);
+        console.log('[BACK BUTTON] event object:', e);
         console.log('[BACK BUTTON] redirecting to index.html');
         window.location.href = 'index.html';
       });
+      
+      // Test if element is clickable
+      console.log('[BIND EVENTS] Back button styles:', window.getComputedStyle(freshBackBtn).pointerEvents);
+      console.log('[BIND EVENTS] Back button display:', window.getComputedStyle(freshBackBtn).display);
+    } else {
+      console.error('[BIND EVENTS] Back button not found!');
     }
 
     // Invite friends button
@@ -1088,6 +1104,10 @@ class ReferralStatusPage {
     console.log(
       "Successfully rendered already redeemed state for referralStatus",
     );
+
+    // Re-bind events since we replaced content
+    console.log("Re-binding events after success state render");
+    this.bindEvents();
   }
 
   // Test function to simulate redemption (for testing purposes)
@@ -1098,16 +1118,33 @@ class ReferralStatusPage {
     ReferralUtils.showToast("Test Mode: Setting status to redeemed!");
     this.showSuccessState();
   }
+
+  // Test function to check back button
+  testBackButton() {
+    const backBtn = document.getElementById('back-btn');
+    console.log('[TEST] Back button element:', backBtn);
+    console.log('[TEST] Back button visible:', backBtn ? window.getComputedStyle(backBtn).display !== 'none' : false);
+    if (backBtn) {
+      console.log('[TEST] Triggering click event programmatically');
+      backBtn.click();
+    }
+  }
 }
 
 // Initialize page when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   window.referralStatusPage = new ReferralStatusPage();
 
-  // Add test function to global scope for easy testing
+  // Add test functions to global scope for easy testing
   window.testStatusRedemption = () => {
     if (window.referralStatusPage) {
       window.referralStatusPage.simulateRedemption();
+    }
+  };
+
+  window.testBackButton = () => {
+    if (window.referralStatusPage) {
+      window.referralStatusPage.testBackButton();
     }
   };
 });
