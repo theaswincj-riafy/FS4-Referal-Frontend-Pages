@@ -162,172 +162,166 @@ class ReferralPromotePage {
   }
 
   initCardStack() {
-    const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length === 0) return;
-
-    // Initial card setup with fade-in animation
-    this.setupInitialCards(cards);
-
-    // Add touch/swipe support
-    this.addTouchSupport();
-  }
-
-  setupInitialCards(cards) {
-    // Set initial properties and animate in
-    cards.forEach((card, index) => {
-      // Set initial state (invisible and slightly scaled down)
-      gsap.set(card, {
-        opacity: 0,
-        scale: 0.98
-      });
-      
-      // Animate in with stagger
-      gsap.to(card, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.4,
-        delay: index * 0.08,
-        ease: "power2.out"
-      });
-    });
-  }
-
-  swipeCard(direction) {
-    const topCard = document.querySelector('.benefit-card.top-card');
-    if (!topCard) return;
-
-    // Animate the top card out
-    const swipeDistance = direction === 'left' ? -400 : 400;
-    const tiltAngle = direction === 'left' ? -10 : 10;
-    
-    gsap.to(topCard, {
-      x: swipeDistance,
-      y: -20,
-      rotation: tiltAngle,
-      opacity: 0,
-      duration: 0.35,
-      ease: "power2.in",
-      onComplete: () => {
-        // Promote cards and add new back card
-        this.promoteCards();
-      }
-    });
-  }
-
-  promoteCards() {
-    const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length < 3) return;
-
-    // Get current cards
-    const topCard = document.querySelector('.benefit-card.top-card');
-    const middleCard = document.querySelector('.benefit-card.middle-card');
-    const backCard = document.querySelector('.benefit-card.back-card');
-
-    if (!topCard || !middleCard || !backCard) return;
-
-    // Reset the swiped card and move to back
-    gsap.set(topCard, {
-      x: 0,
-      y: 0,
-      rotation: 0,
-      opacity: 1
-    });
-
-    // Change classes to promote cards
-    topCard.className = topCard.className.replace('top-card', 'back-card');
-    middleCard.className = middleCard.className.replace('middle-card', 'top-card');
-    backCard.className = backCard.className.replace('back-card', 'middle-card');
-
-    // Update the data-index to maintain card cycling
-    const newTopIndex = parseInt(middleCard.dataset.index);
-    const newMiddleIndex = parseInt(backCard.dataset.index);
-    const newBackIndex = parseInt(topCard.dataset.index);
-    
-    document.querySelector('.benefit-card.top-card').dataset.index = newTopIndex;
-    document.querySelector('.benefit-card.middle-card').dataset.index = newMiddleIndex;
-    document.querySelector('.benefit-card.back-card').dataset.index = newBackIndex;
-  }
-
-  addTouchSupport() {
     const container = document.getElementById('card-stack');
     if (!container) return;
 
-    let startX = 0;
-    let startY = 0;
-    let isDragging = false;
+    // Initialize the new card swiper system
+    this.initReferralCardSwiper(container);
+  }
 
-    // Touch events
-    container.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isDragging = true;
-    }, { passive: true });
+  initReferralCardSwiper(container) {
+    const cards = Array.from(container.querySelectorAll('.benefit-card'));
+    if (!cards.length) return;
 
-    container.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
+    const cardWidth = 280;
+    const sideOffset = 40;
+    const sideYOffset = 20;
+    const rotationDeg = 18;
+    const scaleCenter = 1;
+    const scaleSide = 0.92;
+    const scaleHidden = 0.88;
 
-    container.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      
-      const endX = e.changedTouches[0].clientX;
-      const endY = e.changedTouches[0].clientY;
-      const deltaX = endX - startX;
-      const deltaY = endY - startY;
+    let currentIndex = 0;
+    let isAnimating = false;
 
-      // Check if it's a horizontal swipe (not vertical scroll)
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0) {
-          this.swipeCard('right');
+    const getPositions = () => {
+      const centerX = (container.offsetWidth - cardWidth) / 2;
+      return {
+        center: { x: centerX, y: 0, rotation: 0, scale: scaleCenter, opacity: 1, zIndex: 3 },
+        right: { x: centerX + sideOffset, y: sideYOffset, rotation: rotationDeg, scale: scaleSide, opacity: 0.8, zIndex: 2 },
+        left: { x: centerX - sideOffset, y: sideYOffset, rotation: -rotationDeg, scale: scaleSide, opacity: 0.8, zIndex: 2 },
+        hidden: { x: centerX, y: sideYOffset * 2, rotation: 0, scale: scaleHidden, opacity: 0.5, zIndex: 1 }
+      };
+    };
+
+    const positionCards = (animate = false) => {
+      const positions = getPositions();
+      cards.forEach((card, i) => {
+        const offset = i - currentIndex;
+        let pos;
+        if (offset === 0) pos = positions.center;
+        else if (offset === 1 || offset === -cards.length + 1) pos = positions.right;
+        else if (offset === -1 || offset === cards.length - 1) pos = positions.left;
+        else pos = positions.hidden;
+
+        if (animate) {
+          gsap.to(card, { ...pos, duration: 0.4, ease: "power2.out" });
         } else {
-          this.swipeCard('left');
+          gsap.set(card, pos);
         }
-      }
-      
-      isDragging = false;
-    }, { passive: true });
+      });
+    };
 
-    // Click events for cards - advance to next card on tap
-    container.addEventListener('click', (e) => {
-      const card = e.target.closest('.benefit-card');
-      if (card && card.classList.contains('top-card')) {
-        // Tap on top card to advance
-        this.swipeCard('left');
-      }
+    const swipeToNext = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      currentIndex = (currentIndex + 1) % cards.length;
+      positionCards(true);
+      setTimeout(() => isAnimating = false, 400);
+    };
+
+    const swipeToPrev = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      positionCards(true);
+      setTimeout(() => isAnimating = false, 400);
+    };
+
+    const bindGestures = () => {
+      // Remove old event listeners by cloning nodes
+      cards.forEach(card => {
+        const newCard = card.cloneNode(true);
+        card.parentNode.replaceChild(newCard, card);
+      });
+      
+      const newCards = Array.from(container.querySelectorAll('.benefit-card'));
+
+      // Add swipe detection to center card
+      let startX = 0;
+      let isDragging = false;
+      let dragCard = null;
+
+      const handleStart = (e) => {
+        const centerCard = newCards.find((card, i) => i === currentIndex);
+        if (!centerCard || e.target.closest('.benefit-card') !== centerCard) return;
+        
+        startX = e.clientX || e.touches[0].clientX;
+        isDragging = true;
+        dragCard = centerCard;
+      };
+
+      const handleMove = (e) => {
+        if (!isDragging || !dragCard) return;
+        e.preventDefault();
+        const currentX = e.clientX || e.touches[0].clientX;
+        const dx = currentX - startX;
+        gsap.set(dragCard, { x: `+=${dx * 0.3}` });
+      };
+
+      const handleEnd = (e) => {
+        if (!isDragging || !dragCard) return;
+        isDragging = false;
+        
+        const currentX = e.clientX || e.changedTouches[0].clientX;
+        const dx = currentX - startX;
+        
+        if (Math.abs(dx) > 50) {
+          if (dx < 0) {
+            swipeToNext();
+          } else {
+            swipeToPrev();
+          }
+        } else {
+          gsap.to(dragCard, { x: 0, duration: 0.3, ease: "power2.out" });
+        }
+        dragCard = null;
+      };
+
+      // Mouse events
+      container.addEventListener('mousedown', handleStart);
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+
+      // Touch events
+      container.addEventListener('touchstart', handleStart, { passive: true });
+      container.addEventListener('touchmove', handleMove, { passive: false });
+      container.addEventListener('touchend', handleEnd, { passive: true });
+
+      // Click events for side cards
+      newCards.forEach((card, i) => {
+        card.addEventListener('click', (e) => {
+          if (i === currentIndex) return; // Center card doesn't need click handler
+          
+          const offset = i - currentIndex;
+          if (offset === 1 || offset === -cards.length + 1) {
+            swipeToNext();
+          } else if (offset === -1 || offset === cards.length - 1) {
+            swipeToPrev();
+          }
+        });
+      });
+    };
+
+    // Initial setup
+    positionCards(false);
+    bindGestures();
+
+    // Entrance animation
+    gsap.from(cards, { 
+      opacity: 0, 
+      scale: 0.8, 
+      duration: 0.6, 
+      ease: "back.out(1.7)", 
+      stagger: 0.1 
     });
 
-    // Add press effect for top card
-    const topCard = document.querySelector('.benefit-card.top-card');
-    if (topCard) {
-      topCard.addEventListener('mousedown', this.addPressEffect);
-      topCard.addEventListener('touchstart', this.addPressEffect, { passive: true });
-      topCard.addEventListener('mouseup', this.removePressEffect);
-      topCard.addEventListener('touchend', this.removePressEffect, { passive: true });
-    }
-  }
+    // Handle resize
+    window.addEventListener('resize', () => positionCards(false));
 
-  addPressEffect = (e) => {
-    const card = e.target.closest('.benefit-card.top-card');
-    if (card) {
-      gsap.to(card, {
-        y: -2,
-        boxShadow: "0 12px 40px rgba(0, 0, 0, 0.18)",
-        duration: 0.1,
-        ease: "power2.out"
-      });
-    }
-  }
-
-  removePressEffect = (e) => {
-    const card = e.target.closest('.benefit-card.top-card');
-    if (card) {
-      gsap.to(card, {
-        y: 0,
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-        duration: 0.1,
-        ease: "power2.out"
-      });
-    }
+    // Store methods for external access if needed
+    this.swipeToNext = swipeToNext;
+    this.swipeToPrev = swipeToPrev;
   }
 
   bindEvents() {

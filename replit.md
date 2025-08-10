@@ -28,6 +28,8 @@ Preferred communication style: Simple, everyday language.
 
 **Class-based Structure**: Each page implements a dedicated JavaScript class (`ReferralPromotePage`, `ReferralStatusPage`, etc.) that handles initialization, data loading, rendering, and event binding.
 
+**Card Animation System**: ReferralPromote page features an advanced GSAP-powered card carousel with index-based positioning system. Cards display in center/left/right positions with ±18° rotations, 0.92 scale for side cards, and smooth 0.4s transitions. Supports swipe gestures (50px threshold), drag feedback, and clickable side cards for navigation.
+
 **Shared Utilities**: `ReferralUtils` class provides common functionality including URL parameter parsing, token interpolation, progress calculations, and API simulation methods.
 
 **API Integration System**: Live data fetching from authenticated REST APIs using custom parameters, with intelligent error handling and fallback content for failed requests.

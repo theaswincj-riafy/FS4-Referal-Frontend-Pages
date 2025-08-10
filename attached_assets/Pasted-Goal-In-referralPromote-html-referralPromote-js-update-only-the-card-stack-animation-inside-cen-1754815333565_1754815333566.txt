@@ -1,0 +1,162 @@
+Goal:
+In referralPromote.html / referralPromote.js, update only the card stack animation (inside centered-heading-section + card-stack-container + bottom-status-pill) so it matches the GSAP animation from actionTrails.html.
+
+Requirements:
+
+Do not remove or change unrelated sections — they must work exactly as they do now.
+
+Cards must match exact shape & size from target design (width, height, border-radius).
+
+Three cards always visible (center, left, right) with correct rotation, offset, scaling, and opacity.
+
+Remove all audio from the animation logic (no swipe sounds).
+
+Gestures and animations must feel identical to target actionTrails behavior.
+
+Keep API rendering logic exactly as it is. Only swap the GSAP positioning/animation logic.
+
+Steps to Implement
+Match card shape & size in CSS
+
+Set .benefit-card width to 280px, height to 210px, and border-radius to 24px.
+
+Ensure container centers cards horizontally and leaves enough vertical space (~320–340px container height).
+
+Replace current GSAP animation logic
+
+Remove your “class swapping” card promotion approach.
+
+Use an index-based positioning system (like in actionTrails) where each card’s position is center, left, right, or hidden.
+
+Apply target’s exact transforms:
+
+center: rotation 0°, scale 1, opacity 1
+
+right: rotation +18°, scale 0.92, opacity 0.8, small downward Y offset
+
+left: rotation –18°, scale 0.92, opacity 0.8, small downward Y offset
+
+hidden: scale 0.88, opacity 0.5, extra downward Y offset
+
+Cards animate to these positions with GSAP (duration: 0.4s, ease: "power2.out").
+
+Swipe & tap gestures
+
+Only the center card has swipe detection.
+
+Swipe threshold: >50px horizontal drag triggers change; otherwise card snaps back.
+
+Swiping left → show next card; swiping right → show previous card.
+
+Side cards are clickable: left card click → previous, right card click → next.
+
+Entrance animation
+
+On load, fade and scale cards in (opacity: 0 → 1, scale: 0.8 → 1) with stagger from back → middle → top.
+
+Resize handling
+
+On resize, recalculate positions and reapply without animation so cards stay centered.
+
+Code Snippet (Drop-in GSAP Logic)
+Replace your current GSAP card animation code in referralPromote.js with this:
+
+js
+Copy
+Edit
+function initReferralCardSwiper(container) {
+    const cards = Array.from(container.querySelectorAll('.benefit-card'));
+    if (!cards.length) return;
+
+    const cardWidth = 280;
+    const sideOffset = 40;
+    const sideYOffset = 20;
+    const rotationDeg = 18;
+    const scaleCenter = 1;
+    const scaleSide = 0.92;
+    const scaleHidden = 0.88;
+
+    let currentIndex = 0;
+    let isAnimating = false;
+
+    function getPositions() {
+        const centerX = (container.offsetWidth - cardWidth) / 2;
+        return {
+            center: { x: centerX, y: 0, rotation: 0, scale: scaleCenter, opacity: 1, zIndex: 3 },
+            right: { x: centerX + sideOffset, y: sideYOffset, rotation: rotationDeg, scale: scaleSide, opacity: 0.8, zIndex: 2 },
+            left: { x: centerX - sideOffset, y: sideYOffset, rotation: -rotationDeg, scale: scaleSide, opacity: 0.8, zIndex: 2 },
+            hidden: { x: centerX, y: sideYOffset * 2, rotation: 0, scale: scaleHidden, opacity: 0.5, zIndex: 1 }
+        };
+    }
+
+    function positionCards(animate = false) {
+        const positions = getPositions();
+        cards.forEach((card, i) => {
+            const offset = i - currentIndex;
+            let pos;
+            if (offset === 0) pos = positions.center;
+            else if (offset === 1 || offset === -cards.length + 1) pos = positions.right;
+            else if (offset === -1 || offset === cards.length - 1) pos = positions.left;
+            else pos = positions.hidden;
+
+            if (animate) {
+                gsap.to(card, { ...pos, duration: 0.4, ease: "power2.out" });
+            } else {
+                gsap.set(card, pos);
+            }
+        });
+    }
+
+    function swipeToNext() {
+        if (isAnimating) return;
+        isAnimating = true;
+        currentIndex = (currentIndex + 1) % cards.length;
+        positionCards(true);
+        setTimeout(() => isAnimating = false, 400);
+    }
+
+    function swipeToPrev() {
+        if (isAnimating) return;
+        isAnimating = true;
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        positionCards(true);
+        setTimeout(() => isAnimating = false, 400);
+    }
+
+    function bindGestures() {
+        cards.forEach(card => card.replaceWith(card.cloneNode(true)));
+        const newCards = Array.from(container.querySelectorAll('.benefit-card'));
+
+        const centerCard = newCards[currentIndex];
+        let startX = 0, isDragging = false;
+
+        centerCard.addEventListener('pointerdown', e => {
+            startX = e.clientX;
+            isDragging = true;
+        });
+        centerCard.addEventListener('pointermove', e => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            gsap.to(centerCard, { x: `+=${dx}` });
+        });
+        centerCard.addEventListener('pointerup', e => {
+            if (!isDragging) return;
+            isDragging = false;
+            const dx = e.clientX - startX;
+            if (Math.abs(dx) > 50) {
+                dx < 0 ? swipeToNext() : swipeToPrev();
+            } else {
+                gsap.to(centerCard, { x: 0, duration: 0.3 });
+            }
+        });
+    }
+
+    positionCards(false);
+    bindGestures();
+
+    gsap.from(cards, { opacity: 0, scale: 0.8, duration: 0.6, ease: "back.out(1.7)", stagger: 0.1 });
+
+    window.addEventListener('resize', () => positionCards(false));
+}
+
+initReferralCardSwiper(document.getElementById('card-stack'));

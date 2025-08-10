@@ -670,7 +670,7 @@ p {
 /* Rotating Card Stack */
 .combined-card-section .card-stack-container {
   position: relative;
-  height: 330px;
+  height: 340px;
   margin-bottom: 20px;
   padding: 0;
   overflow: visible;
@@ -682,8 +682,8 @@ p {
 
 .benefit-card {
   position: absolute;
-  width: clamp(280px, 76vw, 440px);
-  height: 220px;
+  width: 280px;
+  height: 210px;
   border-radius: 24px;
   padding: 20px;
   display: flex;
@@ -694,35 +694,23 @@ p {
   user-select: none;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
-/* Top Card (Primary Focus) */
-.benefit-card.top-card {
-  transform: rotate(0deg) translateY(0%);
-  z-index: 3;
+/* Card Background Styles by Data Index */
+.benefit-card[data-index="0"] {
   background: linear-gradient(135deg, #D4A574 0%, #B8956A 100%);
   color: white;
-  filter: blur(0px);
 }
 
-/* Middle Card (Behind Top) */
-.benefit-card.middle-card {
-  transform: rotate(8deg) translateY(2%);
-  z-index: 2;
-  background: #F5E6A3;
-  color: rgba(0, 0, 0, 0.6);
-  filter: blur(0.3px);
+.benefit-card[data-index="1"] {
+  background: linear-gradient(135deg, #F5E6A3 0%, #E8D999 100%);
+  color: rgba(0, 0, 0, 0.8);
 }
 
-/* Back Card (Farthest) */
-.benefit-card.back-card {
-  transform: rotate(-8deg) translateY(-2%);
-  z-index: 1;
-  background: #B5D4E8;
-  color: rgba(0, 0, 0, 0.6);
-  filter: blur(0.6px);
+.benefit-card[data-index="2"] {
+  background: linear-gradient(135deg, #B5D4E8 0%, #A1C7DD 100%);
+  color: rgba(0, 0, 0, 0.8);
 }
 
 /* Legacy card styles for compatibility */
@@ -732,13 +720,13 @@ p {
 }
 
 .benefit-card.win-together {
-  background: #F5E6A3;
-  color: rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, #F5E6A3 0%, #E8D999 100%);
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .benefit-card.fast-simple {
-  background: #B5D4E8;
-  color: rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, #B5D4E8 0%, #A1C7DD 100%);
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .benefit-card-title {
