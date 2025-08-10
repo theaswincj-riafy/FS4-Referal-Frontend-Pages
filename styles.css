@@ -557,7 +557,7 @@ p {
 
 /* Content Sections */
 .how-it-works, .progress-section, .progress-tracking, .faq-section {
-  padding: 0 20px 24px;
+  padding: 20px 24px;
   background: white;
   margin: 0;
 }
@@ -722,12 +722,16 @@ p {
 .combined-card-section .card-stack-container {
   position: relative;
   height: 300px;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 0px auto;
   padding: 0;
   perspective: 1000px;
   overflow: hidden;
   width: 100%;
   max-width: 400px;
+}
+
+#referralStatus-bottom-status-pill{
+  padding-bottom:100px;
 }
 
 .benefit-card {
@@ -804,7 +808,7 @@ p {
 /* Bottom Status Pill within Combined Section */
 .combined-card-section .bottom-status-pill {
   margin: 0;
-  padding: 0 20px 24px;
+  padding: 20px 40px;
   display: flex;
   justify-content: center;
 }

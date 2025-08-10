@@ -7,10 +7,166 @@ class ReferralStatusPage {
     this.init();
   }
 
+  // Simple encryption for localStorage keys (same as referralRedeem)
+  encrypt(text) {
+    try {
+      if (!text) return '';
+      const shifted = text.toString().split('').map(char => 
+        String.fromCharCode(char.charCodeAt(0) + 3)
+      ).join('');
+      return btoa(shifted);
+    } catch (error) {
+      console.error('Encryption error:', error);
+      return btoa(text.toString());
+    }
+  }
+
+  // Simple decryption
+  decrypt(encryptedText) {
+    try {
+      if (!encryptedText) return '';
+      const decoded = atob(encryptedText);
+      return decoded.split('').map(char => 
+        String.fromCharCode(char.charCodeAt(0) - 3)
+      ).join('');
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      try {
+        return atob(encryptedText);
+      } catch (fallbackError) {
+        console.error('Fallback decryption also failed:', fallbackError);
+        return '';
+      }
+    }
+  }
+
+  // Generate localStorage key based on user and app (simple base64 encoding)
+  getStorageKey() {
+    const userId = btoa(this.params.userId);
+    const appName = btoa(this.params.app_package_name);
+    return `referralStatus_${userId}_${appName}`;
+  }
+
+  // Clean up any duplicate localStorage entries for this user
+  cleanupStorageKeys() {
+    const baseKey = this.getStorageKey();
+    // Remove any fallback entries
+    localStorage.removeItem(baseKey + '_fallback');
+    console.log('Cleaned up localStorage for user:', this.params.userId);
+  }
+
+  // Check if user has already redeemed
+  checkAlreadyRedeemed() {
+    const storageKey = this.getStorageKey();
+    const storedData = localStorage.getItem(storageKey);
+    console.log('Checking for stored data with key:', storageKey);
+    console.log('Found stored data:', !!storedData);
+    
+    if (storedData) {
+      try {
+        // Parse as plain JSON
+        const parsedData = JSON.parse(storedData);
+        console.log('Successfully parsed data, alreadyRedeemed:', parsedData.alreadyRedeemed);
+        return parsedData.alreadyRedeemed === true;
+      } catch (error) {
+        console.error('Failed to parse stored status data:', error);
+        // Clean up corrupted data
+        localStorage.removeItem(storageKey);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  // Save status data to localStorage
+  saveStatusData(alreadyRedeemed = false) {
+    const storageKey = this.getStorageKey();
+    const dataToStore = {
+      data: this.data,
+      alreadyRedeemed: alreadyRedeemed,
+      timestamp: new Date().toISOString(),
+      userId: this.params.userId,
+      appName: this.params.app_package_name
+    };
+    
+    // Clean up any existing fallback entries first
+    const fallbackKey = storageKey + '_fallback';
+    localStorage.removeItem(fallbackKey);
+    
+    try {
+      const jsonString = JSON.stringify(dataToStore);
+      console.log('Attempting to save localStorage data with alreadyRedeemed:', alreadyRedeemed);
+      
+      // Try to save as plain JSON
+      localStorage.setItem(storageKey, jsonString);
+      console.log('Status data saved to localStorage with key:', storageKey);
+      
+      // Verify the save worked
+      const verification = localStorage.getItem(storageKey);
+      console.log('Verification - stored data exists:', !!verification);
+    } catch (error) {
+      console.error('Failed to save status data:', error);
+    }
+  }
+
+  // Get stored status data
+  getStoredStatusData() {
+    const storageKey = this.getStorageKey();
+    const storedData = localStorage.getItem(storageKey);
+    
+    if (storedData) {
+      try {
+        // Parse as plain JSON
+        const parsedData = JSON.parse(storedData);
+        return parsedData.data || parsedData; // Return the actual data part
+      } catch (error) {
+        console.error('Failed to parse stored status data:', error);
+        // Clean up corrupted data
+        localStorage.removeItem(storageKey);
+        return null;
+      }
+    }
+    return null;
+  }
+
   async init() {
     try {
+      console.log('ReferralStatusPage: Starting init with params:', this.params);
+      
+      // Clean up any old localStorage entries first
+      this.cleanupStorageKeys();
+      
+      // Check if user has already redeemed
+      const alreadyRedeemed = this.checkAlreadyRedeemed();
+      console.log('ReferralStatusPage: Already redeemed check result:', alreadyRedeemed);
+      
+      if (alreadyRedeemed) {
+        // Load stored data and render success state
+        const storedData = this.getStoredStatusData();
+        console.log('ReferralStatusPage: Stored data found, rendering success state');
+        if (storedData) {
+          this.data = storedData;
+          this.loadThemeColors();
+          this.hideLoader();
+          this.renderAlreadyRedeemedState();
+          return;
+        }
+      }
+      
+      // Normal flow - load fresh data
+      console.log('ReferralStatusPage: Loading fresh data from API');
       await this.loadPageData();
       if (this.data) {
+        // Only save to localStorage if no existing data (don't overwrite alreadyRedeemed=true)
+        const existingData = this.getStoredStatusData();
+        if (!existingData) {
+          console.log('ReferralStatusPage: No existing localStorage data, creating new entry with alreadyRedeemed=false');
+          this.data.alreadyRedeemed = false;
+          this.saveStatusData(false);
+        } else {
+          console.log('ReferralStatusPage: Found existing localStorage data, not overwriting');
+        }
+        
         this.populateContent();
         this.loadThemeColors();
         this.hideLoader();
@@ -675,9 +831,115 @@ class ReferralStatusPage {
       `;
     }
   }
+
+  // Show success state when already redeemed
+  showSuccessState() {
+    console.log('ReferralStatusPage: Showing success state and updating localStorage');
+    
+    // Mark as redeemed and save to localStorage immediately
+    this.data.alreadyRedeemed = true;
+    this.saveStatusData(true);
+    
+    // Replace the entire page content with success state
+    this.renderAlreadyRedeemedState();
+  }
+
+  // Render the already redeemed state (success page)
+  renderAlreadyRedeemedState() {
+    console.log('ReferralStatusPage: Rendering already redeemed state');
+    
+    // Create mock redemption success data as specified
+    const successData = {
+      hero_title: "You're all set!",
+      subtitle: "You have redeemed a valid referral code from {{referrer_name}}! ",
+      nudges: [
+        "Follow up on your friends and family to see how much they liked the app!"
+      ],
+      primary_cta: "Unlock 1 Month Premium 🎉"
+    };
+    
+    console.log('Success data for rendering:', successData);
+    
+    // Update header title to match the success state
+    const headerTitle = document.getElementById('header-title');
+    if (headerTitle) {
+      headerTitle.textContent = 'My Referrals'; // Keep header consistent
+    }
+    
+    // Get content wrapper and completely replace with success UI
+    const contentWrapper = document.getElementById('page-content-wrapper');
+    if (!contentWrapper) return;
+    
+    // Replace entire content with success state matching referralRedeem success screen
+    contentWrapper.innerHTML = `
+      <!-- Success State Content -->
+      <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
+        
+        <!-- Success image with crown -->
+        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; background: #e2e8f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <img src="images/crown.png" alt="Success Crown" style="width: 100px; height: 100px; object-fit: contain;" />
+        </div>
+        
+        <!-- Main success title -->
+        <h1 class="success-title" style="font-size: 2rem; font-weight: 700; color: #1a202c; margin-bottom: 1rem; line-height: 1.2;">
+          ${successData.hero_title}
+        </h1>
+        
+        <!-- Success subtitle -->
+        <p class="success-subtitle" style="font-size: 1rem; color: #718096; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+          ${successData.subtitle}
+        </p>
+        
+        <!-- Info nudge with icon -->
+        <div class="info-nudge" style="background: #f7fafc; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto; border: 1px solid #e2e8f0;">
+          <div class="info-icon" style="color: #4a5568; margin-top: 0.125rem; flex-shrink: 0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="info-text" style="color: #4a5568; font-size: 0.875rem; line-height: 1.4; text-align: left;">
+            ${successData.nudges[0]}
+          </span>
+        </div>
+      </section>
+      
+      <!-- Premium CTA Button -->
+      <div class="fixed-footer" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: white; border-top: 1px solid #e2e8f0;">
+        <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; background: linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%); color: white; cursor: pointer;">
+          ${successData.primary_cta}
+        </button>
+      </div>
+    `;
+    
+    // Bind click event to premium button
+    const premiumBtn = document.getElementById('primary-cta-premium');
+    if (premiumBtn) {
+      premiumBtn.addEventListener('click', () => {
+        console.log('Premium button clicked, deeplink: riafy.me/buy1monthpremium');
+        ReferralUtils.showToast('riafy.me/buy1monthpremium');
+      });
+    }
+    
+    console.log('Successfully rendered already redeemed state for referralStatus');
+  }
+
+  // Test function to simulate redemption (for testing purposes)
+  simulateRedemption() {
+    console.log('Test mode: Simulating successful redemption for referralStatus');
+    ReferralUtils.showToast('Test Mode: Setting status to redeemed!');
+    this.showSuccessState();
+  }
 }
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  new ReferralStatusPage();
+  window.referralStatusPage = new ReferralStatusPage();
+  
+  // Add test function to global scope for easy testing
+  window.testStatusRedemption = () => {
+    if (window.referralStatusPage) {
+      window.referralStatusPage.simulateRedemption();
+    }
+  };
 });
