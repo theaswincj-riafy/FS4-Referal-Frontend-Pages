@@ -218,79 +218,312 @@ class ReferralStatusPage {
   }
 
   initCardStack() {
-    const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length === 0) return;
+    const container = document.getElementById('card-stack');
+    if (!container) return;
 
-    this.positionCards(cards);
-    this.addTouchSupport();
+    // Apply dynamic colors to cards and adjust heights
+    this.applyCardColors();
+    this.adjustCardHeights();
+
+    // Initialize the new card swiper system
+    this.initReferralCardSwiper(container);
   }
 
-  positionCards(cards) {
-    cards.forEach((card, index) => {
-      const offset = index - this.currentCardIndex;
-      
-      gsap.set(card, {
-        zIndex: cards.length - Math.abs(offset),
-        x: offset * 20,
-        y: offset * 10,
-        rotation: offset * 5,
-        scale: 1 - Math.abs(offset) * 0.05
+  applyCardColors() {
+    const cards = document.querySelectorAll('.benefit-card');
+    const usedColorIndices = new Set();
+
+    cards.forEach((cardElement, index) => {
+      // Apply dynamic color combination to each card (ensure unique colors)
+      if (cardElement) {
+        let colorIndex;
+        do {
+          colorIndex = Math.floor(Math.random() * COLOR_COMBOS.length);
+        } while (usedColorIndices.has(colorIndex) && usedColorIndices.size < COLOR_COMBOS.length);
+        
+        usedColorIndices.add(colorIndex);
+        const colorCombo = COLOR_COMBOS[colorIndex];
+        const gradientBG = colorCombo.gradientBG;
+        const textColor = colorCombo.textColor;
+        
+        cardElement.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
+        cardElement.style.color = textColor;
+        
+        // Also apply color to child elements
+        const titleElement = cardElement.querySelector('.benefit-card-title');
+        const descElement = cardElement.querySelector('.benefit-card-desc');
+        if (titleElement) titleElement.style.color = textColor;
+        if (descElement) descElement.style.color = textColor;
+      }
+    });
+  }
+
+  adjustCardHeights() {
+    // Wait for next frame to ensure content is rendered
+    requestAnimationFrame(() => {
+      const cards = document.querySelectorAll('.benefit-card');
+      if (cards.length === 0) return;
+
+      // First, adjust font sizes for titles that are too long
+      cards.forEach(card => {
+        this.adjustCardTitleFontSize(card);
+      });
+
+      // Remove text truncation temporarily to measure natural content height
+      cards.forEach(card => {
+        const descElement = card.querySelector('.benefit-card-desc');
+        if (descElement) {
+          descElement.style.webkitLineClamp = 'unset';
+          descElement.style.display = 'block';
+          descElement.style.overflow = 'visible';
+        }
+        card.style.height = 'auto';
+      });
+
+      // Find the tallest card with full content
+      let maxHeight = 0;
+      cards.forEach(card => {
+        const cardHeight = card.scrollHeight;
+        if (cardHeight > maxHeight) {
+          maxHeight = cardHeight;
+        }
+      });
+
+      // Ensure minimum height for visual consistency
+      const minHeight = 200;
+      maxHeight = Math.max(maxHeight, minHeight);
+
+      // Apply the max height to all cards and restore proper text display
+      cards.forEach(card => {
+        card.style.height = `${maxHeight}px`;
+        const descElement = card.querySelector('.benefit-card-desc');
+        if (descElement) {
+          // Remove the line clamp restriction since we now have enough space
+          descElement.style.webkitLineClamp = 'unset';
+          descElement.style.display = 'block';
+          descElement.style.overflow = 'visible';
+        }
       });
     });
   }
 
-  rotateCards(direction) {
-    const cards = document.querySelectorAll('.benefit-card');
-    if (cards.length === 0) return;
+  adjustCardTitleFontSize(card) {
+    const titleElement = card.querySelector('.benefit-card-title');
+    if (!titleElement) return;
 
-    if (direction === 'next') {
-      this.currentCardIndex = (this.currentCardIndex + 1) % cards.length;
-    } else {
-      this.currentCardIndex = (this.currentCardIndex - 1 + cards.length) % cards.length;
+    // Reset to initial font size first
+    titleElement.style.fontSize = '';
+    
+    const maxWidth = card.offsetWidth - 40; // Account for padding (20px each side)
+    const maxHeight = 60; // Maximum height for title area
+    
+    // Start with the default font size from CSS (1.5rem = 24px)
+    let fontSize = 24;
+    const minFontSize = 18; // Minimum readable size
+    
+    titleElement.style.fontSize = fontSize + 'px';
+    
+    // Check if title overflows and reduce font size if needed
+    while ((titleElement.scrollWidth > maxWidth || titleElement.scrollHeight > maxHeight) && fontSize > minFontSize) {
+      fontSize -= 1;
+      titleElement.style.fontSize = fontSize + 'px';
     }
-
-    this.positionCards(cards);
+    
+    // If still overflowing at minimum size, try line clamping
+    if (titleElement.scrollHeight > maxHeight && fontSize === minFontSize) {
+      titleElement.style.display = '-webkit-box';
+      titleElement.style.webkitLineClamp = '2';
+      titleElement.style.webkitBoxOrient = 'vertical';
+      titleElement.style.overflow = 'hidden';
+      titleElement.style.lineHeight = '1.2';
+    }
   }
 
-  addTouchSupport() {
-    const container = document.getElementById('card-stack');
-    if (!container) return;
+  initReferralCardSwiper(container) {
+    const cards = Array.from(container.querySelectorAll('.benefit-card'));
+    console.log('[CARD SWIPER] Initializing simple card swiper with', cards.length, 'cards');
 
+    // Handle single card case
+    if (cards.length <= 1) {
+      const card = cards[0];
+      if (card) {
+        const waitForSingleCard = () => {
+          const containerWidth = container.offsetWidth;
+          if (containerWidth && containerWidth > 0) {
+            const cardWidth = 180;
+            const centerX = (containerWidth - cardWidth) / 2;
+            gsap.set(card, {
+              x: centerX,
+              y: 40,
+              rotation: 0,
+              scale: 1,
+              zIndex: 3,
+              opacity: 0
+            });
+            gsap.to(card, {
+              opacity: 1,
+              duration: 0.6,
+              ease: "back.out(1.7)"
+            });
+          } else {
+            setTimeout(waitForSingleCard, 50);
+          }
+        };
+        requestAnimationFrame(() => setTimeout(waitForSingleCard, 10));
+      }
+      return;
+    }
+
+    let currentIndex = 0;
+    let isAnimating = false;
+
+    // Calculate card positions
+    function calculatePositions() {
+      const containerWidth = container.offsetWidth;
+      if (!containerWidth || containerWidth <= 0) return null;
+
+      const cardWidth = 180;
+      const centerX = (containerWidth - cardWidth) / 2;
+      const centerY = 40;
+      const baseOffset = Math.min(60, Math.max(35, containerWidth * 0.12));
+      const sideCardOffset = Math.min(20, Math.max(10, containerWidth * 0.035));
+      const sideCardRotation = 18;
+
+      return {
+        center: { x: centerX, y: centerY, rotation: 0, zIndex: 100, scale: 1, opacity: 1 },
+        right: { x: centerX + baseOffset, y: centerY + sideCardOffset, rotation: sideCardRotation, zIndex: 50, scale: 0.92, opacity: 0.8 },
+        left: { x: centerX - baseOffset, y: centerY + sideCardOffset, rotation: -sideCardRotation, zIndex: 50, scale: 0.92, opacity: 0.8 },
+        hidden: { x: centerX, y: centerY + Math.min(25, containerWidth * 0.05), rotation: 0, zIndex: 1, scale: 0.88, opacity: 0.5 }
+      };
+    }
+
+    // Position cards based on current index
+    function positionCards(animate = false) {
+      const positions = calculatePositions();
+      if (!positions) return;
+
+      cards.forEach((card, index) => {
+        const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+        let position;
+
+        if (relativeIndex === 0) {
+          position = positions.center;
+        } else if (relativeIndex === 1) {
+          position = positions.right;
+        } else if (relativeIndex === cards.length - 1) {
+          position = positions.left;
+        } else {
+          position = positions.hidden;
+        }
+
+        if (animate) {
+          gsap.to(card, {
+            ...position,
+            duration: 0.4,
+            ease: "power2.out"
+          });
+        } else {
+          gsap.set(card, position);
+        }
+      });
+    }
+
+    // Next/previous functions
+    function nextCard() {
+      if (isAnimating) return;
+      isAnimating = true;
+      currentIndex = (currentIndex + 1) % cards.length;
+      positionCards(true);
+      setTimeout(() => { isAnimating = false; }, 400);
+    }
+
+    function prevCard() {
+      if (isAnimating) return;
+      isAnimating = true;
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      positionCards(true);
+      setTimeout(() => { isAnimating = false; }, 400);
+    }
+
+    // Click handlers for side cards
+    cards.forEach((card, index) => {
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+        if (relativeIndex === 1) {
+          nextCard();
+        } else if (relativeIndex === cards.length - 1) {
+          prevCard();
+        }
+      });
+    });
+
+    // Touch/swipe support for container
     let startX = 0;
     let isDragging = false;
+    let dragCard = null;
 
     container.addEventListener('touchstart', (e) => {
       startX = e.touches[0].clientX;
       isDragging = true;
+      dragCard = cards[currentIndex];
+    }, { passive: true });
+
+    container.addEventListener('touchmove', (e) => {
+      if (!isDragging || !dragCard) return;
+      
+      const currentX = e.touches[0].clientX;
+      const deltaX = currentX - startX;
+      const maxDrag = 50;
+      const clampedDelta = Math.max(-maxDrag, Math.min(maxDrag, deltaX));
+      
+      if (dragCard) {
+        const positions = calculatePositions();
+        if (positions) {
+          gsap.set(dragCard, {
+            x: positions.center.x + clampedDelta,
+            rotation: clampedDelta * 0.3
+          });
+        }
+      }
     }, { passive: true });
 
     container.addEventListener('touchend', (e) => {
       if (!isDragging) return;
+      isDragging = false;
       
       const endX = e.changedTouches[0].clientX;
       const deltaX = endX - startX;
+      const threshold = 50;
 
-      if (Math.abs(deltaX) > 50) {
+      if (Math.abs(deltaX) > threshold) {
         if (deltaX > 0) {
-          this.rotateCards('prev');
+          prevCard();
         } else {
-          this.rotateCards('next');
+          nextCard();
         }
+      } else {
+        // Return card to center position
+        positionCards(true);
       }
       
+      dragCard = null;
       isDragging = false;
     }, { passive: true });
 
-    container.addEventListener('click', (e) => {
-      const card = e.target.closest('.benefit-card');
-      if (card) {
-        const index = parseInt(card.dataset.index);
-        if (index !== this.currentCardIndex) {
-          this.currentCardIndex = index;
-          this.positionCards(document.querySelectorAll('.benefit-card'));
-        }
+    // Initial positioning
+    const waitForInitialPosition = () => {
+      const containerWidth = container.offsetWidth;
+      if (containerWidth && containerWidth > 0) {
+        positionCards(false);
+      } else {
+        setTimeout(waitForInitialPosition, 50);
       }
-    });
+    };
+    
+    requestAnimationFrame(() => setTimeout(waitForInitialPosition, 10));
   }
 
   bindEvents() {
