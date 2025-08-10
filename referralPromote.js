@@ -113,8 +113,8 @@ class ReferralPromotePage {
       // Add line break only for exactly 2 lines (4-7 words)
       const words = subtitleText.split(' ');
       if (words.length >= 4 && words.length <= 7) {
-        // For exactly 2 lines: place break in the middle
-        const midPoint = Math.floor(words.length / 2);
+        // For exactly 2 lines: place break after the middle word
+        const midPoint = Math.ceil(words.length / 2);
         subtitleText = words.slice(0, midPoint).join(' ') + '<br>' + words.slice(midPoint).join(' ');
       }
       // For 3+ lines (8+ words), do nothing - keep original text
