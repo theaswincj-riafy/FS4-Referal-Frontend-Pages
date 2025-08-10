@@ -162,6 +162,13 @@ class ReferralStatusPage {
             if (iconElement) iconElement.textContent = milestone.level;
           }
           
+          // Add premium class only to milestone-5 if current_redemptions equals 5
+          if (milestone.level === 5 && currentRedemptions === 5) {
+            milestoneElement.classList.add('premium');
+          } else if (milestone.level === 5) {
+            milestoneElement.classList.remove('premium');
+          }
+          
           if (contentElement) {
             const titleElement = contentElement.querySelector('h3');
             const statusElement = contentElement.querySelector('p');
