@@ -740,6 +740,10 @@ p {
   overflow: hidden;
 }
 
+#view-referrals-text{
+  font-size: 12px;
+}
+
 /* Bottom Status Pill within Combined Section */
 .combined-card-section .bottom-status-pill {
   margin: 0;
