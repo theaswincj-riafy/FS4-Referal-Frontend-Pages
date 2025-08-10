@@ -1036,7 +1036,7 @@ class ReferralStatusPage {
     // Replace firstname placeholder with actual value and capitalize first letter
     const firstname = this.params.firstname || 'User';
     const capitalizedFirstname = firstname.charAt(0).toUpperCase() + firstname.slice(1).toLowerCase();
-    successData.hero_title = successData.hero_title.replace('{{firstname}}', capitalizedFirstname + '<br>');
+    successData.hero_title = successData.hero_title.replace('{{firstname}}, you have done it!', capitalizedFirstname + ',<br> you have done it!');
 
     console.log("Success data for rendering:", successData);
 
