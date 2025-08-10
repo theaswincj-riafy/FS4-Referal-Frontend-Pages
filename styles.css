@@ -590,43 +590,57 @@ p {
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
 }
 
-.steps-list {
+.steps-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
-.step-item {
+.step-card {
+  background: #F8F9FA;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 0;
+}
+
+.step-content {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: white;
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.02);
 }
 
-.step-item.highlight-step {
-  background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%);
+.step-number-image {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.step-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333;
+  margin: 0;
+  padding-top: 4px;
+  flex: 1;
+}
+
+.step-card.special-step {
+  background: #FEF3E2;
+  border-radius: 16px;
   border: 1px solid #F59E0B;
 }
 
-.step-number {
-  min-width: 32px;
-  height: 32px;
+.step-card.special-step .step-content {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #1d1d1f;
-  color: white;
-  border-radius: 8px;
-  font-size: 1.125rem;
-  font-weight: 700;
-  font-style: italic;
+  align-items: flex-start;
+  gap: 16px;
 }
 
-.step-number.highlight-number {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+.step-card.special-step .step-number-image {
+  width: 40px;
+  height: 40px;
+}
   color: white;
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
@@ -733,14 +747,14 @@ p {
 .combined-card-section .pill-content {
   background: #FFF1F2;
   border-radius: 9999px;
-  padding: 12px 18px;
+  padding: 12px 24px;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: 12px;
   font-size: 1rem;
   color: #86868b;
-  line-height: 1.5;
+  line-height: 1;
   font-weight: 500;
   max-width: fit-content;
 }
@@ -1074,15 +1088,7 @@ p {
 }
 
 /* Highlight styles for steps */
-.step-item.highlight {
-  background: #fff4e6;
-  border: 1px solid #f59e0b;
-}
 
-.step-number.highlight-number {
-  background: #f59e0b;
-  color: white;
-}
 
 /* Loading Spinner */
 .loading-container {
