@@ -1,116 +1,171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download the App - You're Invited!</title>
-    <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="Download the app and redeem your exclusive invite">
-    <meta name="theme-color" content="#667eea">
-</head>
-<body>
-    <div class="container">
-        <!-- Page Content (No header for this page) -->
-        <main class="download-content" id="main-content">
-            <!-- Full Page Loader -->
-            <div class="page-loader" id="page-loader">
-                <div class="loading-container">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <p>Loading...</p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Download the App - You're Invited!</title>
+        <link rel="stylesheet" href="styles.css" />
+        <meta
+            name="description"
+            content="Download the app and redeem your exclusive invite"
+        />
+        <meta name="theme-color" content="#667eea" />
+    </head>
+    <body>
+        <div class="container">
+            <!-- Page Content (No header for this page) -->
+            <main class="download-content" id="main-content">
+                <!-- Full Page Loader -->
+                <div class="page-loader" id="page-loader">
+                    <div class="loading-container">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Main Content (Hidden during loading) -->
-            <div class="page-content-wrapper" id="page-content-wrapper" style="display: none;">
-                <!-- Hero Section -->
-                <section class="hero-section" id="hero-section">
-                    <h1 class="app-title" id="app-title">This is a placeholder</h1>
-                    <img src="images/downloadapp.png" alt="Download App" class="hero-image" style="height: 150px; width: 150px; margin: 0 auto 24px; border-radius: 16px;" />
-                    <h2 class="invitation-title" id="invitation-title">This is a placeholder</h2>
-                    <p class="hero-subtitle" id="invitation-subtitle">This is a placeholder</p>
-                    <div class="hero-code-cta-container">
-                        <div class="referral-code-display" id="referral-code">This is a placeholder</div>
-                        <button class="view-referrals-btn" id="copy-clipboard">This is a placeholder</button>
-                    </div>
-                </section>
+                <!-- Main Content (Hidden during loading) -->
+                <div
+                    class="page-content-wrapper"
+                    id="page-content-wrapper"
+                    style="display: none"
+                >
+                    <!-- Hero Section -->
+                    <section class="hero-section" id="hero-section">
+                        <h1 class="app-title" id="app-title">
+                            This is a placeholder
+                        </h1>
+                        <img
+                            src="images/downloadapp.png"
+                            alt="Download App"
+                            class="hero-image"
+                            style="
+                                height: 150px;
+                                width: 150px;
+                                margin: 0 auto 24px;
+                                border-radius: 16px;
+                            "
+                        />
+                        <h2 class="invitation-title" id="invitation-title">
+                            This is a placeholder
+                        </h2>
+                        <p class="hero-subtitle" id="invitation-subtitle">
+                            This is a placeholder
+                        </p>
+                        <div class="hero-code-cta-container">
+                            <div
+                                class="referral-code-display"
+                                id="referral-code"
+                            >
+                                This is a placeholder
+                            </div>
+                            <button
+                                class="view-referrals-btn"
+                                id="copy-clipboard"
+                            >
+                                This is a placeholder
+                            </button>
+                        </div>
+                    </section>
 
-                <!-- How It Works Section -->
-                <section class="how-it-works" id="how-it-works-download">
-                    <h2 class="section-title">How it works</h2>
-                    <div class="steps-container" id="steps-container">
-                        <!-- Step 1: Image left -->
-                        <div class="step-row step-left" data-step="1">
-                            <img
-                                src="images/avatar1tp.png"
-                                alt="Step 1"
-                                class="step-number-image"
-                            />
-                            <div class="step-card">
-                                <p class="step-description" id="step-1">
-                                    This is a placeholder
-                                </p>
+                    <!-- How It Works Section -->
+                    <section class="how-it-works" id="how-it-works-download">
+                        <h2 class="section-title">How it works</h2>
+                        <div class="steps-container" id="steps-container">
+                            <!-- Step 1: Image left -->
+                            <div class="step-row step-left" data-step="1">
+                                <img
+                                    src="images/avatar1tp.png"
+                                    alt="Step 1"
+                                    class="step-number-image"
+                                />
+                                <div class="step-card">
+                                    <p class="step-description" id="step-1">
+                                        This is a placeholder
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Image right -->
+                            <div class="step-row step-right" data-step="2">
+                                <img
+                                    src="images/avatar2tp.png"
+                                    alt="Step 2"
+                                    class="step-number-image"
+                                />
+                                <div class="step-card">
+                                    <p class="step-description" id="step-2">
+                                        This is a placeholder
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Image left, premium styling -->
+                            <div
+                                class="step-row step-left premium-step"
+                                data-step="3"
+                            >
+                                <img
+                                    src="images/avatar5tp.png"
+                                    alt="Step 3"
+                                    class="step-number-image"
+                                />
+                                <div class="step-card premium-card">
+                                    <p class="step-description" id="step-3">
+                                        This is a placeholder
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    </section>
+                </div>
+            </main>
 
-                        <!-- Step 2: Image right -->
-                        <div class="step-row step-right" data-step="2">
-                            <img
-                                src="images/avatar2tp.png"
-                                alt="Step 2"
-                                class="step-number-image"
-                            />
-                            <div class="step-card">
-                                <p class="step-description" id="step-2">
-                                    This is a placeholder
-                                </p>
-                            </div>
-                        </div>
+            <!-- Download Buttons Footer -->
+            <footer class="download-footer">
+                <div class="download-buttons-container">
+                    <a
+                        href="#"
+                        class="download-btn google-play"
+                        id="download-google"
+                        style="
+                            background: transparent;
+                            border: none;
+                            padding: 0;
+                        "
+                    >
+                        <img
+                            src="images/google-play-badge.png?v=10"
+                            alt="Get it on Google Play"
+                            style="height: 70px; width: auto; display: block"
+                        />
+                    </a>
+                    <a
+                        href="#"
+                        class="download-btn app-store"
+                        id="download-appstore"
+                        style="
+                            background: transparent;
+                            border: none;
+                            padding: 0;
+                        "
+                    >
+                        <img
+                            src="images/app-store-badge.svg?v=10"
+                            alt="Download on the App Store"
+                            style="height: 50px; width: auto; display: block"
+                        />
+                    </a>
+                </div>
+            </footer>
+        </div>
 
-                        <!-- Step 3: Image left, premium styling -->
-                        <div
-                            class="step-row step-left premium-step"
-                            data-step="3"
-                        >
-                            <img
-                                src="images/avatar5tp.png"
-                                alt="Step 3"
-                                class="step-number-image"
-                            />
-                            <div class="step-card premium-card">
-                                <p class="step-description" id="step-3">
-                                    This is a placeholder
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <!-- Download Buttons Footer -->
-        <footer class="download-footer">
-            <div class="download-buttons-container">
-                <a href="#" class="download-btn google-play" id="download-google" style="background: transparent; border: none; padding: 0;">
-                    <img src="images/google-play-badge.png?v=10" 
-                         alt="Get it on Google Play" 
-                         style="height: 80px; width: auto; display: block;">
-                </a>
-                <a href="#" class="download-btn app-store" id="download-appstore" style="background: transparent; border: none; padding: 0;">
-                    <img src="images/app-store-badge.svg?v=10" 
-                         alt="Download on the App Store" 
-                         style="height: 60px; width: auto; display: block;">
-                </a>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="appTheme.js?v=4"></script>
-    <script src="colorCombos.js?v=4"></script>
-    <script src="utils.js?v=4"></script>
-    <script src="referralDownload.js?v=9"></script>
-</body>
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+        <script src="appTheme.js?v=4"></script>
+        <script src="colorCombos.js?v=4"></script>
+        <script src="utils.js?v=4"></script>
+        <script src="referralDownload.js?v=9"></script>
+    </body>
 </html>
