@@ -244,6 +244,41 @@
         </div>
 
         <script>
+            // Save form data to localStorage
+            function saveFormData() {
+                const data = getFormData();
+                localStorage.setItem('referralBoostFormData', JSON.stringify(data));
+            }
+
+            // Load form data from localStorage
+            function loadFormData() {
+                const savedData = localStorage.getItem('referralBoostFormData');
+                if (savedData) {
+                    try {
+                        const data = JSON.parse(savedData);
+                        
+                        // Restore values to form fields
+                        if (data.app_package_name) {
+                            document.getElementById('app_package_name').value = data.app_package_name;
+                        }
+                        if (data.firstname) {
+                            document.getElementById('firstname').value = data.firstname;
+                        }
+                        if (data.userId) {
+                            document.getElementById('userId').value = data.userId;
+                        }
+                        if (data.language) {
+                            document.getElementById('language').value = data.language;
+                        }
+                        if (data.referralCode) {
+                            document.getElementById('referralCode').value = data.referralCode;
+                        }
+                    } catch (error) {
+                        console.error('Error loading saved form data:', error);
+                    }
+                }
+            }
+
             function getFormData() {
                 return {
                     app_package_name: document.getElementById('app_package_name').value,
@@ -255,6 +290,9 @@
             }
 
             function navigateToPage(page) {
+                // Save current form data before navigation
+                saveFormData();
+                
                 const data = getFormData();
                 const params = new URLSearchParams({
                     app_package_name: data.app_package_name,
@@ -271,8 +309,33 @@
                 window.location.href = `${page}?${params.toString()}`;
             }
 
+            // Add event listeners to save data when inputs change
+            function addChangeListeners() {
+                const inputFields = [
+                    'app_package_name',
+                    'firstname', 
+                    'userId',
+                    'language',
+                    'referralCode'
+                ];
+
+                inputFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('input', saveFormData);
+                        field.addEventListener('change', saveFormData);
+                    }
+                });
+            }
+
             // Prevent scroll behavior on referral code input
             document.addEventListener('DOMContentLoaded', function() {
+                // Load saved form data first
+                loadFormData();
+                
+                // Add change listeners to save data automatically
+                addChangeListeners();
+
                 const referralCodeInput = document.getElementById('referralCode');
                 if (referralCodeInput) {
                     // Override scrollIntoView for this specific input
