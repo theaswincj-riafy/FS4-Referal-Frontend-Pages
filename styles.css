@@ -366,6 +366,7 @@ p {
   letter-spacing: 0.02em;
   border: 2px dashed #52C5F7;
   margin: 0;
+  width:250px;
 }
 
 .view-referrals-btn {
@@ -1119,6 +1120,7 @@ p {
   transition: all 0.2s ease;
   min-width: fit-content;
   max-width: 280px;
+  width: 250px;
 }
 
 .redeem-input:focus {
