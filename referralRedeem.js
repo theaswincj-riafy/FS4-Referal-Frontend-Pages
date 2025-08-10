@@ -368,7 +368,13 @@ class ReferralRedeemPage {
       input.addEventListener('dblclick', () => {
         console.log('Test mode: Simulating successful redemption');
         ReferralUtils.showToast('Test Mode: Simulating success!');
-        this.showSuccessState({ success: true, message: 'Test redemption successful' });
+        // Simulate the actual API response format with referrer_name
+        this.showSuccessState({ 
+          success: true, 
+          status: 'success',
+          message: 'Code redeemed successfully',
+          referrer_name: 'Aswin'
+        });
       });
     }
   }
@@ -465,6 +471,16 @@ class ReferralRedeemPage {
 
   showSuccessState(result) {
     console.log('ReferralRedeemPage: Showing success state and updating localStorage');
+    console.log('API result:', result);
+    
+    // Extract referrer_name from the API response
+    const referrerName = result.referrer_name || 'your friend';
+    console.log('Referrer name from API:', referrerName);
+    
+    // Update localStorage data with personalized referrer_name
+    if (referrerName && referrerName !== 'your friend') {
+      this.personalizeDataWithReferrerName(referrerName);
+    }
     
     // Mark as redeemed and save to localStorage immediately
     this.data.alreadyRedeemed = true;
@@ -481,6 +497,38 @@ class ReferralRedeemPage {
     
     // Replace the entire page content with success state
     this.renderAlreadyRedeemedState();
+  }
+  
+  // Personalize data by replacing {{referrer_name}} placeholders
+  personalizeDataWithReferrerName(referrerName) {
+    console.log('Personalizing data with referrer name:', referrerName);
+    
+    const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
+    const successData = pageData.redeem?.redemptionSuccess;
+    
+    if (successData) {
+      // Update subtitle
+      if (successData.subtitle && successData.subtitle.includes('{{referrer_name}}')) {
+        const originalSubtitle = successData.subtitle;
+        successData.subtitle = successData.subtitle.replace(/\{\{referrer_name\}\}/g, referrerName);
+        console.log('Updated subtitle from:', originalSubtitle, 'to:', successData.subtitle);
+      }
+      
+      // Update nudges array
+      if (successData.nudges && Array.isArray(successData.nudges)) {
+        successData.nudges = successData.nudges.map(nudge => {
+          if (typeof nudge === 'string' && nudge.includes('{{referrer_name}}')) {
+            const originalNudge = nudge;
+            const updatedNudge = nudge.replace(/\{\{referrer_name\}\}/g, referrerName);
+            console.log('Updated nudge from:', originalNudge, 'to:', updatedNudge);
+            return updatedNudge;
+          }
+          return nudge;
+        });
+      }
+      
+      console.log('Personalized success data:', successData);
+    }
   }
 
   showError(message) {
