@@ -97,7 +97,7 @@ class ReferralPromotePage {
 
     const referralCodeElement = document.getElementById('referral-code');
     if (referralCodeElement && apiData.referral_code) {
-      referralCodeElement.textContent = replaceVariables(apiData.referral_code);
+      referralCodeElement.textContent = replaceVariables(apiData.referral_code).toUpperCase();
     }
 
     const viewReferralsTextElement = document.getElementById('view-referrals-text');
