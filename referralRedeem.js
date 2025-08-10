@@ -10,25 +10,39 @@ class ReferralRedeemPage {
   // Simple encryption using base64 and character shifting
   encrypt(text) {
     try {
+      if (!text || typeof text !== 'string') {
+        console.warn('Invalid text for encryption:', text);
+        return btoa(JSON.stringify(text || ''));
+      }
       const shifted = text.split('').map(char => 
         String.fromCharCode(char.charCodeAt(0) + 3)
       ).join('');
       return btoa(shifted);
     } catch (error) {
       console.error('Encryption error:', error);
-      return btoa(text); // Fallback to simple base64
+      return btoa(text || ''); // Fallback to simple base64
     }
   }
 
   // Simple decryption
   decrypt(encryptedText) {
     try {
-      return atob(encryptedText).split('').map(char => 
+      if (!encryptedText) {
+        return '';
+      }
+      const decoded = atob(encryptedText);
+      return decoded.split('').map(char => 
         String.fromCharCode(char.charCodeAt(0) - 3)
       ).join('');
     } catch (error) {
       console.error('Decryption failed:', error);
-      return '';
+      // Try simple base64 decode as fallback
+      try {
+        return atob(encryptedText);
+      } catch (fallbackError) {
+        console.error('Fallback decryption also failed:', fallbackError);
+        return '';
+      }
     }
   }
 
@@ -43,13 +57,27 @@ class ReferralRedeemPage {
   checkAlreadyRedeemed() {
     const storageKey = this.getStorageKey();
     const storedData = localStorage.getItem(storageKey);
+    console.log('Checking for stored data with key:', storageKey);
+    console.log('Found stored data:', !!storedData);
     
     if (storedData) {
       try {
         const decryptedData = JSON.parse(this.decrypt(storedData));
+        console.log('Successfully decrypted data, alreadyRedeemed:', decryptedData.alreadyRedeemed);
         return decryptedData.alreadyRedeemed === true;
       } catch (error) {
         console.error('Failed to parse stored redemption data:', error);
+        // Try fallback
+        const fallbackData = localStorage.getItem(storageKey + '_fallback');
+        if (fallbackData) {
+          try {
+            const fallbackParsed = JSON.parse(fallbackData);
+            console.log('Using fallback data, alreadyRedeemed:', fallbackParsed.alreadyRedeemed);
+            return fallbackParsed.alreadyRedeemed === true;
+          } catch (fallbackError) {
+            console.error('Fallback parsing also failed:', fallbackError);
+          }
+        }
         return false;
       }
     }
@@ -60,22 +88,33 @@ class ReferralRedeemPage {
   saveRedemptionData(alreadyRedeemed = false) {
     const storageKey = this.getStorageKey();
     const dataToStore = {
-      ...this.data,
+      data: this.data,
       alreadyRedeemed: alreadyRedeemed,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      userId: this.params.userId,
+      appName: this.params.app_package_name
     };
     
     try {
       const jsonString = JSON.stringify(dataToStore);
+      console.log('Attempting to encrypt JSON string of length:', jsonString.length);
       const encryptedData = this.encrypt(jsonString);
       localStorage.setItem(storageKey, encryptedData);
       console.log('Redemption data saved to localStorage with key:', storageKey);
-      console.log('Data stored:', { alreadyRedeemed: dataToStore.alreadyRedeemed });
+      console.log('Data stored with alreadyRedeemed:', alreadyRedeemed);
+      
+      // Verify the save worked
+      const verification = localStorage.getItem(storageKey);
+      console.log('Verification - stored data exists:', !!verification);
     } catch (error) {
-      console.error('Failed to save redemption data:', error, {
-        storageKey,
-        dataSize: JSON.stringify(dataToStore).length
-      });
+      console.error('Failed to save redemption data:', error);
+      // Fallback: save without encryption
+      try {
+        localStorage.setItem(storageKey + '_fallback', JSON.stringify(dataToStore));
+        console.log('Saved fallback data without encryption');
+      } catch (fallbackError) {
+        console.error('Even fallback save failed:', fallbackError);
+      }
     }
   }
 
@@ -86,9 +125,20 @@ class ReferralRedeemPage {
     
     if (storedData) {
       try {
-        return JSON.parse(this.decrypt(storedData));
+        const decryptedData = JSON.parse(this.decrypt(storedData));
+        return decryptedData.data || decryptedData; // Return the actual data part
       } catch (error) {
         console.error('Failed to parse stored redemption data:', error);
+        // Try fallback
+        const fallbackData = localStorage.getItem(storageKey + '_fallback');
+        if (fallbackData) {
+          try {
+            const fallbackParsed = JSON.parse(fallbackData);
+            return fallbackParsed.data || fallbackParsed;
+          } catch (fallbackError) {
+            console.error('Fallback parsing also failed:', fallbackError);
+          }
+        }
         return null;
       }
     }
@@ -97,12 +147,16 @@ class ReferralRedeemPage {
 
   async init() {
     try {
+      console.log('ReferralRedeemPage: Starting init with params:', this.params);
+      
       // Check if user has already redeemed
       const alreadyRedeemed = this.checkAlreadyRedeemed();
+      console.log('ReferralRedeemPage: Already redeemed check result:', alreadyRedeemed);
       
       if (alreadyRedeemed) {
         // Load stored data and render success state
         const storedData = this.getStoredRedemptionData();
+        console.log('ReferralRedeemPage: Stored data found, rendering success state');
         if (storedData) {
           this.data = storedData;
           this.loadThemeColors();
@@ -113,6 +167,7 @@ class ReferralRedeemPage {
       }
       
       // Normal flow - load fresh data
+      console.log('ReferralRedeemPage: Loading fresh data from API');
       await this.loadPageData();
       if (this.data) {
         // Add alreadyRedeemed flag and save to localStorage
@@ -374,6 +429,7 @@ class ReferralRedeemPage {
       
       if (result.success || result.status === 'success') {
         // Mark as redeemed and save to localStorage
+        console.log('ReferralRedeemPage: Successful redemption, saving to localStorage');
         this.data.alreadyRedeemed = true;
         this.saveRedemptionData(true);
         this.showSuccessState(result);
