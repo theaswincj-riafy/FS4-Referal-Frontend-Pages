@@ -196,6 +196,27 @@ class ReferralPromotePage {
     if (share.messages && share.messages.default) {
       this.shareMessage = replaceVariables(share.messages.default);
     }
+
+    // Apply automatic coloring to buttons using colorCombos
+    this.applyButtonColors();
+  }
+
+  applyButtonColors() {
+    // Select a random color combo for buttons
+    const selectedColorCombo = COLOR_COMBOS[Math.floor(Math.random() * COLOR_COMBOS.length)];
+    const buttonColor = selectedColorCombo.gradientBG[0]; // Use first gradient color as solid color
+
+    // Apply color to view-referrals button
+    const viewReferralsBtn = document.getElementById('view-referrals');
+    if (viewReferralsBtn) {
+      viewReferralsBtn.style.background = buttonColor;
+    }
+
+    // Apply same color to primary CTA button
+    const primaryCta = document.getElementById('primary-cta');
+    if (primaryCta) {
+      primaryCta.style.background = buttonColor;
+    }
   }
 
   hideLoader() {
