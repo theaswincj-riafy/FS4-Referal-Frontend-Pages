@@ -1033,6 +1033,11 @@ class ReferralStatusPage {
       primary_cta: "Unlock 1 Month Premium 🎉",
     };
 
+    // Replace firstname placeholder with actual value and capitalize first letter
+    const firstname = this.params.firstname || 'User';
+    const capitalizedFirstname = firstname.charAt(0).toUpperCase() + firstname.slice(1).toLowerCase();
+    successData.hero_title = successData.hero_title.replace('{{firstname}}', capitalizedFirstname);
+
     console.log("Success data for rendering:", successData);
 
     // Update header title to match the success state
