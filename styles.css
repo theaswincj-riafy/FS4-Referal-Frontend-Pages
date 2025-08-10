@@ -590,7 +590,7 @@ p {
 }
 
 .download-btn {
-  background: transparent;
+  background: transparent !important;
   border: none;
   padding: 0;
   cursor: pointer;
@@ -599,6 +599,14 @@ p {
   flex: 1;
   display: flex;
   justify-content: center;
+}
+
+.download-btn.google-play img {
+  height: 70px;
+}
+
+.download-btn.app-store img {
+  height: 50px;
 }
 
 .download-btn:hover {

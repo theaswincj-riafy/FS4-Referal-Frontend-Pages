@@ -177,19 +177,7 @@ class ReferralDownloadPage {
       copyButton.style.color = THEME_ONE.textColor;
     }
     
-    // Download buttons styling
-    const googlePlayBtn = document.getElementById('download-google');
-    const appStoreBtn = document.getElementById('download-appstore');
-    
-    if (googlePlayBtn) {
-      googlePlayBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
-      googlePlayBtn.style.color = THEME_ONE.textColor;
-    }
-    
-    if (appStoreBtn) {
-      appStoreBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
-      appStoreBtn.style.color = THEME_ONE.textColor;
-    }
+    // Download buttons styling - no background colors applied
   }
 
   hideLoader() {
