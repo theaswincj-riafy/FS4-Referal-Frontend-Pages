@@ -11,7 +11,8 @@ class ReferralUtils {
       firstname: params.get('firstname') || 'aju', 
       userId: params.get('userId') || '123',
       language: params.get('language') || 'en',
-      referralCode: params.get('referralCode') || 'aju2586'
+      referralCode: params.get('referralCode') || 'aju2586',
+      fb_token: params.get('fb_token') || null
     };
   }
 
