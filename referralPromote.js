@@ -174,8 +174,6 @@ class ReferralPromotePage {
       // Calculate and apply uniform height to all cards after content is populated
       this.adjustCardHeights();
     }
-      });
-    }
 
     // Populate tip using data mapping - randomly select from nudges array
     const tipElement = document.getElementById('tip-text');
