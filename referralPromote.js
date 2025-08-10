@@ -111,7 +111,14 @@ class ReferralPromotePage {
     // Populate progress section using data mapping
     const progressTitleElement = document.getElementById('progress-title');
     if (progressTitleElement && progress.title) {
-      progressTitleElement.textContent = replaceVariables(progress.title);
+      let titleText = replaceVariables(progress.title);
+      // Add line break for better formatting if text is long
+      const words = titleText.split(' ');
+      if (words.length > 4) {
+        const midPoint = Math.ceil(words.length / 2);
+        titleText = words.slice(0, midPoint).join(' ') + '<br>' + words.slice(midPoint).join(' ');
+      }
+      progressTitleElement.innerHTML = titleText;
     }
 
     const progressSubtitleElement = document.getElementById('progress-subtitle');
@@ -121,6 +128,8 @@ class ReferralPromotePage {
 
     // Populate benefits cards using data mapping (NOTE: mapping seems reversed in data structure)
     if (benefits.length > 0) {
+      const usedColorIndices = new Set();
+      
       benefits.forEach((benefit, index) => {
         const titleElement = document.getElementById(`benefit-${index + 1}-title`);
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
@@ -134,9 +143,15 @@ class ReferralPromotePage {
           descElement.textContent = replaceVariables(benefit.desc);
         }
         
-        // Apply dynamic color combination to each card
+        // Apply dynamic color combination to each card (ensure unique colors)
         if (cardElement) {
-          const colorCombo = getRandomColorCombo();
+          let colorIndex;
+          do {
+            colorIndex = Math.floor(Math.random() * COLOR_COMBOS.length);
+          } while (usedColorIndices.has(colorIndex) && usedColorIndices.size < COLOR_COMBOS.length);
+          
+          usedColorIndices.add(colorIndex);
+          const colorCombo = COLOR_COMBOS[colorIndex];
           const gradientBG = colorCombo.gradientBG;
           const textColor = colorCombo.textColor;
           
@@ -154,7 +169,14 @@ class ReferralPromotePage {
     const tipElement = document.getElementById('tip-text');
     if (tipElement && nudges.length > 0) {
       const randomTip = nudges[Math.floor(Math.random() * nudges.length)];
-      tipElement.textContent = replaceVariables(randomTip);
+      let tipText = replaceVariables(randomTip);
+      // Add line break for better formatting if text is long
+      const words = tipText.split(' ');
+      if (words.length > 6) {
+        const midPoint = Math.ceil(words.length / 2);
+        tipText = words.slice(0, midPoint).join(' ') + '<br>' + words.slice(midPoint).join(' ');
+      }
+      tipElement.innerHTML = tipText;
     }
 
     // Populate footer CTA using data mapping
