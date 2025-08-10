@@ -692,7 +692,7 @@ p {
 .benefit-card {
   position: absolute;
   width: 180px;
-  height: 220px;
+  height: 200px;
   border-radius: 24px;
   padding: 20px;
   color: white;
@@ -724,15 +724,15 @@ p {
 
 .benefit-card-title {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 12px;
   line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .benefit-card-desc {
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.25;
   font-weight: 400;
   display: -webkit-box;
   -webkit-line-clamp: 4;
