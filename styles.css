@@ -593,15 +593,15 @@ p {
 .steps-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
+  padding: 0 20px;
 }
 
 .step-row {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 20px;
   position: relative;
-  margin-bottom: 20px;
 }
 
 .step-row.step-left {
@@ -614,47 +614,53 @@ p {
   justify-content: flex-start;
 }
 
-.step-row.step-right .step-card {
+.step-row.step-right .step-description {
   text-align: right;
 }
 
-.step-row.step-left .step-card {
+.step-row.step-left .step-description {
   text-align: left;
 }
 
 .step-card {
-  background: #F8F9FA;
-  border-radius: 16px;
-  padding: 20px;
+  background: none;
+  border-radius: 0;
+  padding: 0;
   flex: 1;
   margin: 0;
-  max-width: calc(100% - 76px); /* Account for image width + gap */
 }
 
 .step-number-image {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   flex-shrink: 0;
   object-fit: contain;
-  margin-top: 4px;
 }
 
 .step-description {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #333;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #1a1a1a;
   margin: 0;
+  font-weight: 400;
+}
+
+.premium-step {
+  position: relative;
 }
 
 .premium-step .step-card.premium-card {
   background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%);
-  border: 1px solid #F59E0B;
-  border-radius: 16px;
+  border: none;
+  border-radius: 20px;
+  padding: 16px 20px;
+  margin-left: -10px;
+  margin-right: -10px;
 }
 
 .premium-step .step-number-image {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
 }
 
 /* Progress Section */
