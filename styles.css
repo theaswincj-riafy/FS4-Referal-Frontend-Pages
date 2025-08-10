@@ -983,7 +983,7 @@ p {
 
 /* Progress tracking styles */
 .progress-tracking {
-  margin-bottom: 32px;
+  margin-bottom: 0px;
 }
 
 .milestone-list {
@@ -1053,14 +1053,14 @@ p {
 
 /* FAQ Section */
 .faq-section {
-  margin-bottom: 32px;
+  margin-bottom: 0px;
 }
 
 .faq-item {
   background: white;
   border-radius: 16px;
   padding: 20px;
-  margin-bottom: 16px;
+  margin-bottom: 0px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -1146,9 +1146,9 @@ p {
 }
 
 .level-subtitle {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 2.25rem;
   color: #1d1d1f;
+  font-weight: 800;
   margin-bottom: 8px;
 }
 

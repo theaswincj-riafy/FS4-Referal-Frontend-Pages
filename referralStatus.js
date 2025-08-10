@@ -122,12 +122,8 @@ class ReferralStatusPage {
     // 2. Find current milestone for hero section using milestones array
     const currentMilestone = milestones.find(m => m.level === currentRedemptions) || milestones[0] || {};
     
-    // Use hero.hero_title for level-title with template replacement
-    let heroTitle = hero.hero_title || currentMilestone.current_level || 'This is a placeholder';
-    heroTitle = heroTitle.replace(/\{\{current_redemptions\}\}/g, currentRedemptions)
-                        .replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions)
-                        .replace(/\{\{referrer_name\}\}/g, referrerName);
-    document.getElementById('level-title').textContent = heroTitle;
+    // Use Level + current_redemptions for level-title
+    document.getElementById('level-title').textContent = `Level ${currentRedemptions}`;
 
     // Use currentMilestone title and message for subtitle and message
     document.getElementById('level-subtitle').textContent = currentMilestone.title || 'This is a placeholder';
@@ -477,16 +473,44 @@ class ReferralStatusPage {
       setTimeout(() => { isAnimating = false; }, 400);
     }
 
-    // Click handlers for side cards
+    // Click handlers for side cards with rotation animation
     cards.forEach((card, index) => {
       card.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         
+        if (isAnimating) return;
+        
         const relativeIndex = (index - currentIndex + cards.length) % cards.length;
         if (relativeIndex === 1) {
+          // Animate rotation before moving to next
+          gsap.to(card, {
+            rotation: "+=15",
+            duration: 0.1,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.to(card, {
+                rotation: "-=15", 
+                duration: 0.1,
+                ease: "power2.out"
+              });
+            }
+          });
           nextCard();
         } else if (relativeIndex === cards.length - 1) {
+          // Animate rotation before moving to previous
+          gsap.to(card, {
+            rotation: "-=15",
+            duration: 0.1,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.to(card, {
+                rotation: "+=15",
+                duration: 0.1,
+                ease: "power2.out"
+              });
+            }
+          });
           prevCard();
         }
       });
