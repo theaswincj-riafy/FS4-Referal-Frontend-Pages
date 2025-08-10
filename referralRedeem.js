@@ -521,8 +521,8 @@ class ReferralRedeemPage {
       <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
         
         <!-- Success image with crown -->
-        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; background: #e2e8f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-          <img src="images/crown.png" alt="Success Crown" style="width: 100px; height: 100px; object-fit: contain;" />
+        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <img src="images/crown.png" alt="Success Crown" style="width: 280px; height: 280px; object-fit: contain;" />
         </div>
         
         <!-- Main success title -->
