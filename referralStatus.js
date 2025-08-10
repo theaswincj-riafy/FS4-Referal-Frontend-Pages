@@ -256,8 +256,7 @@ class ReferralStatusPage {
       document.getElementById('tip-text').textContent = randomNudge || 'This is a placeholder';
     }
 
-    // 8. Update footer CTA with quickButtonText
-    document.getElementById('primary-cta').textContent = hero.quickButtonText || 'This is a placeholder';
+    
   }
 
   hideLoader() {
@@ -622,13 +621,7 @@ class ReferralStatusPage {
       });
     }
 
-    // Primary CTA button
-    const primaryCta = document.getElementById('primary-cta');
-    if (primaryCta) {
-      primaryCta.addEventListener('click', () => {
-        window.location.href = `referralPromote.html?${new URLSearchParams(this.params).toString()}`;
-      });
-    }
+    
   }
 
   loadThemeColors() {
@@ -656,12 +649,7 @@ class ReferralStatusPage {
         inviteFriendsBtn.style.color = THEME_ONE.textColor;
       }
 
-      // Apply theme colors to primary-cta button
-      const primaryCtaBtn = document.getElementById('primary-cta');
-      if (primaryCtaBtn) {
-        primaryCtaBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
-        primaryCtaBtn.style.color = THEME_ONE.textColor;
-      }
+      
     }
   }
 
