@@ -12,8 +12,8 @@ class ReferralPromotePage {
       await this.loadPageData();
       if (this.data) {
         this.populateContent();
-        this.debugHowItWorksSection(); // Add debug function
         this.hideLoader();
+        this.debugHowItWorksSection(); // Move debug after hideLoader
         this.initCardStack();
         this.bindEvents();
       } else {
@@ -494,45 +494,58 @@ class ReferralPromotePage {
   }
 
   debugHowItWorksSection() {
-    console.log('[HOW IT WORKS DEBUG] Starting section debug...');
+    console.log('=== HOW IT WORKS DEBUG START ===');
     
-    // Check if steps container exists
-    const stepsContainer = document.getElementById('steps-container');
-    console.log('[HOW IT WORKS DEBUG] Steps container:', stepsContainer);
-    
-    // Check all step rows
-    const stepRows = document.querySelectorAll('.step-row');
-    console.log('[HOW IT WORKS DEBUG] Found step rows:', stepRows.length);
-    
-    stepRows.forEach((row, index) => {
-      const stepNumber = index + 1;
-      const img = row.querySelector('.step-number-image');
-      const card = row.querySelector('.step-card');
-      const description = row.querySelector('.step-description');
+    // Wait a bit for DOM to be fully rendered
+    setTimeout(() => {
+      // Check if steps container exists
+      const stepsContainer = document.getElementById('steps-container');
+      console.log('[DEBUG] Steps container:', stepsContainer);
       
-      console.log(`[HOW IT WORKS DEBUG] Step ${stepNumber}:`, {
-        row: row,
-        classes: row.className,
-        image: img,
-        imageSrc: img?.src,
-        card: card,
-        description: description,
-        descriptionText: description?.textContent,
-        computedStyle: window.getComputedStyle(row),
-        flexDirection: window.getComputedStyle(row).flexDirection
+      // Check all step rows
+      const stepRows = document.querySelectorAll('.step-row');
+      console.log('[DEBUG] Found step rows:', stepRows.length);
+      
+      stepRows.forEach((row, index) => {
+        const stepNumber = index + 1;
+        const img = row.querySelector('.step-number-image');
+        const card = row.querySelector('.step-card');
+        const description = row.querySelector('.step-description');
+        const computedStyles = window.getComputedStyle(row);
+        
+        console.log(`[DEBUG] === STEP ${stepNumber} ===`);
+        console.log(`[DEBUG] Element:`, row);
+        console.log(`[DEBUG] Classes:`, row.className);
+        console.log(`[DEBUG] Computed flex-direction:`, computedStyles.flexDirection);
+        console.log(`[DEBUG] Computed display:`, computedStyles.display);
+        console.log(`[DEBUG] Image src:`, img?.src);
+        console.log(`[DEBUG] Description text:`, description?.textContent);
+        console.log(`[DEBUG] Is step-left:`, row.classList.contains('step-left'));
+        console.log(`[DEBUG] Is step-right:`, row.classList.contains('step-right'));
+        
+        // Check if flex-direction is actually being applied
+        if (row.classList.contains('step-right') && computedStyles.flexDirection !== 'row-reverse') {
+          console.warn(`[DEBUG] WARNING: Step ${stepNumber} should be row-reverse but is ${computedStyles.flexDirection}`);
+        }
+        if (row.classList.contains('step-left') && computedStyles.flexDirection !== 'row') {
+          console.warn(`[DEBUG] WARNING: Step ${stepNumber} should be row but is ${computedStyles.flexDirection}`);
+        }
       });
-    });
-    
-    // Check step elements by ID
-    for (let i = 1; i <= 5; i++) {
-      const stepElement = document.getElementById(`step-${i}`);
-      console.log(`[HOW IT WORKS DEBUG] Step ${i} element:`, {
-        element: stepElement,
-        text: stepElement?.textContent,
-        parentRow: stepElement?.closest('.step-row'),
-        parentClasses: stepElement?.closest('.step-row')?.className
-      });
-    }
+      
+      // Check step elements by ID
+      for (let i = 1; i <= 5; i++) {
+        const stepElement = document.getElementById(`step-${i}`);
+        const parentRow = stepElement?.closest('.step-row');
+        console.log(`[DEBUG] Step ${i} element:`, {
+          element: stepElement,
+          text: stepElement?.textContent?.substring(0, 50) + '...',
+          parentRow: parentRow,
+          parentClasses: parentRow?.className
+        });
+      }
+      
+      console.log('=== HOW IT WORKS DEBUG END ===');
+    }, 100);
   }
 
   showError(message) {

@@ -603,16 +603,19 @@ p {
   position: relative;
   margin-bottom: 20px;
   width: 100%;
+  min-height: 80px;
 }
 
 .step-row.step-left {
-  flex-direction: row;
+  flex-direction: row !important;
   justify-content: flex-start;
+  background: rgba(82, 197, 247, 0.05);
 }
 
 .step-row.step-right {
-  flex-direction: row-reverse;
+  flex-direction: row-reverse !important;
   justify-content: flex-start;
+  background: rgba(255, 165, 0, 0.05);
 }
 
 .step-row.step-right .step-card {
@@ -623,15 +626,31 @@ p {
   text-align: left;
 }
 
-/* Debug styles to make positioning visible */
-.step-row.step-left {
-  border-left: 3px solid #52C5F7;
-  padding-left: 8px;
+/* Visual debugging styles */
+.step-row.step-left::before {
+  content: "LEFT";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  background: #52C5F7;
+  color: white;
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 4px;
+  z-index: 10;
 }
 
-.step-row.step-right {
-  border-right: 3px solid #52C5F7;
-  padding-right: 8px;
+.step-row.step-right::before {
+  content: "RIGHT";
+  position: absolute;
+  top: -10px;
+  right: 0;
+  background: #FF6B35;
+  color: white;
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 4px;
+  z-index: 10;
 }
 
 .step-card {
