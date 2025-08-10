@@ -777,6 +777,12 @@ p {
   font-size: 16px;
 }
 
+#tip-text {
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
 /* Legacy Tips Section (for other pages) */
 .tips-section {
   background: #FFF1F2;
