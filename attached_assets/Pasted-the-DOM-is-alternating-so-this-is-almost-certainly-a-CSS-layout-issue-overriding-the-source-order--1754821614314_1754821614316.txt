@@ -1,0 +1,74 @@
+the DOM is alternating, so this is almost certainly a CSS/layout issue overriding the source order.
+
+What’s likely happening:
+
+.step-number-image is either positioned absolutely (always pinned on the left), or
+
+a flex/grid rule (e.g., order, grid-area, or a fixed flex-direction) forces the same layout for every row.
+
+Quick fix (make source order win)
+Drop this at the end of your CSS (or in a small override file loaded last):
+
+css
+Copy
+Edit
+/* Ensure rows lay out left/right by source order */
+.steps-container { display: flex; flex-direction: column; gap: 16px; }
+
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Even rows flip to put the image on the right */
+.step-row.step-right { flex-direction: row-reverse; }
+
+/* Make sure no previous rules pin the number image */
+.step-number-image {
+  position: static !important;   /* override any absolute/float */
+  width: 56px;
+  height: auto;
+  flex: 0 0 auto;
+}
+
+/* Card should take the remaining space */
+.step-card { flex: 1 1 auto; }
+
+/* Optional: tidy margins when reversed */
+.step-row.step-right .step-card { margin-right: 0; }
+.step-row.step-left  .step-card { margin-left: 0; }
+If your current CSS uses absolute positioning
+Then also add these to flip the pin side on “right” rows:
+
+css
+Copy
+Edit
+/* Neutralize absolute pinning globally */
+.step-number-image { position: static !important; }
+
+/* …or, if you must keep absolute positioning: */
+.step-row { position: relative; }
+.step-number-image {
+  position: absolute;
+  left: 0; right: auto;
+}
+.step-row.step-right .step-number-image {
+  right: 0; left: auto;
+}
+.step-row.step-left  .step-card  { margin-left: 72px; }
+.step-row.step-right .step-card  { margin-right: 72px; }
+How to confirm the root cause in DevTools (60-sec checklist)
+Select a “step-right” row → check Computed for:
+
+flex-direction (should be row-reverse after the fix).
+
+order on .step-number-image or .step-card (should be 0 or unset).
+
+position on .step-number-image (should be static unless you intentionally use absolute).
+
+Toggle the .step-right class in the Elements panel and see if the layout flips. If not, there’s a higher-specificity rule—your override needs !important or more specific selectors.
+
+Look for any grid-* properties on .step-row—if it’s a grid, add grid-auto-flow: column; and set direction on the right rows or switch to flex as above.
+
+Apply the first snippet (flex with row-reverse) unless you truly need absolute positioning. That will make the UI match your alternating DOM immediately.
