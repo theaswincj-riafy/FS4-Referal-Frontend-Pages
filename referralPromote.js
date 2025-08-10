@@ -4,11 +4,13 @@ class ReferralPromotePage {
     this.data = null;
     this.params = ReferralUtils.getUrlParams();
     this.currentCardIndex = 0;
+    this.appTheme = null;
     this.init();
   }
 
   async init() {
     try {
+      await this.loadAppTheme();
       await this.loadPageData();
       if (this.data) {
         this.populateContent();
@@ -21,6 +23,20 @@ class ReferralPromotePage {
     } catch (error) {
       console.error('Failed to load page:', error);
       this.showError('Failed to load page data. Please try again.');
+    }
+  }
+
+  async loadAppTheme() {
+    try {
+      // Load the app theme
+      if (typeof THEME_ONE !== 'undefined') {
+        this.appTheme = THEME_ONE;
+        console.log('App theme loaded:', this.appTheme);
+      } else {
+        console.warn('App theme not available, using defaults');
+      }
+    } catch (error) {
+      console.error('Failed to load app theme:', error);
     }
   }
 
@@ -92,7 +108,24 @@ class ReferralPromotePage {
 
     const heroSubtitleElement = document.getElementById('hero-subtitle');
     if (heroSubtitleElement && hero.subtitle) {
-      heroSubtitleElement.textContent = replaceVariables(hero.subtitle);
+      let subtitleText = replaceVariables(hero.subtitle);
+      
+      // Add smart line breaks based on content length
+      const words = subtitleText.split(' ');
+      if (words.length >= 8) {
+        // For 3 lines: place breaks at 1/3 points
+        const firstBreak = Math.floor(words.length / 3);
+        const secondBreak = Math.floor((words.length * 2) / 3);
+        subtitleText = words.slice(0, firstBreak).join(' ') + '<br><br>' + 
+                     words.slice(firstBreak, secondBreak).join(' ') + '<br><br>' + 
+                     words.slice(secondBreak).join(' ');
+      } else if (words.length >= 4) {
+        // For 2 lines: place break in the middle
+        const midPoint = Math.floor(words.length / 2);
+        subtitleText = words.slice(0, midPoint).join(' ') + '<br>' + words.slice(midPoint).join(' ');
+      }
+      
+      heroSubtitleElement.innerHTML = subtitleText;
     }
 
     const referralCodeElement = document.getElementById('referral-code');
@@ -202,6 +235,9 @@ class ReferralPromotePage {
 
     // Apply automatic coloring to buttons using colorCombos
     this.applyButtonColors();
+    
+    // Apply app theme colors
+    this.applyAppTheme();
   }
 
   applyButtonColors() {
@@ -210,31 +246,58 @@ class ReferralPromotePage {
     const gradientBG = selectedColorCombo.gradientBG;
     const textColor = selectedColorCombo.textColor;
 
-    // Apply color to view-referrals button
-    const viewReferralsBtn = document.getElementById('view-referrals');
-    if (viewReferralsBtn) {
-      viewReferralsBtn.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
-      viewReferralsBtn.style.color = textColor;
-    }
-
-    // Apply same color to primary CTA button
-    const primaryCta = document.getElementById('primary-cta');
-    if (primaryCta) {
-      primaryCta.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
-      primaryCta.style.color = textColor;
-    }
-
     // Apply color to loading spinners
     const spinners = document.querySelectorAll('.spinner');
     spinners.forEach(spinner => {
       spinner.style.borderTopColor = gradientBG[0];
     });
+  }
 
-    // Apply color to referral-code-display border
+  applyAppTheme() {
+    if (!this.appTheme) return;
+
+    // Apply hero section background color
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection) {
+      heroSection.style.backgroundColor = this.appTheme.pastelBG;
+    }
+
+    // Apply referral code display styling
     const referralCodeDisplay = document.getElementById('referral-code');
     if (referralCodeDisplay) {
-      referralCodeDisplay.style.borderColor = gradientBG[0];
+      referralCodeDisplay.style.borderColor = this.appTheme.border;
+      referralCodeDisplay.style.backgroundColor = this.appTheme.pastelBGFill;
     }
+
+    // Apply button gradient colors
+    const viewReferralsBtn = document.getElementById('view-referrals');
+    if (viewReferralsBtn) {
+      viewReferralsBtn.style.background = `linear-gradient(135deg, ${this.appTheme.gradientBG[0]}, ${this.appTheme.gradientBG[1]})`;
+      viewReferralsBtn.style.color = this.appTheme.textColor;
+    }
+
+    const primaryCta = document.getElementById('primary-cta');
+    if (primaryCta) {
+      primaryCta.style.background = `linear-gradient(135deg, ${this.appTheme.gradientBG[0]}, ${this.appTheme.gradientBG[1]})`;
+      primaryCta.style.color = this.appTheme.textColor;
+    }
+
+    // Apply secondary text color
+    const heroSubtitle = document.getElementById('hero-subtitle');
+    if (heroSubtitle) {
+      heroSubtitle.style.color = this.appTheme.secondaryTextColor;
+    }
+
+    const tipText = document.getElementById('tip-text');
+    if (tipText) {
+      tipText.style.color = this.appTheme.secondaryTextColor;
+    }
+
+    // Apply step card background color
+    const stepCards = document.querySelectorAll('.step-card');
+    stepCards.forEach(card => {
+      card.style.backgroundColor = this.appTheme.whiteCardBG;
+    });
   }
 
   adjustCardHeights() {
