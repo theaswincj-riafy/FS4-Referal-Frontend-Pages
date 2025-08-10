@@ -12,6 +12,7 @@ class ReferralPromotePage {
       await this.loadPageData();
       if (this.data) {
         this.populateContent();
+        this.debugHowItWorksSection(); // Add debug function
         this.hideLoader();
         this.initCardStack();
         this.bindEvents();
@@ -100,11 +101,33 @@ class ReferralPromotePage {
 
     // Populate how it works steps using data mapping
     if (steps.length > 0) {
+      console.log('[HOW IT WORKS DEBUG] Processing steps:', steps);
       steps.forEach((step) => {
         const stepElement = document.getElementById(`step-${step.step}`);
+        const stepRow = stepElement?.closest('.step-row');
+        
+        console.log(`[HOW IT WORKS DEBUG] Step ${step.step}:`, {
+          stepElement: stepElement,
+          stepRow: stepRow,
+          stepRowClasses: stepRow?.className,
+          stepDesc: step.desc
+        });
+        
         if (stepElement && step.desc) {
           stepElement.textContent = replaceVariables(step.desc);
         }
+      });
+      
+      // Debug all step rows to see their classes
+      const allStepRows = document.querySelectorAll('.step-row');
+      console.log('[HOW IT WORKS DEBUG] All step rows and their classes:');
+      allStepRows.forEach((row, index) => {
+        console.log(`Row ${index + 1}:`, {
+          element: row,
+          classes: row.className,
+          isLeft: row.classList.contains('step-left'),
+          isRight: row.classList.contains('step-right')
+        });
       });
     }
 
@@ -467,6 +490,48 @@ class ReferralPromotePage {
         navigator.clipboard.writeText(shareData.text + ' ' + shareData.url);
         ReferralUtils.showToast('Link copied to clipboard!');
       }
+    }
+  }
+
+  debugHowItWorksSection() {
+    console.log('[HOW IT WORKS DEBUG] Starting section debug...');
+    
+    // Check if steps container exists
+    const stepsContainer = document.getElementById('steps-container');
+    console.log('[HOW IT WORKS DEBUG] Steps container:', stepsContainer);
+    
+    // Check all step rows
+    const stepRows = document.querySelectorAll('.step-row');
+    console.log('[HOW IT WORKS DEBUG] Found step rows:', stepRows.length);
+    
+    stepRows.forEach((row, index) => {
+      const stepNumber = index + 1;
+      const img = row.querySelector('.step-number-image');
+      const card = row.querySelector('.step-card');
+      const description = row.querySelector('.step-description');
+      
+      console.log(`[HOW IT WORKS DEBUG] Step ${stepNumber}:`, {
+        row: row,
+        classes: row.className,
+        image: img,
+        imageSrc: img?.src,
+        card: card,
+        description: description,
+        descriptionText: description?.textContent,
+        computedStyle: window.getComputedStyle(row),
+        flexDirection: window.getComputedStyle(row).flexDirection
+      });
+    });
+    
+    // Check step elements by ID
+    for (let i = 1; i <= 5; i++) {
+      const stepElement = document.getElementById(`step-${i}`);
+      console.log(`[HOW IT WORKS DEBUG] Step ${i} element:`, {
+        element: stepElement,
+        text: stepElement?.textContent,
+        parentRow: stepElement?.closest('.step-row'),
+        parentClasses: stepElement?.closest('.step-row')?.className
+      });
     }
   }
 

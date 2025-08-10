@@ -602,6 +602,7 @@ p {
   gap: 16px;
   position: relative;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .step-row.step-left {
@@ -620,6 +621,17 @@ p {
 
 .step-row.step-left .step-card {
   text-align: left;
+}
+
+/* Debug styles to make positioning visible */
+.step-row.step-left {
+  border-left: 3px solid #52C5F7;
+  padding-left: 8px;
+}
+
+.step-row.step-right {
+  border-right: 3px solid #52C5F7;
+  padding-right: 8px;
 }
 
 .step-card {
