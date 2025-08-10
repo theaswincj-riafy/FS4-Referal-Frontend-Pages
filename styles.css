@@ -805,6 +805,10 @@ p {
   margin-bottom:0px;
 }
 
+.primary-cta-premium {
+  color: #333333;
+}
+
 /* Bottom Status Pill within Combined Section */
 .combined-card-section .bottom-status-pill {
   margin: 0;
