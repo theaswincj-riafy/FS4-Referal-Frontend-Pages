@@ -546,31 +546,6 @@ class ReferralPromotePage {
       setTimeout(initialize, 10);
     });
 
-    // Define swipe functions within the card swiper context
-    const swipeToNext = () => {
-      console.log('[CARD SWIPER] swipeToNext() called - currentIndex:', currentIndex);
-      if (isAnimating) {
-        console.log('[CARD SWIPER] swipeToNext() blocked - animation in progress');
-        return;
-      }
-      
-      currentIndex = (currentIndex + 1) % cards.length;
-      console.log('[CARD SWIPER] New currentIndex:', currentIndex);
-      positionCards(true);
-    };
-
-    const swipeToPrev = () => {
-      console.log('[CARD SWIPER] swipeToPrev() called - currentIndex:', currentIndex);
-      if (isAnimating) {
-        console.log('[CARD SWIPER] swipeToPrev() blocked - animation in progress');
-        return;
-      }
-      
-      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-      console.log('[CARD SWIPER] New currentIndex:', currentIndex);
-      positionCards(true);
-    };
-
     // Store methods for external access if needed
     this.swipeToNext = swipeToNext;
     this.swipeToPrev = swipeToPrev;
