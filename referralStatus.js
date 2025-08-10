@@ -182,7 +182,7 @@ class ReferralStatusPage {
       });
     }
 
-    // Populate progress section
+    // Populate progress section  
     const remaining = targetLevel - currentRedemptions;
     let progressTitle = progress.title || `Only ${remaining} more levels to go!`;
     // Replace template variables
