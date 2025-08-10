@@ -1,0 +1,2 @@
+const FCM_TOKEN =
+  "el9hynweR3SThH0SvmWWk9:APA91bHhTHhPCMYCTQcxnADkufEeQ9BfM7hKMCoqwQcqChMX3X8BcvswYG4ZbDxyb38A25ElDCnbBpgiFhGp2lLjvkFUZuVDolxbV0q_utjRVH6DVeayFwM";

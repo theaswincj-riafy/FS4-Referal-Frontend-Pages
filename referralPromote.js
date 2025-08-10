@@ -49,6 +49,12 @@ class ReferralPromotePage {
         user_id: this.params.userId
       };
 
+      // Add FCM token to request body if provided via URL parameter
+      if (this.params.fcmToken) {
+        body.fcm_token = this.params.fcmToken;
+        console.log('FCM Token included in request:', this.params.fcmToken);
+      }
+
       console.log('Making API call to:', endpoint);
       console.log('Request body:', body);
       
