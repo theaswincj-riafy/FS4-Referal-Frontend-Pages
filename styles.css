@@ -460,16 +460,20 @@ p {
   margin-bottom: 2rem;
 }
 
-/* Centered Heading Section */
-.centered-heading-section {
+/* Main Card Section - Combined Layout */
+.main-card-section {
   max-width: 760px;
   margin: 0 auto;
-  padding: 0 20px;
-  text-align: center;
-  margin-bottom: 16px;
+  background: white;
+  padding: 28px 20px 24px;
 }
 
-.centered-main-title {
+.section-heading {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.main-title {
   font-weight: 800;
   font-size: 1.75rem;
   line-height: 1.25;
@@ -478,7 +482,7 @@ p {
   margin-bottom: 8px;
 }
 
-.centered-subtitle {
+.main-subtitle {
   font-size: 1rem;
   font-weight: 400;
   color: #86868b;
@@ -665,10 +669,6 @@ p {
   position: relative;
   height: 330px;
   margin-bottom: 20px;
-  max-width: 760px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 20px;
   overflow: visible;
   display: flex;
   align-items: center;
@@ -755,17 +755,11 @@ p {
   overflow: hidden;
 }
 
-/* Bottom Status Pill */
-.bottom-status-pill {
-  max-width: 760px;
-  margin: 0 auto 20px;
-  padding: 0 20px;
-}
-
-.pill-content {
+/* Status Pill (inside main section) */
+.status-pill {
   background: #FFF1F2;
   border-radius: 9999px;
-  padding: 12px 18px;
+  padding: 14px 18px;
   min-height: 44px;
   display: flex;
   align-items: center;
@@ -788,18 +782,6 @@ p {
 .tip-icon::before {
   content: '❤️';
   font-size: 16px;
-}
-
-.view-all-link {
-  margin-left: auto;
-  color: #86868b;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.view-all-link:hover {
-  color: #52C5F7;
 }
 
 /* Legacy Tips Section (for other pages) */
