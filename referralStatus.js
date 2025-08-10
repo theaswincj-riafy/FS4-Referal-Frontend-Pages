@@ -925,6 +925,7 @@ class ReferralStatusPage {
       // Apply theme colors to premium button
       if (typeof THEME_ONE !== 'undefined') {
         premiumBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        premiumBtn.style.color = THEME_ONE.textColor;
         
         // Update scrollable content background
         const scrollableContent = document.getElementById('main-content');
