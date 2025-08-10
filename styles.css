@@ -594,8 +594,6 @@ p {
 .steps-container { 
   display: flex; 
   flex-direction: column; 
-  gap: 24px;
-  padding: 0 20px;
 }
 
 .step-row {
@@ -636,6 +634,23 @@ p {
 .step-row.step-right .step-card {
   margin-right: 72px; /* 56px width + 16px gap */
   text-align: left;
+}
+
+.hero-image{
+  height: 150px;
+  width: 150px;
+}
+
+.step-row.step-right .step-number-image {
+  height: 100px;
+  width: 100px;
+  margin-right: -20px;
+}
+
+.step-row.step-left .step-number-image {
+  height: 100px;
+  width: 100px;
+  margin-left: -20px;
 }
 
 /* Card styling */
