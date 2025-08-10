@@ -470,6 +470,15 @@ class ReferralRedeemPage {
     this.data.alreadyRedeemed = true;
     this.saveRedemptionData(true);
     
+    // Update the primary CTA button immediately before rendering
+    const primaryCta = document.getElementById('primary-cta');
+    if (primaryCta) {
+      const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
+      const successData = pageData.redeem?.redemptionSuccess || {};
+      primaryCta.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
+      console.log('Updated primary CTA button text to:', primaryCta.textContent);
+    }
+    
     // Replace the entire page content with success state
     this.renderAlreadyRedeemedState();
   }
@@ -511,9 +520,9 @@ class ReferralRedeemPage {
       <!-- Success State Content -->
       <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
         
-        <!-- Gray placeholder image box -->
+        <!-- Success image with crown -->
         <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; background: #e2e8f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-          <div style="color: #a0aec0; font-size: 3rem;">🎁</div>
+          <img src="images/crown.png" alt="Success Crown" style="width: 100px; height: 100px; object-fit: contain;" />
         </div>
         
         <!-- Main success title -->
