@@ -590,28 +590,26 @@ p {
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
 }
 
-.steps-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+/* Ensure rows lay out left/right by source order */
+.steps-container { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
 }
 
 .step-row {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  gap: 12px;
   position: relative;
   margin-bottom: 20px;
   width: 100%;
   min-height: 80px;
 }
 
-.step-row.step-left {
-  flex-direction: row;
-}
-
-.step-row.step-right {
-  flex-direction: row-reverse;
+/* Even rows flip to put the image on the right */
+.step-row.step-right { 
+  flex-direction: row-reverse; 
 }
 
 .step-row.step-right .step-card {
@@ -622,22 +620,28 @@ p {
   text-align: left;
 }
 
-.step-card {
-  background: #F8F9FA;
-  border-radius: 16px;
-  padding: 20px;
-  flex: 1;
-  margin: 0;
-  max-width: calc(100% - 76px); /* Account for image width + gap */
-}
-
+/* Make sure no previous rules pin the number image */
 .step-number-image {
-  width: 60px;
+  position: static !important;   /* override any absolute/float */
+  width: 56px;
   height: 60px;
-  flex-shrink: 0;
+  flex: 0 0 auto;
   object-fit: contain;
   margin-top: 4px;
 }
+
+/* Card should take the remaining space */
+.step-card { 
+  background: #F8F9FA;
+  border-radius: 16px;
+  padding: 20px;
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+/* Optional: tidy margins when reversed */
+.step-row.step-right .step-card { margin-right: 0; }
+.step-row.step-left  .step-card { margin-left: 0; }
 
 .step-description {
   font-size: 1rem;
