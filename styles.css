@@ -661,9 +661,12 @@ p {
   text-align: left;
 }
 
-.hero-image{
+.hero-image {
   height: 150px;
   width: 150px;
+  object-fit: contain;
+  margin: 0 auto 24px;
+  border-radius: 16px;
 }
 
 .step-row.step-right .step-number-image {

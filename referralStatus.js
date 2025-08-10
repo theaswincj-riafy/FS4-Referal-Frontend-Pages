@@ -145,6 +145,21 @@ class ReferralStatusPage {
     // Use hero.quickButtonText for invite button
     document.getElementById('invite-friends').querySelector('span').textContent = hero.quickButtonText || 'This is a placeholder';
 
+    // Update hero image based on current_redemptions
+    const heroImage = document.getElementById('hero-image');
+    if (heroImage) {
+      const imageMap = {
+        1: 'images/level1tp.png',
+        2: 'images/level2tp.png',
+        3: 'images/level3tp.png',
+        4: 'images/level4tp.png',
+        5: 'images/level5tp.png'
+      };
+      
+      const imageSrc = imageMap[currentRedemptions] || 'images/level1tp.png';
+      heroImage.src = imageSrc;
+    }
+
     // 3. Populate milestones (levels 1-5 only, ignore level 0)
     if (milestones.length > 0) {
       milestones.filter(milestone => milestone.level >= 1 && milestone.level <= 5).forEach((milestone) => {
