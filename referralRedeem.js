@@ -608,9 +608,6 @@ class ReferralRedeemPage {
   renderAlreadyRedeemedState() {
     console.log('ReferralRedeemPage: Rendering already redeemed state');
 
-    // Remove vertical scroll when showing success state
-    document.body.style.overflow = 'hidden';
-
     // Set scrollable-content background color to pastelBG
     const scrollableContent = document.querySelector('.scrollable-content');
     if (scrollableContent && typeof THEME_ONE !== 'undefined') {
@@ -655,13 +652,13 @@ class ReferralRedeemPage {
 
         <!-- Info nudge with icon -->
         <div id="info-nudge-component" class="info-nudge" style="background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%); border: 1px solid #F59E0B; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto;">
-          <div class="info-icon" style="color: #4a5568; margin-top: 0.125rem; flex-shrink: 0;">
+          <div class="info-icon" style="color: ${typeof THEME_ONE !== 'undefined' ? THEME_ONE.secondaryTextColor : '#676767'}; margin-top: 0.125rem; flex-shrink: 0;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
               <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <span class="info-text" style="color: #4a5568; font-size: 0.875rem; line-height: 1.4; text-align: left;">
+          <span class="info-text" style="color: ${typeof THEME_ONE !== 'undefined' ? THEME_ONE.secondaryTextColor : '#676767'}; font-size: 0.875rem; line-height: 1.4; text-align: left;">
             ${(successData.nudges && successData.nudges[0]) || 'Your redemption also helps John progress toward a reward.'}
           </span>
         </div>
