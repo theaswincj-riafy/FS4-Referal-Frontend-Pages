@@ -61,33 +61,41 @@ class ReferralPromotePage {
     const nudges = promoteData.nudges || [];
     const share = promoteData.share || {};
 
+    // Helper function to replace all variables in text
+    const replaceVariables = (text) => {
+      if (!text) return text;
+      return text
+        .replace(/\{\{referrer_name\}\}/g, apiData.referrer_name || this.params.firstname)
+        .replace(/\{\{referral_link\}\}/g, apiData.referral_url || '#')
+        .replace(/\{\{pending_redemptions\}\}/g, apiData.pending_redemptions || '0')
+        .replace(/\{\{current_redemptions\}\}/g, apiData.current_redemptions || '0');
+    };
+
     // Populate header using data mapping
     const headerElement = document.getElementById('header-title');
     if (headerElement && hero.page_title) {
-      headerElement.textContent = hero.page_title;
+      headerElement.textContent = replaceVariables(hero.page_title);
     }
 
     // Populate hero section using data mapping
     const heroTitleElement = document.getElementById('hero-title');
     if (heroTitleElement && hero.hero_title) {
-      heroTitleElement.textContent = hero.hero_title;
+      heroTitleElement.textContent = replaceVariables(hero.hero_title);
     }
 
     const heroSubtitleElement = document.getElementById('hero-subtitle');
     if (heroSubtitleElement && hero.subtitle) {
-      // Replace placeholder with actual referrer name
-      const subtitle = hero.subtitle.replace('{{referrer_name}}', apiData.referrer_name || this.params.firstname);
-      heroSubtitleElement.textContent = subtitle;
+      heroSubtitleElement.textContent = replaceVariables(hero.subtitle);
     }
 
     const referralCodeElement = document.getElementById('referral-code');
     if (referralCodeElement && apiData.referral_code) {
-      referralCodeElement.textContent = apiData.referral_code;
+      referralCodeElement.textContent = replaceVariables(apiData.referral_code);
     }
 
     const viewReferralsTextElement = document.getElementById('view-referrals-text');
     if (viewReferralsTextElement && hero.quickButtonText) {
-      viewReferralsTextElement.textContent = hero.quickButtonText;
+      viewReferralsTextElement.textContent = replaceVariables(hero.quickButtonText);
     }
 
     // Populate how it works steps using data mapping
@@ -95,7 +103,7 @@ class ReferralPromotePage {
       steps.forEach((step) => {
         const stepElement = document.getElementById(`step-${step.step}`);
         if (stepElement && step.desc) {
-          stepElement.textContent = step.desc;
+          stepElement.textContent = replaceVariables(step.desc);
         }
       });
     }
@@ -103,12 +111,12 @@ class ReferralPromotePage {
     // Populate progress section using data mapping
     const progressTitleElement = document.getElementById('progress-title');
     if (progressTitleElement && progress.title) {
-      progressTitleElement.textContent = progress.title;
+      progressTitleElement.textContent = replaceVariables(progress.title);
     }
 
     const progressSubtitleElement = document.getElementById('progress-subtitle');
     if (progressSubtitleElement && progress.subtitle) {
-      progressSubtitleElement.textContent = progress.subtitle;
+      progressSubtitleElement.textContent = replaceVariables(progress.subtitle);
     }
 
     // Populate benefits cards using data mapping (NOTE: mapping seems reversed in data structure)
@@ -118,10 +126,10 @@ class ReferralPromotePage {
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
         // According to mapping: benefit.desc goes to title, benefit.title goes to desc
         if (titleElement && benefit.title) {
-          titleElement.textContent = benefit.title;
+          titleElement.textContent = replaceVariables(benefit.title);
         }
         if (descElement && benefit.desc) {
-          descElement.textContent = benefit.desc;
+          descElement.textContent = replaceVariables(benefit.desc);
         }
       });
     }
@@ -130,20 +138,18 @@ class ReferralPromotePage {
     const tipElement = document.getElementById('tip-text');
     if (tipElement && nudges.length > 0) {
       const randomTip = nudges[Math.floor(Math.random() * nudges.length)];
-      tipElement.textContent = randomTip;
+      tipElement.textContent = replaceVariables(randomTip);
     }
 
     // Populate footer CTA using data mapping
     const primaryCtaElement = document.getElementById('primary-cta');
     if (primaryCtaElement && share.primary_cta) {
-      primaryCtaElement.textContent = share.primary_cta;
+      primaryCtaElement.textContent = replaceVariables(share.primary_cta);
     }
 
     // Store share message for later use in sharing functionality
     if (share.messages && share.messages.default) {
-      this.shareMessage = share.messages.default
-        .replace('{{referrer_name}}', apiData.referrer_name || this.params.firstname)
-        .replace('{{referral_link}}', apiData.referral_url || '#');
+      this.shareMessage = replaceVariables(share.messages.default);
     }
   }
 
