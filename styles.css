@@ -578,25 +578,27 @@ p {
   z-index: 100;
   background: #ffffff;
   border-top: 1px solid #e5e5ea;
-  padding: 16px 20px 32px;
+  padding: 16px 20px 24px;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.download-buttons-container {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
 }
 
 .download-btn {
-  width: 100%;
   background: transparent;
-  color: white;
   border: none;
-  border-radius: 0;
   padding: 0;
-  font-size: 1rem;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .download-btn:hover {
