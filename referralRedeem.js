@@ -170,9 +170,15 @@ class ReferralRedeemPage {
       console.log('ReferralRedeemPage: Loading fresh data from API');
       await this.loadPageData();
       if (this.data) {
-        // Add alreadyRedeemed flag and save to localStorage
-        this.data.alreadyRedeemed = false;
-        this.saveRedemptionData(false);
+        // Only save to localStorage if no existing data (don't overwrite alreadyRedeemed=true)
+        const existingData = this.getStoredRedemptionData();
+        if (!existingData) {
+          console.log('ReferralRedeemPage: No existing localStorage data, creating new entry with alreadyRedeemed=false');
+          this.data.alreadyRedeemed = false;
+          this.saveRedemptionData(false);
+        } else {
+          console.log('ReferralRedeemPage: Found existing localStorage data, not overwriting');
+        }
         
         this.populateContent();
         this.loadThemeColors();
