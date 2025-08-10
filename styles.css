@@ -463,7 +463,6 @@ p {
 /* Combined Card Section */
 .combined-card-section {
   background: white;
-  padding: 28px 20px 24px;
   max-width: 760px;
   margin: 0 auto;
   border-radius: 0;
@@ -473,6 +472,7 @@ p {
 .centered-heading-area {
   text-align: center;
   margin-bottom: 14px;
+  padding: 28px 20px 0;
 }
 
 .centered-main-title {
@@ -671,13 +671,12 @@ p {
 .combined-card-section .card-stack-container {
   position: relative;
   height: 300px;
-  margin: 0 auto;
+  margin: 0 auto 20px auto;
   padding: 0;
   perspective: 1000px;
   overflow: hidden;
   width: 100%;
   max-width: 400px;
-  margin-bottom: 20px;
 }
 
 .benefit-card {
@@ -734,7 +733,7 @@ p {
 /* Bottom Status Pill within Combined Section */
 .combined-card-section .bottom-status-pill {
   margin: 0;
-  padding: 0;
+  padding: 0 20px 24px;
 }
 
 .combined-card-section .pill-content {
