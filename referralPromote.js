@@ -77,6 +77,37 @@ class ReferralPromotePage {
       headerElement.textContent = replaceVariables(hero.page_title);
     }
 
+    // Populate hero section using data mapping
+    const heroTitleElement = document.getElementById('hero-title');
+    if (heroTitleElement && hero.hero_title) {
+      heroTitleElement.textContent = replaceVariables(hero.hero_title);
+    }
+
+    const heroSubtitleElement = document.getElementById('hero-subtitle');
+    if (heroSubtitleElement && hero.subtitle) {
+      heroSubtitleElement.textContent = replaceVariables(hero.subtitle);
+    }
+
+    const referralCodeElement = document.getElementById('referral-code');
+    if (referralCodeElement && apiData.referral_code) {
+      referralCodeElement.textContent = replaceVariables(apiData.referral_code);
+    }
+
+    const viewReferralsTextElement = document.getElementById('view-referrals-text');
+    if (viewReferralsTextElement && hero.quickButtonText) {
+      viewReferralsTextElement.textContent = replaceVariables(hero.quickButtonText);
+    }
+
+    // Populate how it works steps using data mapping
+    if (steps.length > 0) {
+      steps.forEach((step) => {
+        const stepElement = document.getElementById(`step-${step.step}`);
+        if (stepElement && step.desc) {
+          stepElement.textContent = replaceVariables(step.desc);
+        }
+      });
+    }
+
     // Populate progress section using data mapping
     const progressTitleElement = document.getElementById('progress-title');
     if (progressTitleElement && progress.title) {
@@ -308,6 +339,14 @@ class ReferralPromotePage {
       });
     }
 
+    // View referrals button
+    const viewReferralsBtn = document.getElementById('view-referrals');
+    if (viewReferralsBtn) {
+      viewReferralsBtn.addEventListener('click', () => {
+        window.location.href = `referralStatus.html?${new URLSearchParams(this.params).toString()}`;
+      });
+    }
+
     // Primary CTA button
     const primaryCta = document.getElementById('primary-cta');
     if (primaryCta) {
@@ -316,6 +355,30 @@ class ReferralPromotePage {
       });
     }
 
+    // View All Cards link in bottom pill
+    const viewAllLink = document.getElementById('view-all-cards');
+    if (viewAllLink) {
+      viewAllLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Cycle through cards quickly to show all of them
+        this.showAllCards();
+      });
+    }
+  }
+
+  showAllCards() {
+    // Quick demonstration of all cards
+    let cycleCount = 0;
+    const maxCycles = 3; // Show 3 cards
+    
+    const cycleInterval = setInterval(() => {
+      this.swipeCard('left');
+      cycleCount++;
+      
+      if (cycleCount >= maxCycles) {
+        clearInterval(cycleInterval);
+      }
+    }, 800); // 800ms between each card
   }
 
   shareInvite() {
