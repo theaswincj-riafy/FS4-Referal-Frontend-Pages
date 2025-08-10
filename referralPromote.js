@@ -613,6 +613,9 @@ class ReferralPromotePage {
     const backBtn = document.getElementById('back-btn');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
+        console.log('[BACK BUTTON] referralPromote back button clicked');
+        console.log('[BACK BUTTON] userId:', this.params.userId);
+        console.log('[BACK BUTTON] redirecting to index.html');
         window.location.href = 'index.html';
       });
     }

@@ -920,10 +920,14 @@ class ReferralStatusPage {
 
   bindEvents() {
     // Back button
-    const backBtn = document.getElementById("back-btn");
+    const backBtn = document.getElementById('back-btn');
     if (backBtn) {
-      backBtn.addEventListener("click", () => {
-        window.location.href = "index.html";
+      backBtn.addEventListener('click', () => {
+        console.log('[BACK BUTTON] referralStatus back button clicked');
+        console.log('[BACK BUTTON] alreadyRedeemed state:', this.data?.alreadyRedeemed || false);
+        console.log('[BACK BUTTON] userId:', this.params.userId);
+        console.log('[BACK BUTTON] redirecting to index.html');
+        window.location.href = 'index.html';
       });
     }
 
@@ -1020,22 +1024,22 @@ class ReferralStatusPage {
     contentWrapper.innerHTML = `
       <!-- Success State Content -->
       <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
-        
+
         <!-- Success image with crown -->
         <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
           <img src="images/crown.png" alt="Success Crown" style="width: 250px; height: 250px; object-fit: contain;" />
         </div>
-        
+
         <!-- Main success title -->
         <h1 class="success-title" style="font-size: 2rem; font-weight: 700; color: #1a202c; margin-bottom: 1rem; line-height: 1.2;">
           ${successData.hero_title}
         </h1>
-        
+
         <!-- Success subtitle -->
         <p class="success-subtitle" style="font-size: 1rem; color: #718096; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
           ${successData.subtitle}
         </p>
-        
+
         <!-- Info nudge with icon -->
         <div class="info-nudge" style="background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%); border: 1px solid #F59E0B; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto;">
           <div class="info-icon" style="color: #4a5568; margin-top: 0.125rem; flex-shrink: 0;">
@@ -1049,7 +1053,7 @@ class ReferralStatusPage {
           </span>
         </div>
       </section>
-      
+
       <!-- Premium CTA Button -->
       <div class="fixed-footer" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 20px 32px; background: white; border-top: 1px solid #e2e8f0;">
         <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; color: white; cursor: pointer;">
