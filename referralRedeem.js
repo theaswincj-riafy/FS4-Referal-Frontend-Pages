@@ -3,13 +3,122 @@ class ReferralRedeemPage {
   constructor() {
     this.data = null;
     this.params = ReferralUtils.getUrlParams();
+    this.validationMessages = {};
     this.init();
+  }
+
+  // Simple encryption using base64 and character shifting
+  encrypt(text) {
+    try {
+      const shifted = text.split('').map(char => 
+        String.fromCharCode(char.charCodeAt(0) + 3)
+      ).join('');
+      return btoa(shifted);
+    } catch (error) {
+      console.error('Encryption error:', error);
+      return btoa(text); // Fallback to simple base64
+    }
+  }
+
+  // Simple decryption
+  decrypt(encryptedText) {
+    try {
+      return atob(encryptedText).split('').map(char => 
+        String.fromCharCode(char.charCodeAt(0) - 3)
+      ).join('');
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      return '';
+    }
+  }
+
+  // Generate encrypted localStorage key
+  getStorageKey() {
+    const encryptedUserId = this.encrypt(this.params.userId);
+    const encryptedAppName = this.encrypt(this.params.app_package_name);
+    return `referralRedeem_${encryptedUserId}_${encryptedAppName}`;
+  }
+
+  // Check if user has already redeemed
+  checkAlreadyRedeemed() {
+    const storageKey = this.getStorageKey();
+    const storedData = localStorage.getItem(storageKey);
+    
+    if (storedData) {
+      try {
+        const decryptedData = JSON.parse(this.decrypt(storedData));
+        return decryptedData.alreadyRedeemed === true;
+      } catch (error) {
+        console.error('Failed to parse stored redemption data:', error);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  // Save redemption data to localStorage
+  saveRedemptionData(alreadyRedeemed = false) {
+    const storageKey = this.getStorageKey();
+    const dataToStore = {
+      ...this.data,
+      alreadyRedeemed: alreadyRedeemed,
+      timestamp: new Date().toISOString()
+    };
+    
+    try {
+      const jsonString = JSON.stringify(dataToStore);
+      const encryptedData = this.encrypt(jsonString);
+      localStorage.setItem(storageKey, encryptedData);
+      console.log('Redemption data saved to localStorage with key:', storageKey);
+      console.log('Data stored:', { alreadyRedeemed: dataToStore.alreadyRedeemed });
+    } catch (error) {
+      console.error('Failed to save redemption data:', error, {
+        storageKey,
+        dataSize: JSON.stringify(dataToStore).length
+      });
+    }
+  }
+
+  // Get stored redemption data
+  getStoredRedemptionData() {
+    const storageKey = this.getStorageKey();
+    const storedData = localStorage.getItem(storageKey);
+    
+    if (storedData) {
+      try {
+        return JSON.parse(this.decrypt(storedData));
+      } catch (error) {
+        console.error('Failed to parse stored redemption data:', error);
+        return null;
+      }
+    }
+    return null;
   }
 
   async init() {
     try {
+      // Check if user has already redeemed
+      const alreadyRedeemed = this.checkAlreadyRedeemed();
+      
+      if (alreadyRedeemed) {
+        // Load stored data and render success state
+        const storedData = this.getStoredRedemptionData();
+        if (storedData) {
+          this.data = storedData;
+          this.loadThemeColors();
+          this.hideLoader();
+          this.renderAlreadyRedeemedState();
+          return;
+        }
+      }
+      
+      // Normal flow - load fresh data
       await this.loadPageData();
       if (this.data) {
+        // Add alreadyRedeemed flag and save to localStorage
+        this.data.alreadyRedeemed = false;
+        this.saveRedemptionData(false);
+        
         this.populateContent();
         this.loadThemeColors();
         this.hideLoader();
@@ -264,6 +373,9 @@ class ReferralRedeemPage {
       const result = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
       
       if (result.success || result.status === 'success') {
+        // Mark as redeemed and save to localStorage
+        this.data.alreadyRedeemed = true;
+        this.saveRedemptionData(true);
         this.showSuccessState(result);
       } else {
         // Handle different validation states
@@ -350,6 +462,69 @@ class ReferralRedeemPage {
         </div>
       `;
     }
+  }
+
+  // Render the already redeemed state (success page)
+  renderAlreadyRedeemedState() {
+    // Get redemption success data
+    const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
+    const successData = pageData.redeem?.redemptionSuccess || {};
+    
+    // Get content wrapper and replace with success UI
+    const contentWrapper = document.getElementById('page-content-wrapper');
+    if (!contentWrapper) return;
+    
+    // Update header title
+    const headerTitle = document.getElementById('header-title');
+    if (headerTitle) {
+      headerTitle.textContent = successData.hero_title || 'You\'re all set!';
+    }
+    
+    // Replace main content with success state
+    contentWrapper.innerHTML = `
+      <!-- Hero Section - Success State -->
+      <section class="hero-section" style="text-align: center; padding: 2rem 1rem;">
+        <div class="success-image-container" style="width: 200px; height: 200px; margin: 0 auto 2rem; background: #f0f0f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 4rem;">🎁</div>
+        </div>
+        
+        <h1 class="hero-title" style="font-size: 1.75rem; font-weight: 700; color: #2d3748; margin-bottom: 1rem;">
+          ${successData.hero_title || 'You\'re all set!'}
+        </h1>
+        
+        <p class="hero-subtitle" style="font-size: 1rem; color: #4a5568; line-height: 1.5; margin-bottom: 2rem;">
+          ${successData.subtitle || 'You have redeemed a valid referral code!'}
+        </p>
+        
+        <!-- Success Nudge -->
+        <div class="success-nudge" style="background: #f0fff4; border: 1px solid #9ae6b4; border-radius: 12px; padding: 1rem; margin-bottom: 3rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+          <div class="nudge-icon" style="color: #38a169; margin-top: 0.125rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="nudge-text" style="color: #2f855a; font-size: 0.875rem; line-height: 1.4;">
+            ${(successData.nudges && successData.nudges[0]) || 'Your redemption helps your friend progress toward a reward.'}
+          </span>
+        </div>
+      </section>
+    `;
+    
+    // Update footer CTA
+    const footerCTA = document.getElementById('primary-cta');
+    if (footerCTA) {
+      footerCTA.textContent = successData.primary_cta || 'Continue';
+      footerCTA.disabled = false;
+      
+      // Add click handler for the CTA in success state
+      footerCTA.onclick = () => {
+        // You can customize this behavior - perhaps navigate somewhere else or close the page
+        ReferralUtils.showToast('Premium access activated!');
+      };
+    }
+    
+    console.log('Rendered already redeemed state with data:', successData);
   }
 }
 
