@@ -1034,9 +1034,13 @@ class ReferralStatusPage {
     };
 
     // Replace firstname placeholder with actual value and capitalize first letter
-    const firstname = this.params.firstname || 'User';
-    const capitalizedFirstname = firstname.charAt(0).toUpperCase() + firstname.slice(1).toLowerCase();
-    successData.hero_title = successData.hero_title.replace('{{firstname}}, you have done it!', capitalizedFirstname + ',<br> you have done it!');
+    const firstname = this.params.firstname || "User";
+    const capitalizedFirstname =
+      firstname.charAt(0).toUpperCase() + firstname.slice(1).toLowerCase();
+    successData.hero_title = successData.hero_title.replace(
+      "{{firstname}}, you have done it!",
+      capitalizedFirstname + ",<br> you have done it!",
+    );
 
     console.log("Success data for rendering:", successData);
 
@@ -1053,10 +1057,10 @@ class ReferralStatusPage {
     // Replace entire content with success state matching referralRedeem success screen
     contentWrapper.innerHTML = `
       <!-- Success State Content -->
-      <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
+      <section class="success-section" style="text-align: center; padding: 0rem 1rem 4rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
 
         <!-- Success image with crown -->
-        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
           <img src="images/crown.png" alt="Success Crown" style="width: 250px; height: 250px; object-fit: contain;" />
         </div>
 
