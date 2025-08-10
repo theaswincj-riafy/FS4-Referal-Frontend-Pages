@@ -460,13 +460,19 @@ p {
   margin-bottom: 2rem;
 }
 
-/* Centered Heading Section */
-.centered-heading-section {
+/* Combined Card Section */
+.combined-card-section {
+  background: white;
+  padding: 28px 20px 24px;
   max-width: 760px;
   margin: 0 auto;
-  padding: 0 20px;
+  border-radius: 0;
+}
+
+/* Centered Heading Area within Combined Section */
+.centered-heading-area {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .centered-main-title {
@@ -476,6 +482,7 @@ p {
   letter-spacing: -0.02em;
   color: #1d1d1f;
   margin-bottom: 8px;
+  max-width: 100%;
 }
 
 .centered-subtitle {
@@ -661,14 +668,11 @@ p {
 }
 
 /* Rotating Card Stack */
-.card-stack-container {
+.combined-card-section .card-stack-container {
   position: relative;
   height: 330px;
   margin-bottom: 20px;
-  max-width: 760px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 20px;
+  padding: 0;
   overflow: visible;
   display: flex;
   align-items: center;
@@ -738,7 +742,7 @@ p {
 }
 
 .benefit-card-title {
-  font-size: 1.375rem;
+  font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 12px;
   line-height: 1.15;
@@ -755,14 +759,13 @@ p {
   overflow: hidden;
 }
 
-/* Bottom Status Pill */
-.bottom-status-pill {
-  max-width: 760px;
-  margin: 0 auto 20px;
-  padding: 0 20px;
+/* Bottom Status Pill within Combined Section */
+.combined-card-section .bottom-status-pill {
+  margin: 0;
+  padding: 0;
 }
 
-.pill-content {
+.combined-card-section .pill-content {
   background: #FFF1F2;
   border-radius: 9999px;
   padding: 12px 18px;
@@ -776,7 +779,7 @@ p {
   font-weight: 500;
 }
 
-.tip-icon {
+.combined-card-section .tip-icon {
   width: 20px;
   height: 20px;
   display: flex;
@@ -785,21 +788,9 @@ p {
   flex-shrink: 0;
 }
 
-.tip-icon::before {
+.combined-card-section .tip-icon::before {
   content: '❤️';
   font-size: 16px;
-}
-
-.view-all-link {
-  margin-left: auto;
-  color: #86868b;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-.view-all-link:hover {
-  color: #52C5F7;
 }
 
 /* Legacy Tips Section (for other pages) */

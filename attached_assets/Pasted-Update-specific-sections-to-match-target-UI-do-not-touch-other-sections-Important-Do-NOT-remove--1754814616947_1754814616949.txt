@@ -1,0 +1,97 @@
+Update specific sections to match target UI (do not touch other sections)
+Important:
+
+Do NOT remove or alter any unrelated sections.
+
+All other sections in the HTML must work exactly as they do now.
+
+Only the sections shown in the provided screenshot (centered-heading-section, card-stack-container, bottom-status-pill) should have their UI updated.
+
+1) Combine into a single main section
+Merge centered-heading-section, card-stack-container, and bottom-status-pill into one HTML section.
+
+This section should:
+
+Have a white background (matching target design).
+
+Use unified padding: top ~28px, bottom ~24px, left/right ~20–24px.
+
+Contain: heading → subtitle → card stack → status pill, stacked vertically.
+
+Align all elements consistently with equal horizontal insets.
+
+Remove any extra gaps/dividers between these three elements so they appear as one block.
+
+2) Centered heading area (inside the combined section)
+Title: bold (~26–28px), center-aligned, max two lines.
+
+Subtitle: ~15–16px, muted grey, center-aligned.
+
+Gap between title and subtitle: ~8px.
+
+Gap between subtitle and card stack: ~12–16px.
+
+3) Card stack (inside the combined section)
+Structure & sizing
+
+Show three cards at all times:
+
+Top card: upright (0° rotation), no blur, full content visible.
+
+Middle card: rotated clockwise (~+8°), slightly lower, subtle blur, pastel yellow background.
+
+Back card: rotated counter-clockwise (~–8°), slightly higher, slightly more blur, pastel blue background.
+
+Card width: clamp between 280px–440px (~76vw on small screens). Height ~210–230px.
+
+Corner radius: 24px.
+
+Shadows: soft, wide, low-opacity — remove harsh or glowing shadows.
+
+Top card content
+
+Warm vertical gradient background (light warm → medium warm, desaturated).
+
+White, left-aligned text: title (~22–24px, bold) and body (~14–15px, 3–5 lines max).
+
+Internal padding: ~20–22px.
+
+GSAP behavior (design intent)
+
+On load: fade/scale in all three cards with small stagger from back → middle → top.
+
+On swipe: top card exits with tilt (~10°) and lift, middle becomes top, back becomes middle, insert a new back card (maintaining three visible cards).
+
+4) Bottom status pill (inside the combined section)
+Single full-width pill with:
+
+Very light pink background, no border, fully rounded edges.
+
+Height ≥44px, padding ~12–14px vertical, ~16–18px horizontal.
+
+Inline layout: heart icon + tip text.
+
+Remove the “View All Cards” button/link entirely — only show icon and text.
+
+Text: medium weight, muted grey; icon and text vertically centered.
+
+5) Spacing rhythm
+Heading → subtitle: ~8px gap.
+
+Subtitle → card stack: ~12–16px gap.
+
+Card stack → pill: ~16–24px gap.
+
+Pill → bottom of section: ~0–8px gap (tight to section padding).
+
+6) Final QA checklist
+Only the specified three sections are updated; all other page sections remain exactly as they are now.
+
+Combined section has a white background, unified padding, and vertical stacking.
+
+Three cards are always visible with correct rotations, offsets, soft shadows, and pastel backgrounds.
+
+Top card gradient, text styling, and padding match the target look.
+
+Status pill contains only icon + text (no “View All Cards” link).
+

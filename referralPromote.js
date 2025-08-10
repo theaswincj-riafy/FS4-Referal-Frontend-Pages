@@ -355,30 +355,6 @@ class ReferralPromotePage {
       });
     }
 
-    // View All Cards link in bottom pill
-    const viewAllLink = document.getElementById('view-all-cards');
-    if (viewAllLink) {
-      viewAllLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Cycle through cards quickly to show all of them
-        this.showAllCards();
-      });
-    }
-  }
-
-  showAllCards() {
-    // Quick demonstration of all cards
-    let cycleCount = 0;
-    const maxCycles = 3; // Show 3 cards
-    
-    const cycleInterval = setInterval(() => {
-      this.swipeCard('left');
-      cycleCount++;
-      
-      if (cycleCount >= maxCycles) {
-        clearInterval(cycleInterval);
-      }
-    }, 800); // 800ms between each card
   }
 
   shareInvite() {
