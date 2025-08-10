@@ -248,12 +248,18 @@ class ReferralPromotePage {
         this.adjustCardTitleFontSize(card);
       });
 
-      // Reset heights to auto to measure natural height after font adjustments
+      // Remove text truncation temporarily to measure natural content height
       cards.forEach(card => {
+        const descElement = card.querySelector('.benefit-card-desc');
+        if (descElement) {
+          descElement.style.webkitLineClamp = 'unset';
+          descElement.style.display = 'block';
+          descElement.style.overflow = 'visible';
+        }
         card.style.height = 'auto';
       });
 
-      // Find the tallest card
+      // Find the tallest card with full content
       let maxHeight = 0;
       cards.forEach(card => {
         const cardHeight = card.scrollHeight;
@@ -262,9 +268,20 @@ class ReferralPromotePage {
         }
       });
 
-      // Apply the max height to all cards
+      // Ensure minimum height for visual consistency
+      const minHeight = 200;
+      maxHeight = Math.max(maxHeight, minHeight);
+
+      // Apply the max height to all cards and restore proper text display
       cards.forEach(card => {
         card.style.height = `${maxHeight}px`;
+        const descElement = card.querySelector('.benefit-card-desc');
+        if (descElement) {
+          // Remove the line clamp restriction since we now have enough space
+          descElement.style.webkitLineClamp = 'unset';
+          descElement.style.display = 'block';
+          descElement.style.overflow = 'visible';
+        }
       });
     });
   }
