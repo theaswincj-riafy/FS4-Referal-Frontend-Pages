@@ -157,14 +157,21 @@ class ReferralStatusPage {
       console.log('ReferralStatusPage: Loading fresh data from API');
       await this.loadPageData();
       if (this.data) {
-        // Only save to localStorage if no existing data (don't overwrite alreadyRedeemed=true)
-        const existingData = this.getStoredStatusData();
-        if (!existingData) {
-          console.log('ReferralStatusPage: No existing localStorage data, creating new entry with alreadyRedeemed=false');
-          this.data.alreadyRedeemed = false;
-          this.saveStatusData(false);
-        } else {
-          console.log('ReferralStatusPage: Found existing localStorage data, not overwriting');
+        // Check current_redemptions from API to determine alreadyRedeemed status
+        const currentRedemptions = this.data.data?.current_redemptions || 0;
+        const shouldBeRedeemed = currentRedemptions >= 5;
+        console.log('Current redemptions:', currentRedemptions, 'Should be redeemed:', shouldBeRedeemed);
+        
+        // Set alreadyRedeemed based on current_redemptions
+        this.data.alreadyRedeemed = shouldBeRedeemed;
+        this.saveStatusData(shouldBeRedeemed);
+        
+        if (shouldBeRedeemed) {
+          console.log('ReferralStatusPage: current_redemptions >= 5, showing success state');
+          this.loadThemeColors();
+          this.hideLoader();
+          this.renderAlreadyRedeemedState();
+          return;
         }
         
         this.populateContent();
@@ -876,8 +883,8 @@ class ReferralStatusPage {
       <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
         
         <!-- Success image with crown -->
-        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; background: #e2e8f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-          <img src="images/crown.png" alt="Success Crown" style="width: 100px; height: 100px; object-fit: contain;" />
+        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <img src="images/crown.png" alt="Success Crown" style="width: 250px; height: 250px; object-fit: contain;" />
         </div>
         
         <!-- Main success title -->
@@ -891,7 +898,7 @@ class ReferralStatusPage {
         </p>
         
         <!-- Info nudge with icon -->
-        <div class="info-nudge" style="background: #f7fafc; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto; border: 1px solid #e2e8f0;">
+        <div class="info-nudge" style="background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%); border: 1px solid #F59E0B; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto;">
           <div class="info-icon" style="color: #4a5568; margin-top: 0.125rem; flex-shrink: 0;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -905,16 +912,27 @@ class ReferralStatusPage {
       </section>
       
       <!-- Premium CTA Button -->
-      <div class="fixed-footer" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 1rem; background: white; border-top: 1px solid #e2e8f0;">
-        <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; background: linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%); color: white; cursor: pointer;">
+      <div class="fixed-footer" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 20px 32px; background: white; border-top: 1px solid #e2e8f0;">
+        <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; color: white; cursor: pointer;">
           ${successData.primary_cta}
         </button>
       </div>
     `;
     
-    // Bind click event to premium button
+    // Apply theme colors and bind click event to premium button
     const premiumBtn = document.getElementById('primary-cta-premium');
     if (premiumBtn) {
+      // Apply theme colors to premium button
+      if (typeof THEME_ONE !== 'undefined') {
+        premiumBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        
+        // Update scrollable content background
+        const scrollableContent = document.getElementById('main-content');
+        if (scrollableContent) {
+          scrollableContent.style.backgroundColor = THEME_ONE.pastelBG;
+        }
+      }
+      
       premiumBtn.addEventListener('click', () => {
         console.log('Premium button clicked, deeplink: riafy.me/buy1monthpremium');
         ReferralUtils.showToast('riafy.me/buy1monthpremium');
