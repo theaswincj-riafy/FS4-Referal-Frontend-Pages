@@ -24,14 +24,27 @@ class ReferralDownloadPage {
 
   async loadPageData() {
     try {
-      const endpoint = `/share/${this.params.referralCode}`;
+      // Use the referralCode from URL params for the API call
+      const referralCode = this.params.referralCode;
+      if (!referralCode) {
+        throw new Error('No referral code provided');
+      }
       
-      console.log('Making API call to:', endpoint);
+      const endpoint = `/share/${referralCode}`;
+      
+      console.log('ReferralDownloadPage: Making API call to:', endpoint);
+      console.log('Using referralCode:', referralCode);
       
       this.data = await ReferralUtils.makeApiCall(endpoint, 'GET');
-      console.log('Loaded API data:', this.data);
+      console.log('ReferralDownloadPage: Loaded API data:', this.data);
+      
+      // Validate that we received the expected page3_referralDownload data
+      if (!this.data.data?.page3_referralDownload) {
+        console.warn('ReferralDownloadPage: No page3_referralDownload found in API response');
+      }
+      
     } catch (error) {
-      console.error('API call error:', error);
+      console.error('ReferralDownloadPage: API call error:', error);
       this.data = null;
       throw new Error('API call failed');
     }
@@ -43,52 +56,84 @@ class ReferralDownloadPage {
       return;
     }
 
+    console.log('ReferralDownloadPage: Populating content with API data');
+    
     // Extract data from API response structure
-    const pageData = this.data.data || this.data;
-    const app = pageData.app || {};
-    const invitation = pageData.invitation || {};
-    const steps = pageData.how_it_works || pageData.steps || [];
-
-    // Populate app title
-    document.getElementById('app-title').textContent = app.name || app.title || 'Dance Workouts For Weight Loss';
-
-    // Populate invitation section
-    const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
-    document.getElementById('invitation-title').textContent = 
-      invitation.title || `${capitalizedName} Invited You To Try This App`;
+    const apiData = this.data.data || this.data;
+    const downloadData = apiData.page3_referralDownload || {};
+    const heroData = downloadData.hero || {};
+    const howItWorksData = downloadData.how_it_works || [];
+    const storeCtas = downloadData.store_ctas || {};
     
-    document.getElementById('invitation-subtitle').textContent = 
-      invitation.subtitle || 'Download the app to claim your invite and get 1 week of Premium features for Free!';
+    console.log('Download page data:', downloadData);
+    console.log('Hero data:', heroData);
+    console.log('How it works data:', howItWorksData);
+    console.log('Store CTAs:', storeCtas);
+
+    // Populate app title using page_title
+    const appTitleElement = document.getElementById('app-title');
+    if (appTitleElement && heroData.page_title) {
+      appTitleElement.textContent = heroData.page_title;
+    }
+
+    // Populate invitation title, replacing {{referrer_name}} with actual referrer name
+    const invitationTitleElement = document.getElementById('invitation-title');
+    if (invitationTitleElement && heroData.hero_title) {
+      let heroTitle = heroData.hero_title;
+      if (apiData.referrer_name) {
+        heroTitle = heroTitle.replace(/\{\{referrer_name\}\}/g, apiData.referrer_name);
+      }
+      invitationTitleElement.textContent = heroTitle;
+    }
     
-    document.getElementById('referral-code').textContent = 
-      invitation.referral_code || pageData.referral_code || this.params.referralCode;
+    // Populate invitation subtitle
+    const invitationSubtitleElement = document.getElementById('invitation-subtitle');
+    if (invitationSubtitleElement && heroData.subtitle) {
+      invitationSubtitleElement.textContent = heroData.subtitle;
+    }
+    
+    // Populate referral code
+    const referralCodeElement = document.getElementById('referral-code');
+    if (referralCodeElement && heroData.referral_code) {
+      referralCodeElement.textContent = heroData.referral_code;
+    }
+    
+    // Populate copy button text
+    const copyButtonElement = document.getElementById('copy-clipboard');
+    if (copyButtonElement && heroData.quickButtonText) {
+      copyButtonElement.textContent = heroData.quickButtonText;
+    }
 
     // Populate how it works steps
-    if (steps.length > 0) {
-      steps.forEach((step, index) => {
-        const stepElement = document.getElementById(`step-${index + 1}`);
-        if (stepElement) {
-          let stepText = step.desc || step.description || step.text;
-          // Replace placeholder with actual referrer name
-          stepText = stepText.replace(/\{referrer_name\}/g, capitalizedName);
-          stepElement.textContent = stepText;
-        }
-      });
-    } else {
-      // Default steps if API doesn't provide them
-      const defaultSteps = [
-        'Download the app from Google Play or Apple App Store',
-        'Open the app and click on Redeem Referral Code',
-        `Paste ${capitalizedName}'s referral code and hit redeem to unlock a week of Premium features for yourself!`
-      ];
-      
-      defaultSteps.forEach((stepText, index) => {
-        const stepElement = document.getElementById(`step-${index + 1}`);
-        if (stepElement) {
+    if (howItWorksData.length > 0) {
+      howItWorksData.forEach((stepData, index) => {
+        const stepElement = document.getElementById(`step-${stepData.step || index + 1}`);
+        if (stepElement && stepData.desc) {
+          let stepText = stepData.desc;
+          // Replace {{referrer_name}} placeholder with actual referrer name
+          if (apiData.referrer_name) {
+            stepText = stepText.replace(/\{\{referrer_name\}\}/g, apiData.referrer_name);
+          }
           stepElement.textContent = stepText;
         }
       });
     }
+    
+    // Populate download button texts and store links
+    const googlePlayBtn = document.getElementById('download-google');
+    const appStoreBtn = document.getElementById('download-appstore');
+    
+    if (googlePlayBtn && storeCtas.play_store_button) {
+      googlePlayBtn.textContent = storeCtas.play_store_button;
+    }
+    
+    if (appStoreBtn && storeCtas.app_store_button) {
+      appStoreBtn.textContent = storeCtas.app_store_button;
+    }
+    
+    // Store the download links for event binding
+    this.playStoreLink = storeCtas.play_store_link || apiData.play_store_link;
+    this.appStoreLink = storeCtas.app_store_link || apiData.app_store_link;
   }
 
   hideLoader() {
@@ -112,6 +157,20 @@ class ReferralDownloadPage {
     // Download buttons
     const googlePlayBtn = document.getElementById('download-google');
     const appStoreBtn = document.getElementById('download-appstore');
+    
+    if (googlePlayBtn && this.playStoreLink) {
+      googlePlayBtn.addEventListener('click', () => {
+        console.log('Opening Play Store link:', this.playStoreLink);
+        window.open(this.playStoreLink, '_blank');
+      });
+    }
+    
+    if (appStoreBtn && this.appStoreLink) {
+      appStoreBtn.addEventListener('click', () => {
+        console.log('Opening App Store link:', this.appStoreLink);
+        window.open(this.appStoreLink, '_blank');
+      });
+    }
     
     if (googlePlayBtn) {
       googlePlayBtn.addEventListener('click', () => {
