@@ -1,123 +1,205 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invite Friends - Referral Promote</title>
-    <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="Invite friends and unlock 1 month of Premium">
-    <meta name="theme-color" content="#667eea">
-</head>
-<body>
-    <div class="container">
-        <!-- Sticky Header -->
-        <header class="sticky-header" role="banner">
-            <button class="back-btn" id="back-btn" aria-label="Go back">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h1 class="header-title" id="header-title">Invite Friends</h1>
-        </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Invite Friends - Referral Promote</title>
+        <link rel="stylesheet" href="styles.css" />
+        <meta
+            name="description"
+            content="Invite friends and unlock 1 month of Premium"
+        />
+        <meta name="theme-color" content="#667eea" />
+    </head>
+    <body>
+        <div class="container">
+            <!-- Sticky Header -->
+            <header class="sticky-header" role="banner">
+                <button class="back-btn" id="back-btn" aria-label="Go back">
+                    <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M15 18L9 12L15 6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </button>
+                <h1 class="header-title" id="header-title">Invite Friends</h1>
+            </header>
 
-        <!-- Scrollable Content -->
-        <main class="scrollable-content" id="main-content">
-            <!-- Full Page Loader -->
-            <div class="page-loader" id="page-loader">
-                <div class="loading-container">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content (Hidden during loading) -->
-            <div class="page-content-wrapper" id="page-content-wrapper" style="display: none;">
-                <!-- Hero Section -->
-                <section class="hero-section">
-                    <div class="hero-image-placeholder"></div>
-                    <h1 class="hero-title" id="hero-title">Invite & Unlock 1 Month Premium</h1>
-                    <p class="hero-subtitle" id="hero-subtitle">John, invite friends and get 1 month of Premium when 5 people redeem your code.</p>
-                    <div class="hero-code-cta-container">
-                        <div class="referral-code-display" id="referral-code">JOHN1234</div>
-                        <button class="view-referrals-btn" id="view-referrals">
-                            <span id="view-referrals-text">View my referrals</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                </section>
-
-                <!-- How It Works Section -->
-                <section class="how-it-works">
-                    <h2 class="section-title">How it works</h2>
-                    <div class="steps-list" id="steps-list">
-                        <div class="step-item">
-                            <div class="step-number">1</div>
-                            <p class="step-description" id="step-1">Invite your friends and family using your referral code</p>
+            <!-- Scrollable Content -->
+            <main class="scrollable-content" id="main-content">
+                <!-- Full Page Loader -->
+                <div class="page-loader" id="page-loader">
+                    <div class="loading-container">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
                         </div>
-                        <div class="step-item">
-                            <div class="step-number">2</div>
-                            <p class="step-description" id="step-2">After your friend has installed the app, they can redeem your code.</p>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-number">3</div>
-                            <p class="step-description" id="step-3">On every successful redemption, you will gain a new level!</p>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-number">4</div>
-                            <p class="step-description" id="step-4">Your friend receives a week of free premium as well!</p>
-                        </div>
-                        <div class="step-item" id="step-5-item">
-                            <div class="step-number">5</div>
-                            <p class="step-description" id="step-5">You can unlock a month of free premium on reaching level 5!</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Progress Section -->
-                <section class="progress-section">
-                    <h3 class="progress-title" id="progress-title">Only 5 more levels to go!</h3>
-                    <p class="progress-subtitle" id="progress-subtitle">Each redemption brings you closer to Premium!</p>
-                </section>
-
-                <!-- Rotating Card Stack -->
-                <div class="card-stack-container" id="card-stack">
-                    <div class="benefit-card premium-access" data-index="0">
-                        <h4 class="benefit-card-title" id="benefit-1-title">Premium Access</h4>
-                        <p class="benefit-card-desc" id="benefit-1-desc">Ad-free experience, pro features, and priority support for 1 month.</p>
-                    </div>
-                    <div class="benefit-card win-together" data-index="1">
-                        <h4 class="benefit-card-title" id="benefit-2-title">Win Together</h4>
-                        <p class="benefit-card-desc" id="benefit-2-desc">Your friends get an exclusive newcomer perk when they join via your link.</p>
-                    </div>
-                    <div class="benefit-card fast-simple" data-index="2">
-                        <h4 class="benefit-card-title" id="benefit-3-title">Fast & Simple</h4>
-                        <p class="benefit-card-desc" id="benefit-3-desc">Share your link; they download and redeem. You progress instantly.</p>
                     </div>
                 </div>
 
-                <!-- Tips Section -->
-                <section class="tips-section">
-                    <div class="tip-item">
-                        <div class="tip-icon"></div>
-                        <span id="tip-text">Best results: share with 5–10 close contacts first.</span>
+                <!-- Main Content (Hidden during loading) -->
+                <div
+                    class="page-content-wrapper"
+                    id="page-content-wrapper"
+                    style="display: none"
+                >
+                    <!-- Hero Section -->
+                    <section class="hero-section">
+                        <div class="hero-image-placeholder"></div>
+                        <h1 class="hero-title" id="hero-title">
+                            Invite & Unlock 1 Month Premium
+                        </h1>
+                        <p class="hero-subtitle" id="hero-subtitle">
+                            John, invite friends and get 1 month of Premium when
+                            5 people redeem your code.
+                        </p>
+                        <div class="hero-code-cta-container">
+                            <div
+                                class="referral-code-display"
+                                id="referral-code"
+                            >
+                                JOHN1234
+                            </div>
+                            <button
+                                class="view-referrals-btn"
+                                id="view-referrals"
+                            >
+                                <span id="view-referrals-text"
+                                    >View my referrals</span
+                                >
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M9 18L15 12L9 6"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- How It Works Section -->
+                    <section class="how-it-works">
+                        <h2 class="section-title">How it works</h2>
+                        <div class="steps-list" id="steps-list">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="step-description" id="step-1">
+                                    Invite your friends and family using your
+                                    referral code
+                                </p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <p class="step-description" id="step-2">
+                                    After your friend has installed the app,
+                                    they can redeem your code.
+                                </p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <p class="step-description" id="step-3">
+                                    On every successful redemption, you will
+                                    gain a new level!
+                                </p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <p class="step-description" id="step-4">
+                                    Your friend receives a week of free premium
+                                    as well!
+                                </p>
+                            </div>
+                            <div class="step-item" id="step-5-item">
+                                <div class="step-number">5</div>
+                                <p class="step-description" id="step-5">
+                                    You can unlock a month of free premium on
+                                    reaching level 5!
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Progress Section -->
+                    <section class="progress-section">
+                        <h3 class="progress-title" id="progress-title">
+                            Only 5 more levels to go!
+                        </h3>
+                        <p class="progress-subtitle" id="progress-subtitle">
+                            Each redemption brings you closer to Premium!
+                        </p>
+                    </section>
+
+                    <!-- Rotating Card Stack -->
+                    <div class="card-stack-container" id="card-stack">
+                        <div class="benefit-card premium-access" data-index="0">
+                            <h4 class="benefit-card-title" id="benefit-1-title">
+                                Premium Access
+                            </h4>
+                            <p class="benefit-card-desc" id="benefit-1-desc">
+                                Ad-free experience, pro features, and priority
+                                support for 1 month.
+                            </p>
+                        </div>
+                        <div class="benefit-card win-together" data-index="1">
+                            <h4 class="benefit-card-title" id="benefit-2-title">
+                                Win Together
+                            </h4>
+                            <p class="benefit-card-desc" id="benefit-2-desc">
+                                Your friends get an exclusive newcomer perk when
+                                they join via your link.
+                            </p>
+                        </div>
+                        <div class="benefit-card fast-simple" data-index="2">
+                            <h4 class="benefit-card-title" id="benefit-3-title">
+                                Fast & Simple
+                            </h4>
+                            <p class="benefit-card-desc" id="benefit-3-desc">
+                                Share your link; they download and redeem. You
+                                progress instantly.
+                            </p>
+                        </div>
                     </div>
-                </section>
-            </div>
-        </main>
 
-        <!-- Sticky Footer -->
-        <footer class="sticky-footer">
-            <button class="primary-cta" id="primary-cta">Invite Friends & Family</button>
-        </footer>
-    </div>
+                    <!-- Tips Section -->
+                    <section class="tips-section">
+                        <div class="tip-item">
+                            <div class="tip-icon"></div>
+                            <span id="tip-text">hard coded</span>
+                        </div>
+                    </section>
+                </div>
+            </main>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="utils.js"></script>
-    <script src="referralPromote.js"></script>
-</body>
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <button class="primary-cta" id="primary-cta">
+                    Invite Friends & Family
+                </button>
+            </footer>
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+        <script src="utils.js"></script>
+        <script src="referralPromote.js"></script>
+    </body>
 </html>

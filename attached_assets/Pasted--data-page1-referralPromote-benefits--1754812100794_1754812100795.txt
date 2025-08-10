@@ -1,0 +1,68 @@
+{
+    "data": {
+        "page1_referralPromote": {
+            "benefits": [
+                {
+                    "desc": "Use this key to replace id=benefit-1-title",
+                    "title": "Use this key to replace id=benefit-1-desc"
+                },
+                {
+                    "desc": "Use this key to replace id=benefit-2-title",
+                    "title": "Use this key to replace id=benefit-2-desc"
+                },
+                {
+                    "desc": "Use this key to replace id=benefit-3-title",
+                    "title": "Use this key to replace id=benefit-3-desc"
+                }
+            ],
+            "hero": {
+                "hero_title": "Use this key to replace id=hero-title",
+                "page_title": "Use this key to replace id=header-title ",
+                "quickButtonText": "Use this key to replace id=view-referrals-text",
+                "subtitle": "Use this key to replace id=hero-subtitle"
+            },
+            "how_it_works": [
+                {
+                    "desc": "use this key to replace id=step-1",
+                    "step": 1 "use this key for any logic to determine which step"
+                },
+                {
+                    "desc": "use this key to replace id=step-2",
+                    "step": 2 "use this key for any logic to determine which step"
+                },
+                {
+                    "desc": "use this key to replace id=step-3",
+                    "step": 3 "use this key for any logic to determine which step"
+                },
+                {
+                    "desc": "use this key to replace id=step-4",
+                    "step": 4 "use this key for any logic to determine which step"
+                },
+                {
+                    "desc": "use this key to replace id=step-5",
+                    "step": 5 "use this key for any logic to determine which step"
+                }
+            ],
+            "nudges": [
+                "randomly select any 1 string from this array and replace value in id=tip-text with this text",
+                "randomly select any 1 string from this array and replace value in id=tip-text with this text",
+                "randomly select any 1 string from this array and replace value in id=tip-text with this text",
+            ],
+            "progress_teaser": {
+                "subtitle": "Use this key to replace id=progress-subtitle",
+                "title": "Use this key to replace id=progress-title"
+            },
+            "share": {
+                "messages": {
+                    "default": "Use this key to create the share message that will be sent during the share operation when id=primary-cta button is clicked. Replace the {{referrer_name}}  & {{referral_link}} variables with referrer_name & referral_url keys available in the api json"
+                },
+                "primary_cta": "Use this key to replace id=primary-cta"
+            }
+        },
+        "referral_code": "use this key to replace id=referral-code",
+        "referral_url": "Use this key to replace {{referral_link}} variable in the share message in share.messages.default when id=primary-cta button is clicked",
+        "referrer_name": "Use this key to replace {{referrer_name}} variable in the share message in share.messages.default when id=primary-cta button is clicked"
+    },
+    "message": "Referral data fetched",
+    "status": "success"
+}

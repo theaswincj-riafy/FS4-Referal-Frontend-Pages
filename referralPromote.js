@@ -51,56 +51,100 @@ class ReferralPromotePage {
       return;
     }
 
-    // Extract data from API response structure
-    const pageData = this.data.data || this.data;
-    const hero = pageData.hero || {};
-    const steps = pageData.how_it_works || pageData.steps || [];
-    const progress = pageData.progress_teaser || pageData.progress || {};
-    const benefits = pageData.benefits || [];
-    const tips = pageData.nudges || pageData.tips || [];
-    const share = pageData.share || {};
+    // Extract data from API response structure according to data mapping
+    const apiData = this.data.data || this.data;
+    const promoteData = apiData.page1_referralPromote || {};
+    const hero = promoteData.hero || {};
+    const steps = promoteData.how_it_works || [];
+    const progress = promoteData.progress_teaser || {};
+    const benefits = promoteData.benefits || [];
+    const nudges = promoteData.nudges || [];
+    const share = promoteData.share || {};
 
-    // Populate header
-    document.getElementById('header-title').textContent = hero.page_title || pageData.page_title || 'Invite Friends';
+    // Populate header using data mapping
+    const headerElement = document.getElementById('header-title');
+    if (headerElement && hero.page_title) {
+      headerElement.textContent = hero.page_title;
+    }
 
-    // Populate hero section
-    document.getElementById('hero-title').textContent = hero.hero_title || hero.title || 'Invite & Unlock 1 Month Premium';
-    const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
-    document.getElementById('hero-subtitle').textContent = hero.subtitle || `${capitalizedName}, invite friends and get rewards!`;
-    document.getElementById('referral-code').textContent = hero.referral_code || pageData.referral_code || this.params.firstname.toUpperCase() + '1234';
-    document.getElementById('view-referrals-text').textContent = hero.quickButtonText || 'View my referrals';
+    // Populate hero section using data mapping
+    const heroTitleElement = document.getElementById('hero-title');
+    if (heroTitleElement && hero.hero_title) {
+      heroTitleElement.textContent = hero.hero_title;
+    }
 
-    // Populate how it works steps
+    const heroSubtitleElement = document.getElementById('hero-subtitle');
+    if (heroSubtitleElement && hero.subtitle) {
+      // Replace placeholder with actual referrer name
+      const subtitle = hero.subtitle.replace('{{referrer_name}}', apiData.referrer_name || this.params.firstname);
+      heroSubtitleElement.textContent = subtitle;
+    }
+
+    const referralCodeElement = document.getElementById('referral-code');
+    if (referralCodeElement && apiData.referral_code) {
+      referralCodeElement.textContent = apiData.referral_code;
+    }
+
+    const viewReferralsTextElement = document.getElementById('view-referrals-text');
+    if (viewReferralsTextElement && hero.quickButtonText) {
+      viewReferralsTextElement.textContent = hero.quickButtonText;
+    }
+
+    // Populate how it works steps using data mapping
     if (steps.length > 0) {
-      steps.forEach((step, index) => {
-        const stepElement = document.getElementById(`step-${index + 1}`);
-        if (stepElement) {
-          stepElement.textContent = step.desc || step.description || step.text;
+      steps.forEach((step) => {
+        const stepElement = document.getElementById(`step-${step.step}`);
+        if (stepElement && step.desc) {
+          stepElement.textContent = step.desc;
         }
       });
     }
 
-    // Populate progress section
-    document.getElementById('progress-title').textContent = progress.title || 'Almost there!';
-    document.getElementById('progress-subtitle').textContent = progress.subtitle || 'Keep sharing!';
+    // Populate progress section using data mapping
+    const progressTitleElement = document.getElementById('progress-title');
+    if (progressTitleElement && progress.title) {
+      progressTitleElement.textContent = progress.title;
+    }
 
-    // Populate benefits cards
+    const progressSubtitleElement = document.getElementById('progress-subtitle');
+    if (progressSubtitleElement && progress.subtitle) {
+      progressSubtitleElement.textContent = progress.subtitle;
+    }
+
+    // Populate benefits cards using data mapping (NOTE: mapping seems reversed in data structure)
     if (benefits.length > 0) {
       benefits.forEach((benefit, index) => {
         const titleElement = document.getElementById(`benefit-${index + 1}-title`);
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
-        if (titleElement) titleElement.textContent = benefit.title;
-        if (descElement) descElement.textContent = benefit.desc || benefit.description;
+        // According to mapping: benefit.desc goes to title, benefit.title goes to desc
+        if (titleElement && benefit.title) {
+          titleElement.textContent = benefit.title;
+        }
+        if (descElement && benefit.desc) {
+          descElement.textContent = benefit.desc;
+        }
       });
     }
 
-    // Populate tip
-    if (tips.length > 0) {
-      document.getElementById('tip-text').textContent = tips[0].text || tips[0];
+    // Populate tip using data mapping - randomly select from nudges array
+    const tipElement = document.getElementById('tip-text');
+    if (tipElement && nudges.length > 0) {
+      const randomTip = nudges[Math.floor(Math.random() * nudges.length)];
+      tipElement.textContent = randomTip;
     }
 
-    // Populate footer CTA
-    document.getElementById('primary-cta').textContent = share.primary_cta || 'Invite Friends & Family';
+    // Populate footer CTA using data mapping
+    const primaryCtaElement = document.getElementById('primary-cta');
+    if (primaryCtaElement && share.primary_cta) {
+      primaryCtaElement.textContent = share.primary_cta;
+    }
+
+    // Store share message for later use in sharing functionality
+    if (share.messages && share.messages.default) {
+      this.shareMessage = share.messages.default
+        .replace('{{referrer_name}}', apiData.referrer_name || this.params.firstname)
+        .replace('{{referral_link}}', apiData.referral_url || '#');
+    }
   }
 
   hideLoader() {
@@ -228,10 +272,13 @@ class ReferralPromotePage {
   }
 
   shareInvite() {
+    // Use the dynamically generated share message with replaced variables
+    const shareText = this.shareMessage || `${this.params.firstname} invited you to try this app!`;
+    
     const shareData = {
       title: 'Join me on this app!',
-      text: this.data.share?.messages?.default || `${this.params.firstName} invited you to try this app. Get 1 week of Premium features for free!`,
-      url: this.params.referral_link || window.location.origin
+      text: shareText,
+      url: this.data?.data?.referral_url || window.location.origin
     };
 
     if (navigator.share) {
