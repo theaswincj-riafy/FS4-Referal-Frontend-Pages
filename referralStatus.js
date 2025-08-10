@@ -160,6 +160,9 @@ class ReferralStatusPage {
       heroImage.src = imageSrc;
     }
 
+    // Get redeem_dates from API response
+    const redeemDates = pageData.redeem_dates || {};
+
     // 3. Populate milestones (levels 1-5 only, ignore level 0)
     if (milestones.length > 0) {
       milestones.filter(milestone => milestone.level >= 1 && milestone.level <= 5).forEach((milestone) => {
@@ -197,9 +200,17 @@ class ReferralStatusPage {
               titleElement.textContent = `${levelTitle} - ${milestone.title}`;
             }
             
-            // 2c. Use achievedOn value for p tag
+            // 2c. Use redeem_dates for completed milestones, otherwise use "Pending"
             if (statusElement) {
-              statusElement.textContent = milestone.achievedOn || 'This is a placeholder';
+              let achievementDate = 'Pending';
+              
+              // If milestone is completed (level <= current_redemptions), try to get date from redeem_dates
+              if (milestone.level <= currentRedemptions) {
+                const dateKey = `date_${milestone.level}`;
+                achievementDate = redeemDates[dateKey] || 'Pending';
+              }
+              
+              statusElement.textContent = achievementDate;
             }
           }
         }
