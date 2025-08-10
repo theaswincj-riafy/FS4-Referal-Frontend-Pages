@@ -243,7 +243,12 @@ class ReferralPromotePage {
       const cards = document.querySelectorAll('.benefit-card');
       if (cards.length === 0) return;
 
-      // Reset heights to auto to measure natural height
+      // First, adjust font sizes for titles that are too long
+      cards.forEach(card => {
+        this.adjustCardTitleFontSize(card);
+      });
+
+      // Reset heights to auto to measure natural height after font adjustments
       cards.forEach(card => {
         card.style.height = 'auto';
       });
@@ -262,6 +267,38 @@ class ReferralPromotePage {
         card.style.height = `${maxHeight}px`;
       });
     });
+  }
+
+  adjustCardTitleFontSize(card) {
+    const titleElement = card.querySelector('.benefit-card-title');
+    if (!titleElement) return;
+
+    // Reset to initial font size first
+    titleElement.style.fontSize = '';
+    
+    const maxWidth = card.offsetWidth - 40; // Account for padding (20px each side)
+    const maxHeight = 60; // Maximum height for title area
+    
+    // Start with the default font size from CSS (1.5rem = 24px)
+    let fontSize = 24;
+    const minFontSize = 18; // Minimum readable size
+    
+    titleElement.style.fontSize = fontSize + 'px';
+    
+    // Check if title overflows and reduce font size if needed
+    while ((titleElement.scrollWidth > maxWidth || titleElement.scrollHeight > maxHeight) && fontSize > minFontSize) {
+      fontSize -= 1;
+      titleElement.style.fontSize = fontSize + 'px';
+    }
+    
+    // If still overflowing at minimum size, try line clamping
+    if (titleElement.scrollHeight > maxHeight && fontSize === minFontSize) {
+      titleElement.style.display = '-webkit-box';
+      titleElement.style.webkitLineClamp = '2';
+      titleElement.style.webkitBoxOrient = 'vertical';
+      titleElement.style.overflow = 'hidden';
+      titleElement.style.lineHeight = '1.2';
+    }
   }
 
   hideLoader() {
