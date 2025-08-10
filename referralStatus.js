@@ -102,40 +102,50 @@ class ReferralStatusPage {
 
     // Extract data from API response structure
     const pageData = this.data.data || this.data;
-    const hero = pageData.hero || {};
-    const status = pageData.status || {};
-    const milestones = pageData.milestones || [];
-    const faqs = pageData.faq || pageData.faqs || [];
-    const progress = pageData.progress_teaser || pageData.progress || {};
-    const benefits = pageData.benefits || [];
-    const tips = pageData.nudges || pageData.tips || [];
+    const referralStatusData = pageData.page2_referralStatus || {};
+    const hero = referralStatusData.hero || {};
+    const status = referralStatusData.status || {};
+    const milestones = referralStatusData.milestones || [];
+    const faqs = referralStatusData.faq || pageData.faqs || [];
+    const progress = referralStatusData.progress_teaser || pageData.progress || {};
+    const benefits = referralStatusData.benefits || [];
+    const tips = referralStatusData.nudges || pageData.tips || [];
 
     // Populate header
-    document.getElementById('header-title').textContent = hero.page_title || pageData.page_title || 'My Referrals';
+    document.getElementById('header-title').textContent = hero.page_title || 'My Referrals';
 
-    // Populate hero section with level information
-    const currentLevel = status.current || pageData.current_redemptions || 1;
-    const targetLevel = status.target || pageData.target_redemptions || 5;
-    const currentMilestone = milestones.find(m => m.level === currentLevel) || milestones[0];
+    // Get current redemptions from the API
+    const currentRedemptions = pageData.current_redemptions || 0;
+    const targetLevel = pageData.target_redemptions || 5;
+    
+    // Find the milestone that matches current redemptions
+    const currentMilestone = milestones.find(m => m.level === currentRedemptions) || milestones[0];
 
     if (currentMilestone) {
-      document.getElementById('level-title').textContent = `Level ${currentLevel}`;
+      // For level 0, don't show "Level 0", just show the title
+      if (currentRedemptions === 0) {
+        document.getElementById('level-title').textContent = currentMilestone.title || 'Let\'s Start';
+      } else {
+        document.getElementById('level-title').textContent = `Level ${currentRedemptions}`;
+      }
       document.getElementById('level-subtitle').textContent = currentMilestone.title || 'Progress';
       const capitalizedName = ReferralUtils.capitalizeName(this.params.firstname);
       document.getElementById('level-message').textContent = currentMilestone.message || `Great work, ${capitalizedName}! Keep going.`;
     }
 
-    document.getElementById('progress-display').textContent = `${currentLevel} of ${targetLevel} Completed`;
+    document.getElementById('progress-display').textContent = `${currentRedemptions} of ${targetLevel} Completed`;
 
-    // Populate milestones
-    if (milestones.length > 0) {
-      milestones.forEach((milestone, index) => {
+    // Populate milestones - filter out level 0 for the progress section
+    const progressMilestones = milestones.filter(m => m.level > 0);
+    if (progressMilestones.length > 0) {
+      progressMilestones.forEach((milestone, index) => {
         const milestoneElement = document.getElementById(`milestone-${index + 1}`);
         if (milestoneElement) {
           const iconElement = milestoneElement.querySelector('.milestone-icon');
           const contentElement = milestoneElement.querySelector('.milestone-content');
           
-          if (milestone.level <= currentLevel) {
+          // Check if this level is completed based on current_redemptions
+          if (milestone.level <= currentRedemptions) {
             milestoneElement.classList.add('completed');
             if (iconElement) iconElement.textContent = '✓';
           } else {
@@ -148,8 +158,14 @@ class ReferralStatusPage {
             const statusElement = contentElement.querySelector('p');
             if (titleElement) titleElement.textContent = `Level ${milestone.level} - ${milestone.title}`;
             if (statusElement) {
-              statusElement.textContent = milestone.level <= currentLevel ? 
-                (milestone.achievedOn ? `Achieved on ${milestone.achievedOn}` : 'Achieved') : 'Not Yet';
+              if (milestone.level <= currentRedemptions) {
+                // Show achievedOn if available and not "Pending"
+                const achievedText = milestone.achievedOn && milestone.achievedOn !== "Pending" ? 
+                  milestone.achievedOn : 'Achieved';
+                statusElement.textContent = achievedText;
+              } else {
+                statusElement.textContent = 'Not Level';
+              }
             }
           }
         }
@@ -167,8 +183,11 @@ class ReferralStatusPage {
     }
 
     // Populate progress section
-    const remaining = targetLevel - currentLevel;
-    document.getElementById('progress-title').textContent = progress.title || `Only ${remaining} more levels to go!`;
+    const remaining = targetLevel - currentRedemptions;
+    let progressTitle = progress.title || `Only ${remaining} more levels to go!`;
+    // Replace template variables
+    progressTitle = progressTitle.replace(/\{\{pending_redemptions\}\}/g, remaining);
+    document.getElementById('progress-title').textContent = progressTitle;
     document.getElementById('progress-subtitle').textContent = progress.subtitle || 'Each redemption brings you closer to Premium!';
 
     // Populate benefits cards
