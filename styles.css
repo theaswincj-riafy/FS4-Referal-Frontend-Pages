@@ -562,6 +562,10 @@ p {
   margin: 0;
 }
 
+.how-it-works .section-title {
+  text-align: center;
+}
+
 #how-it-works-download {
   padding-bottom: 15rem;
   padding-top: 3rem;
