@@ -613,6 +613,12 @@ class ReferralStatusPage {
     if (typeof THEME_ONE !== 'undefined') {
       console.log('Loading THEME_ONE colors:', THEME_ONE);
       
+      // Apply theme colors to hero-section background
+      const heroSection = document.querySelector('.hero-section');
+      if (heroSection) {
+        heroSection.style.backgroundColor = THEME_ONE.pastelBG;
+      }
+      
       // Apply theme colors to progress-display
       const progressDisplay = document.getElementById('progress-display');
       if (progressDisplay) {
@@ -626,6 +632,13 @@ class ReferralStatusPage {
       if (inviteFriendsBtn) {
         inviteFriendsBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
         inviteFriendsBtn.style.color = THEME_ONE.textColor;
+      }
+
+      // Apply theme colors to primary-cta button
+      const primaryCtaBtn = document.getElementById('primary-cta');
+      if (primaryCtaBtn) {
+        primaryCtaBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        primaryCtaBtn.style.color = THEME_ONE.textColor;
       }
     }
   }

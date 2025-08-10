@@ -1009,8 +1009,9 @@ p {
 }
 
 .milestone-item.premium {
-  background: linear-gradient(135deg, #A855F7 0%, #8B5CF6 100%);
-  color: white;
+  background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%);
+  border: 1px solid #F59E0B;
+  color: #1d1d1f;
 }
 
 .milestone-icon {
@@ -1032,7 +1033,7 @@ p {
 }
 
 .milestone-item.premium .milestone-icon {
-  background: rgba(255, 255, 255, 0.2);
+  background: #F59E0B;
   color: white;
 }
 
@@ -1049,7 +1050,7 @@ p {
 }
 
 .milestone-item.premium .milestone-content p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #86868b;
 }
 
 
