@@ -39,7 +39,7 @@ body {
     align-items: flex-start;
     padding: 24px;
   }
-  
+
   .container {
     width: 390px;
     max-width: 430px;
@@ -270,6 +270,7 @@ p {
   cursor: pointer;
   transition: all 0.2s ease;
   min-height: 52px;
+  text-align: center;
 }
 
 .primary-cta:hover:not(:disabled) {
@@ -1233,31 +1234,48 @@ p {
 /* Toast Notifications */
 .toast {
   position: fixed;
-  top: 32px;
+  bottom: 80px;
   left: 50%;
-  transform: translateX(-50%) translateY(-100px);
-  background: #1d1d1f;
+  transform: translateX(-50%);
+  background: #333;
   color: white;
-  padding: 16px 28px;
-  border-radius: 16px;
-  font-weight: 500;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
   z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  max-width: 90%;
-  backdrop-filter: blur(20px);
 }
 
 .toast.toast-show {
-  transform: translateX(-50%) translateY(0);
-}
-
-.toast.toast-success {
-  background: #34c759;
+  opacity: 1;
 }
 
 .toast.toast-error {
-  background: #ff3b30;
+  background: #dc3545;
+}
+
+/* Success State Styles */
+.success-nudge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 24px;
+  border-left: 4px solid #28a745;
+}
+
+.nudge-icon {
+  color: #28a745;
+  flex-shrink: 0;
+}
+
+.nudge-text {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 /* Notifications Banner */
@@ -2040,7 +2058,7 @@ a:focus {
     background: #000;
     border: 2px solid #fff;
   }
-  
+
   .card {
     border: 2px solid #000;
   }
@@ -2060,11 +2078,11 @@ a:focus {
   .container {
     padding: 0 1rem;
   }
-  
+
   .hero-title {
     font-size: 1.5rem;
   }
-  
+
   .btn {
     padding: 14px 20px;
     font-size: 0.9rem;

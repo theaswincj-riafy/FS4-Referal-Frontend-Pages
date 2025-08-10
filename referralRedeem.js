@@ -185,18 +185,18 @@ class ReferralRedeemPage {
     }
 
     try {
-      // Call the redeem API
-      const endpoint = `/api/referral-redeem?lang=${this.params.language}`;
+      // Call the checkredeem API
+      const endpoint = `/api/checkredeem?lang=${this.params.language}`;
       const body = {
         app_package_name: this.params.app_package_name,
         user_id: this.params.userId,
-        referral_code: code
+        code: code
       };
 
       const result = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
       
       if (result.success || result.status === 'success') {
-        this.showSuccess(result.message || 'Referral code redeemed successfully!');
+        this.showSuccessState(result);
       } else {
         throw new Error(result.message || 'Failed to redeem code');
       }
@@ -212,34 +212,42 @@ class ReferralRedeemPage {
     }
   }
 
-  showSuccess(message) {
-    // Create success overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'success-overlay';
-    overlay.innerHTML = `
-      <div class="success-content">
-        <div class="success-icon">🎉</div>
-        <h2>Success!</h2>
-        <p>${message}</p>
-        <button class="btn btn-primary" onclick="this.parentElement.parentElement.remove()">Continue</button>
-      </div>
+  showSuccessState(result) {
+    // Extract success data from API response
+    const pageData = result.data || result;
+    const successData = pageData.page4_referralRedeem?.redeem?.redemptionSuccess || {};
+    
+    // Get content wrapper and clear it
+    const contentWrapper = document.getElementById('page-content-wrapper');
+    if (!contentWrapper) return;
+    
+    // Update the entire content to success state
+    contentWrapper.innerHTML = `
+      <!-- Hero Section - Success State -->
+      <section class="hero-section">
+        <div class="hero-image-placeholder"></div>
+        <h1 class="hero-title" id="hero-title">${successData.hero_title || "You're all set!"}</h1>
+        <p class="hero-subtitle" id="hero-subtitle">${successData.subtitle || "You have redeemed a valid referral code from John!"}</p>
+        
+        <!-- Success Nudge -->
+        <div class="success-nudge">
+          <div class="nudge-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="nudge-text">${(successData.nudges && successData.nudges[0]) || "Your redemption also helps John progress toward a reward."}</span>
+        </div>
+      </section>
     `;
     
-    // Add styles
-    overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    `;
-    
-    document.body.appendChild(overlay);
+    // Update footer CTA
+    const footerCTA = document.getElementById('primary-cta');
+    if (footerCTA && successData.primary_cta) {
+      footerCTA.textContent = successData.primary_cta;
+      footerCTA.disabled = false;
+    }
   }
 
   showError(message) {
