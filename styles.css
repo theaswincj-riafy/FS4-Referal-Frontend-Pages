@@ -374,6 +374,15 @@ p {
   text-align: center;
 }
 
+.app-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-bottom: 24px;
+  text-align: center;
+  line-height: 1.2;
+}
+
 .invitation-title {
   font-size: 1.375rem;
   font-weight: 600;
@@ -500,6 +509,40 @@ p {
   padding: 0 20px 24px;
   background: white;
   margin: 0;
+}
+
+/* Download Page Footer */
+.download-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-top: 1px solid #e5e5ea;
+  padding: 16px 20px 32px;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.download-btn {
+  width: 100%;
+  background: #52C5F7;
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 52px;
+}
+
+.download-btn:hover {
+  background: #2ba7e3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(82, 197, 247, 0.3);
 }
 
 .section-title {
