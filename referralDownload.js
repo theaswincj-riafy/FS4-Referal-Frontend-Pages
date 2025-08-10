@@ -95,7 +95,10 @@ class ReferralDownloadPage {
     // Populate invitation title
     const invitationTitleElement = document.getElementById('invitation-title');
     if (invitationTitleElement && heroData.hero_title) {
-      invitationTitleElement.textContent = replacePlaceholders(heroData.hero_title);
+      const titleText = replacePlaceholders(heroData.hero_title);
+      // Capitalize first letter of all words
+      const capitalizedTitle = titleText.replace(/\b\w/g, letter => letter.toUpperCase());
+      invitationTitleElement.textContent = capitalizedTitle;
     }
     
     // Populate invitation subtitle
