@@ -1401,6 +1401,15 @@ p {
 }
 
 /* Success State Styles */
+.success-section {
+  padding: 0rem 1rem;
+}
+
+/* Remove vertical scroll when in already redeemed state */
+.success-section ~ .sticky-footer {
+  position: relative;
+}
+
 .success-nudge {
   display: flex;
   align-items: center;
