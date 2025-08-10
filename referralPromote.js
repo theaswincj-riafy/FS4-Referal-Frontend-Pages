@@ -223,6 +223,18 @@ class ReferralPromotePage {
       primaryCta.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
       primaryCta.style.color = textColor;
     }
+
+    // Apply color to loading spinners
+    const spinners = document.querySelectorAll('.spinner');
+    spinners.forEach(spinner => {
+      spinner.style.borderTopColor = gradientBG[0];
+    });
+
+    // Apply color to referral-code-display border
+    const referralCodeDisplay = document.getElementById('referral-code');
+    if (referralCodeDisplay) {
+      referralCodeDisplay.style.borderColor = gradientBG[0];
+    }
   }
 
   adjustCardHeights() {
