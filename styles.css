@@ -1448,7 +1448,6 @@ p {
 }
 
 .faq-item {
-  border-bottom: 1px solid #e2e8f0;
   padding: 1rem 0;
 }
 
@@ -1959,9 +1958,6 @@ p {
   border: 1px solid #e2e8f0;
 }
 
-.faq-item {
-  border-bottom: 1px solid #e2e8f0;
-}
 
 .faq-item:last-child {
   border-bottom: none;
