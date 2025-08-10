@@ -670,63 +670,47 @@ p {
 /* Rotating Card Stack */
 .combined-card-section .card-stack-container {
   position: relative;
-  height: 340px;
-  margin-bottom: 20px;
+  height: 300px;
+  margin: 0 auto;
   padding: 0;
-  overflow: visible;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   perspective: 1000px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
 }
 
 .benefit-card {
   position: absolute;
-  width: 280px;
-  height: 210px;
+  width: 180px;
+  height: 220px;
   border-radius: 24px;
   padding: 20px;
+  color: white;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  text-align: left;
-  cursor: pointer;
+  justify-content: space-between;
+  text-align: center;
+  cursor: grab;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transform-origin: center;
   user-select: none;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-/* Card Background Styles by Data Index */
-.benefit-card[data-index="0"] {
-  background: linear-gradient(135deg, #D4A574 0%, #B8956A 100%);
-  color: white;
+.benefit-card:active {
+  cursor: grabbing;
 }
 
-.benefit-card[data-index="1"] {
-  background: linear-gradient(135deg, #F5E6A3 0%, #E8D999 100%);
-  color: rgba(0, 0, 0, 0.8);
+.benefit-card.dragging {
+  transition: none;
+  z-index: 1000;
 }
 
-.benefit-card[data-index="2"] {
-  background: linear-gradient(135deg, #B5D4E8 0%, #A1C7DD 100%);
-  color: rgba(0, 0, 0, 0.8);
-}
-
-/* Legacy card styles for compatibility */
-.benefit-card.premium-access {
-  background: linear-gradient(135deg, #D4A574 0%, #B8956A 100%);
-  color: white;
-}
-
-.benefit-card.win-together {
-  background: linear-gradient(135deg, #F5E6A3 0%, #E8D999 100%);
-  color: rgba(0, 0, 0, 0.8);
-}
-
-.benefit-card.fast-simple {
-  background: linear-gradient(135deg, #B5D4E8 0%, #A1C7DD 100%);
-  color: rgba(0, 0, 0, 0.8);
+.benefit-card:not(.dragging) {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .benefit-card-title {

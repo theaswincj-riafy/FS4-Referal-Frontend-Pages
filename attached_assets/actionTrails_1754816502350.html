@@ -1,0 +1,3030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Trails</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Draggable.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="js/colorCombos.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Responsive Design for laptop/desktop */
+        @media (min-width: 768px) {
+            .mobile-container {
+                max-width: 450px;
+                margin: 20px auto;
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                min-height: calc(100vh - 40px);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 20px 20px;
+        }
+
+        .back-btn, .filter-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .back-btn:focus, .filter-btn:focus,
+        .back-btn:active, .filter-btn:active,
+        .back-btn:hover, .filter-btn:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        /* Universal focus outline removal */
+        *, *:before, *:after {
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        button, input, select, textarea, a, [tabindex] {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        button:focus, input:focus, select:focus, textarea:focus, a:focus, [tabindex]:focus,
+        button:active, input:active, select:active, textarea:active, a:active, [tabindex]:active,
+        button:hover, input:hover, select:hover, textarea:hover, a:hover, [tabindex]:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 120px);
+            text-align: center;
+        }
+
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007AFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-container h2 {
+            color: #ff4757;
+            margin-bottom: 10px;
+        }
+
+        .retry-btn {
+            padding: 12px 24px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            outline: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .retry-btn:focus, .retry-btn:active, .retry-btn:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        .trails-container {
+            padding: 0 20px;
+            margin-bottom: 40px;
+            min-height: calc(100vh - 120px); /* Account for header height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .trail-item {
+            border-radius: 16px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .trail-task-item {
+            background: white;
+        }
+
+        .trail-task-item:hover {
+            transform: none;
+        }
+
+        .trail-task-item .trail-title {
+            padding-bottom: 20px;
+        }
+
+        .trail-title {
+            text-align: center;
+            padding: 20px 20px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .trail-subtitle {
+            text-align: center;
+            padding: 0 20px 16px;
+            font-size: 16px;
+            font-weight: 200;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .trail-card-item .trail-subtitle {
+            padding-bottom: 0px;
+        }
+
+        .task-card {
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "task-content task-content task-content";
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .task-type-header {
+            grid-area: header;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-type-icon {
+            width: 24px;
+            height: 24px;
+            font-size: 20px;
+        }
+
+        .task-type-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .task-time {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .task-main-content {
+            grid-area: task-content;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid currentColor;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            margin-top: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+
+        .task-checkbox:hover {
+            opacity: 1;
+        }
+
+        .task-checkbox.checked {
+            background: var(--task-text-color);
+            border-color: var(--task-text-color);
+            color: white;
+        }
+
+        .task-checkbox.checked::after {
+            content: '✓';
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .task-action {
+            font-size: 14px;
+            font-weight: 200;
+            line-height: 1.4;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+        .remaining-tasks-btn {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px 0;
+            border-radius: 0;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: calc(100% + 48px);
+            margin: 20px -24px -24px -24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .remaining-tasks-btn:focus, .remaining-tasks-btn:active, .remaining-tasks-btn:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        .completion-message-item {
+            text-align: center;
+            padding: 24px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: auto;
+        }
+
+        .completion-message-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .completion-message-item h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .completion-message-item p {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .view-all-tasks-btn {
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .view-all-tasks-btn:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+            transform: translateY(-1px);
+        }
+
+        .view-all-tasks-btn:focus, .view-all-tasks-btn:active {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        .cards-preview {
+            position: relative;
+            height: 300px;
+            margin: 0 auto;
+            padding: 0;
+            perspective: 1000px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .preview-card {
+            position: absolute;
+            width: 180px;
+            height: 220px;
+            border-radius: 24px;
+            padding: 20px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            cursor: grab;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform-origin: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .preview-card:active {
+            cursor: grabbing;
+        }
+
+        .preview-card.dragging {
+            transition: none;
+            z-index: 1000;
+        }
+
+        .preview-card:not(.dragging) {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .preview-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .preview-card-content {
+            font-size: 11px;
+            line-height: 1.3;
+            flex-grow: 1;
+            margin-bottom: 12px;
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .preview-card-heart {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            align-self: center;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .preview-card-heart:focus, .preview-card-heart:active, .preview-card-heart:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        .preview-card-heart-icon {
+            width: 16px;
+            height: 16px;
+            stroke: none;
+            fill: white;
+            transition: all 0.3s ease;
+        }
+
+        .preview-card-heart-icon.filled {
+            fill: #ff4757;
+        }
+
+        .task-item.filter-hidden {
+            display: none !important;
+        }
+
+        .external-tasks-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: none;
+            outline: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #007AFF;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .external-tasks-btn:focus, .external-tasks-btn:active, .external-tasks-btn:hover {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+
+        .task-card.completed-card {
+            gap: 0;
+        }
+
+        .liked-cards-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(255, 71, 87, 0.1);
+            border-radius: 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .lottie-container {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lottie-animation {
+            width: 300px;
+            height: 300px;
+        }
+
+        .task-card {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .task-card.animating {
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="handleBackButtonClick()">
+                <i data-lucide="arrow-left"></i>
+            </button>
+            <div class="header-title">Action Trails</div>
+            <button class="filter-btn" id="filterBtn" onclick="toggleTaskFilter()" style="display: none;">
+                <i data-lucide="list-todo" id="filterIcon"></i>
+            </button>
+            <button class="filter-btn" id="filterBtnPlaceholder" style="visibility: hidden;">
+                <i data-lucide="list-todo"></i>
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-container" id="loadingContainer">
+            <div class="loader-spinner"></div>
+            <p>Fetching Your Trails!</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-container" id="errorContainer" style="display: none;">
+            <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+            <h2>Something went wrong</h2>
+            <p id="errorMessage">Unable to load content. Please try again.</p>
+            <button class="retry-btn" onclick="loadContent()">🔄 Retry</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <div class="trails-container" id="trailsContainer">
+                <!-- Dynamic content will be rendered here -->
+            </div>
+        </div>
+
+        <!-- Lottie Animation Container -->
+        <div class="lottie-container" id="lottieContainer" style="display: none;">
+            <div class="lottie-animation" id="lottieAnimation"></div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let apiData = null;
+
+        // Preload all audio and Lottie files to eliminate delays
+        const audioCache = {};
+        const lottieCache = {};
+        const audioFiles = [
+            'audio/completed1.mp3',
+            'audio/completed2.mp3',
+            'audio/completed3.mp3',
+            'audio/swipe1.mp3',
+            'audio/swipe2.mp3',
+            'audio/transition.mp3'
+        ];
+        const lottieFiles = [
+            'lottie/Fire.json',
+            'lottie/Rating.json',
+            'lottie/confetti.json',
+            'lottie/firework.json',
+            'lottie/star.json'
+        ];
+
+        // Preload all audio files
+        function preloadAudio() {
+            audioFiles.forEach(audioFile => {
+                const audio = new Audio(audioFile);
+                audio.preload = 'auto';
+                audio.load(); // Force loading
+                audioCache[audioFile] = audio;
+
+                // Create a clone function for reuse
+                audioCache[audioFile].play = function() {
+                    const clone = this.cloneNode();
+                    clone.volume = this.volume;
+                    return clone.play();
+                };
+            });
+        }
+
+        // Preload all Lottie files
+        async function preloadLottie() {
+            for (const lottieFile of lottieFiles) {
+                try {
+                    const response = await fetch(lottieFile);
+                    if (response.ok) {
+                        const animationData = await response.json();
+                        lottieCache[lottieFile] = animationData;
+                        console.log(`Preloaded Lottie: ${lottieFile}`);
+                    }
+                } catch (error) {
+                    console.warn(`Failed to preload Lottie: ${lottieFile}`, error);
+                }
+            }
+        }
+
+        // Initialize preloading when page loads
+        preloadAudio();
+        preloadLottie();
+
+        // Task filtering state
+        let taskFilterState = 'all'; // 'completion', 'all'
+
+        // Get parameters from URL
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                userEmail: urlParams.get('userEmail') || 'aswincj@riafy.me',
+                appName: urlParams.get('appName') || 'Book Summaries',
+                loadFromLocal: urlParams.get('loadFromLocal') === 'true'
+            };
+        }
+
+        // Generate email and app-specific cache keys
+        function getCacheKeys(userEmail, appName) {
+            const emailHash = btoa(userEmail).replace(/[^a-zA-Z0-9]/g, ''); // Create safe key from email
+            const appHash = btoa(appName).replace(/[^a-zA-Z0-9]/g, ''); // Create safe key from app name
+            return {
+                CACHE_KEY: `actionTrails_cache_${emailHash}_${appHash}`,
+                CACHE_TIMESTAMP_KEY: `actionTrails_cache_timestamp_${emailHash}_${appHash}`
+            };
+        }
+
+        // Cache management functions
+        function saveToCache(data, originalParams = null) {
+            try {
+                const { userEmail, appName } = getUrlParams();
+                const { CACHE_KEY, CACHE_TIMESTAMP_KEY } = getCacheKeys(userEmail, appName);
+
+                const cacheData = {
+                    ...data,
+                    originalParams: originalParams,
+                    userEmail: userEmail, // Store email for verification
+                    appName: appName // Store app name for verification
+                };
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+                console.log('Data cached to localStorage for email:', userEmail, 'and app:', appName);
+            } catch (error) {
+                console.warn('Failed to save to cache:', error);
+            }
+        }
+
+        function getCachedData() {
+            try {
+                const { userEmail, appName } = getUrlParams();
+                const { CACHE_KEY, CACHE_TIMESTAMP_KEY } = getCacheKeys(userEmail, appName);
+
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
+                if (cachedData && timestamp) {
+                    const parsedData = JSON.parse(cachedData);
+
+                    // Verify the cached data belongs to the current email and app
+                    if (parsedData.userEmail === userEmail && parsedData.appName === appName) {
+                        console.log('Retrieved cached data for email:', userEmail, 'and app:', appName);
+                        return parsedData;
+                    } else {
+                        console.log('Cached data mismatch. Expected:', userEmail, appName, 'Found:', parsedData.userEmail, parsedData.appName);
+                        return null;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to retrieve cached data:', error);
+            }
+            return null;
+        }
+
+        function clearCache() {
+            try {
+                const { userEmail, appName } = getUrlParams();
+                const { CACHE_KEY, CACHE_TIMESTAMP_KEY } = getCacheKeys(userEmail, appName);
+
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+                console.log('Cache cleared for email:', userEmail, 'and app:', appName);
+            } catch (error) {
+                console.warn('Failed to clear cache:', error);
+            }
+        }
+
+        // Update cached data for specific userReengageID
+        function updateCachedTrail(userReengageID, updatedResponse) {
+            try {
+                console.log('[UPDATE CACHE] Updating cache for userReengageID:', userReengageID);
+                console.log('[UPDATE CACHE] Updated response:', updatedResponse);
+
+                const cachedData = getCachedData();
+                if (cachedData && cachedData.data) {
+                    const trailIndex = cachedData.data.findIndex(trail => trail.userReengageID == userReengageID);
+                    console.log('[UPDATE CACHE] Found trail at index:', trailIndex);
+
+                    if (trailIndex !== -1) {
+                        console.log('[UPDATE CACHE] Previous response:', cachedData.data[trailIndex].response);
+                        cachedData.data[trailIndex].response = updatedResponse;
+
+                        // Preserve original params when updating
+                        const originalParams = cachedData.originalParams;
+                        saveToCache(cachedData, originalParams);
+
+                        console.log('[UPDATE CACHE] Cache updated for userReengageID:', userReengageID);
+                        console.log('[UPDATE CACHE] New cached data:', cachedData.data[trailIndex].response);
+                        return true;
+                    }
+                }
+                console.warn('[UPDATE CACHE] Failed to find trail in cache');
+            } catch (error) {
+                console.warn('[UPDATE CACHE] Failed to update cached trail:', error);
+            }
+            return false;
+        }
+
+        // Load content from API or localStorage
+        async function loadContent() {
+            const { userEmail, appName, loadFromLocal } = getUrlParams();
+
+            console.log('[LOAD CONTENT] Starting with params:', { userEmail, appName, loadFromLocal });
+            showLoading();
+
+            try {
+                // Always try to load from cache first when loadFromLocal=true
+                if (loadFromLocal) {
+                    console.log('[LOAD CONTENT] Attempting to load from localStorage for actionTrails');
+                    const cachedData = getCachedData();
+
+                    if (cachedData) {
+                        console.log('[LOAD CONTENT] Data loaded from localStorage');
+                        console.log('[LOAD CONTENT] Loaded from localStorage:', cachedData);
+                        apiData = cachedData;
+
+                        // Hide loading and show content immediately
+                        showContent();
+
+                        // Render trails from cache
+                        renderTrails(apiData.data || []);
+
+                        // Show filter button if there are task trails
+                        const hasTaskTrails = apiData.data && apiData.data.some(trail => trail.type === 'tasks' && trail.response.tasks);
+                        const filterBtn = document.getElementById('filterBtn');
+                        const filterBtnPlaceholder = document.getElementById('filterBtnPlaceholder');
+                        if (filterBtn && hasTaskTrails) {
+                            filterBtn.style.display = 'flex';
+                            if (filterBtnPlaceholder) {
+                                filterBtnPlaceholder.style.display = 'none';
+                            }
+                            // Apply initial filter
+                            applyTaskFilter();
+                        } else {
+                            // Show placeholder when filter button is hidden to center title
+                            if (filterBtnPlaceholder) {
+                                filterBtnPlaceholder.style.display = 'flex';
+                            }
+                        }
+
+                        // Start background sync with API (but don't overwrite local changes immediately)
+                        syncWithAPIInBackground(userEmail, appName);
+                        return;
+                    } else {
+                        console.log('[LOAD CONTENT] No cached data found, loading from API');
+                    }
+                }
+
+                // Load from API (either fallback or direct)
+                console.log('[LOAD CONTENT] Making API call to smart_notification_list with:', {
+                    userEmail: userEmail,
+                    appName: appName
+                });
+
+                const response = await fetch('https://streak-flask-api.onrender.com/api/smart_notification_list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': 'g5DSD-5X1JrPzK_WM_MxP3Bc4zyLK0jk5sRHIMmVb-o'
+                    },
+                    body: JSON.stringify({
+                        userEmail: userEmail,
+                        appName: appName
+                    })
+                });
+
+                console.log('[LOAD CONTENT] API Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+                }
+
+                apiData = await response.json();
+                console.log('[LOAD CONTENT] API Response data:', apiData);
+
+                // Save to cache for faster subsequent loads, including original parameters
+                saveToCache(apiData, { userEmail, appName });
+
+                // Log flashcard gradients for card trails
+                if (apiData.data && Array.isArray(apiData.data)) {
+                    apiData.data.forEach(trail => {
+                        if (trail.type === 'cards' && trail.response && trail.response.cards) {
+                            const trailTitle = trail.response.title || 'Untitled';
+                            trail.response.cards.forEach(card => {
+                                const cardTitle = card.title || 'Untitled Card';
+                                const backgroundGradient = card['background-gradient-color'] || [];
+                                const textColor = card['text-color'] || '';
+                                console.log('[LOAD CONTENT] flashcardGradients', cardTitle, backgroundGradient, textColor);
+                            });
+                        }
+                    });
+                }
+
+                // Hide loading and show content
+                showContent();
+
+                // Render trails
+                renderTrails(apiData.data || []);
+
+            } catch (error) {
+                console.error('[LOAD CONTENT] Failed to load content:', error);
+                showError('Failed to load action trails: ' + error.message);
+            }
+        }
+
+        // Background sync function to check for API updates
+        async function syncWithAPIInBackground(userEmail, appName) {
+            try {
+                console.log('[BACKGROUND SYNC] Starting background sync with API...');
+
+                const response = await fetch('https://streak-flask-api.onrender.com/api/smart_notification_list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': 'g5DSD-5X1JrPzK_WM_MxP3Bc4zyLK0jk5sRHIMmVb-o'
+                    },
+                    body: JSON.stringify({
+                        userEmail: userEmail,
+                        appName: appName
+                    })
+                });
+
+                if (!response.ok) {
+                    console.warn('[BACKGROUND SYNC] Background API sync failed:', response.status, response.statusText);
+                    return;
+                }
+
+                const freshApiData = await response.json();
+                console.log('[BACKGROUND SYNC] Fresh API data received:', freshApiData);
+
+                // Compare with current cached data
+                const currentCachedData = getCachedData();
+                console.log('[BACKGROUND SYNC] Current cached data:', currentCachedData);
+
+                // Check if there are any pending local changes that haven't been saved to API yet
+                const hasPendingChanges = checkForPendingLocalChanges();
+                console.log('[BACKGROUND SYNC] Has pending local changes:', hasPendingChanges);
+
+                if (hasPendingChanges) {
+                    console.log('[BACKGROUND SYNC] Skipping sync due to pending local changes');
+                    return;
+                }
+
+                const hasChanges = !currentCachedData || JSON.stringify(currentCachedData.data) !== JSON.stringify(freshApiData.data);
+                console.log('[BACKGROUND SYNC] Has changes detected:', hasChanges);
+
+                if (hasChanges) {
+                    console.log('[BACKGROUND SYNC] New data detected, updating cache');
+
+                    // Save fresh data to cache for next reload
+                    saveToCache(freshApiData, { userEmail, appName });
+
+                    // Optional: Show a subtle notification to user that fresh data is available
+                    showDataUpdateNotification();
+                } else {
+                    console.log('[BACKGROUND SYNC] No changes detected');
+                }
+
+            } catch (error) {
+                console.warn('[BACKGROUND SYNC] Background sync failed:', error);
+                // Silent fail - don't disrupt user experience
+            }
+        }
+
+        // Check if there are pending local changes that haven't been saved to API
+        function checkForPendingLocalChanges() {
+            // Check if any task completion API calls are in progress
+            const pendingSaves = document.querySelectorAll('.task-card.animating');
+            console.log('[PENDING CHANGES] Found animating task cards:', pendingSaves.length);
+
+            // Also check if we recently made changes (within last 5 seconds)
+            const lastChangeTime = localStorage.getItem('lastLocalChangeTime');
+            const timeSinceLastChange = lastChangeTime ? Date.now() - parseInt(lastChangeTime) : Infinity;
+            const recentChanges = timeSinceLastChange < 5000; // 5 seconds
+            console.log('[PENDING CHANGES] Time since last change:', timeSinceLastChange, 'Recent changes:', recentChanges);
+
+            return pendingSaves.length > 0 || recentChanges;
+        }
+
+        // Show subtle notification that fresh data is available
+        function showDataUpdateNotification() {
+            // Create a subtle toast notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #007AFF;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+                z-index: 10000;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                opacity: 0;
+                transform: translateY(-10px);
+            `;
+            notification.textContent = '🔄 Fresh content available - tap to refresh';
+
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Add click handler to refresh page
+            notification.onclick = () => {
+                window.location.reload();
+            };
+
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 8000);
+        }
+
+        function renderTrails(trails) {
+            const container = document.getElementById('trailsContainer');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (trails.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
+                        <h2 style="font-size: 24px; margin-bottom: 16px; color: #333;">No Action Trails</h2>
+                        <p style="font-size: 16px; line-height: 1.4;">You have no action trails at this time.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            trails.forEach((trail, index) => {
+                const trailElement = createTrailElement(trail, index);
+                container.appendChild(trailElement);
+            });
+
+            // Create Lucide icons and setup card animations
+            setTimeout(() => {
+                lucide.createIcons();
+                setupCardsAnimations();
+
+                // Show filter button if there are task trails
+                const hasTaskTrails = trails.some(trail => trail.type === 'tasks' && trail.response.tasks);
+                const filterBtn = document.getElementById('filterBtn');
+                const filterBtnPlaceholder = document.getElementById('filterBtnPlaceholder');
+                if (filterBtn && hasTaskTrails) {
+                    filterBtn.style.display = 'flex';
+                    if (filterBtnPlaceholder) {
+                        filterBtnPlaceholder.style.display = 'none';
+                    }
+                    // Apply initial filter (hide completed tasks by default)
+                    applyTaskFilter();
+                } else {
+                    // Show placeholder when filter button is hidden to center title
+                    if (filterBtnPlaceholder) {
+                        filterBtnPlaceholder.style.display = 'flex';
+                    }
+                }
+            }, 100);
+        }
+
+        function createTrailElement(trail, index) {
+            const div = document.createElement('div');
+
+            // Set specific class names based on trail type
+            if (trail.type === 'tasks' && trail.response.tasks) {
+                div.className = 'trail-item trail-task-item';
+                div.innerHTML = createTaskTrail(trail.response, trail.userReengageID);
+            } else if (trail.type === 'cards' && trail.response.cards) {
+                div.className = 'trail-item trail-card-item';
+                div.innerHTML = createCardTrail(trail.response, trail.userReengageID);
+                // Remove onclick from card trail items
+            } else {
+                div.className = 'trail-item';
+                div.innerHTML = createFallbackTrail(trail, index);
+                div.onclick = () => openTrail(trail.userReengageID);
+            }
+
+            return div;
+        }
+
+        // Generate a unique key for a task based on its content
+        function generateTaskKey(taskData) {
+            // Create a simple hash from task title and action to ensure uniqueness
+            const content = (taskData.task || '') + (taskData.action_to_take || '') + (taskData.why_this_task || '');
+            let hash = 0;
+            for (let i = 0; i < content.length; i++) {
+                const char = content.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            return 'task_color_' + Math.abs(hash);
+        }
+
+        // Generate a unique key for completion state based on trail ID
+        function generateCompletionKey(userReengageID) {
+            return 'completion_color_' + userReengageID;
+        }
+
+        // Get persistent color combination for completion state
+        function getPersistentCompletionColorCombo(userReengageID) {
+            const completionKey = generateCompletionKey(userReengageID);
+
+            try {
+                // Try to get existing color from localStorage
+                const storedColor = localStorage.getItem(completionKey);
+                if (storedColor) {
+                    console.log('[COMPLETION COLOR] Retrieved stored completion color for:', userReengageID, JSON.parse(storedColor));
+                    return JSON.parse(storedColor);
+                }
+            } catch (error) {
+                console.warn('Failed to retrieve stored completion color:', error);
+            }
+
+            // If no stored color exists, generate a new one and store it
+            const newColorCombo = getRandomColorCombo();
+            console.log('[COMPLETION COLOR] Generated new completion color for:', userReengageID, newColorCombo);
+
+            try {
+                localStorage.setItem(completionKey, JSON.stringify(newColorCombo));
+                console.log('[COMPLETION COLOR] Saved completion color to localStorage');
+            } catch (error) {
+                console.warn('Failed to store completion color combination:', error);
+            }
+            return newColorCombo;
+        }
+
+        // Get persistent color combination for a task
+        function getPersistentColorCombo(taskKey) {
+            try {
+                // Try to get existing color from localStorage
+                const storedColor = localStorage.getItem(taskKey);
+                if (storedColor) {
+                    return JSON.parse(storedColor);
+                }
+            } catch (error) {
+                console.warn('Failed to retrieve stored color:', error);
+            }
+
+            // If no stored color exists, generate a new one and store it
+            const newColorCombo = getRandomColorCombo();
+            try {
+                localStorage.setItem(taskKey, JSON.stringify(newColorCombo));
+            } catch (error) {
+                console.warn('Failed to store color combination:', error);
+            }
+            return newColorCombo;
+        }
+
+        function createTaskTrail(response, userReengageID) {
+            console.log('[CREATE TASK TRAIL] Creating task trail for userReengageID:', userReengageID);
+            console.log('[CREATE TASK TRAIL] Response data:', response);
+
+            const { title, tasks, checklist_completion_message } = response;
+            const completedCount = tasks.filter(task => task.completed).length;
+            const totalTasks = tasks.length;
+            const allCompleted = completedCount === totalTasks;
+
+            console.log('[CREATE TASK TRAIL] Task stats:', { completedCount, totalTasks, allCompleted });
+
+            // Find the next pending task
+            const nextTask = tasks.find(task => !task.completed);
+            const remainingTasks = totalTasks - completedCount;
+
+            console.log('[CREATE TASK TRAIL] Next task:', nextTask);
+
+            // Generate a unique key for this specific task (not just the trail)
+            let taskKey, colorCombo, gradientBG, textColor;
+
+            if (nextTask) {
+                // Use task content to generate unique key for consistent colors per task
+                taskKey = generateTaskKey(nextTask);
+                colorCombo = getPersistentColorCombo(taskKey);
+                gradientBG = colorCombo.gradientBG;
+                textColor = colorCombo.textColor;
+                console.log('[CREATE TASK TRAIL] Next task key:', taskKey);
+                console.log('[CREATE TASK TRAIL] Next task color combo:', { gradientBG, textColor });
+            } else {
+                // For completed state, always use a random color scheme
+                colorCombo = getRandomColorCombo();
+                gradientBG = colorCombo.gradientBG;
+                textColor = colorCombo.textColor;
+                console.log('[CREATE TASK TRAIL] Completed trail - using random color combo:', { gradientBG, textColor });
+            }
+
+            // Convert icon name to kebab-case for Lucide
+            const iconName = convertIconName(nextTask?.icon) || 'check-circle';
+
+            // Determine task status using round-robin approach
+            // Find first incomplete task for "Next Task" status
+            const firstIncompleteIndex = tasks.findIndex(t => !t.completed);
+            const isNextTask = nextTask && tasks.indexOf(nextTask) === firstIncompleteIndex;
+            const taskStatus = allCompleted ? 'Completed' : (isNextTask ? 'Next Task' : 'Upcoming Task');
+
+            console.log('[CREATE TASK TRAIL] Task status:', taskStatus);
+
+            // Use appropriate colors based on completion state
+            let finalGradientBG, finalTextColor;
+            if (allCompleted) {
+                // Use persistent completion colors for already completed trails
+                const completionColorCombo = getPersistentCompletionColorCombo(userReengageID);
+                finalGradientBG = completionColorCombo.gradientBG;
+                finalTextColor = completionColorCombo.textColor;
+                console.log('[CREATE TASK TRAIL] Using completion colors for already completed trail:', { finalGradientBG, finalTextColor });
+            } else {
+                // Use task-specific colors for active trails
+                finalGradientBG = gradientBG;
+                finalTextColor = textColor;
+            }
+
+            return `
+                <div class="trail-title">${escapeHtml(title)}</div>
+                <div class="task-card ${allCompleted ? 'completed-card' : ''}" 
+                     style="background: linear-gradient(135deg, ${finalGradientBG[0]}, ${finalGradientBG[1]}); color: ${finalTextColor};" 
+                     data-user-reengage-id="${userReengageID}"
+                     data-task-index="${tasks.indexOf(nextTask)}"
+                     onclick="handleTaskCardClick(event, '${userReengageID}')">
+                    ${allCompleted ? `
+                        <div class="completion-message-item" onclick="openTrail('${userReengageID}')">
+                            <div style="margin-bottom: 12px;">
+                                <i data-lucide="sparkles" style="width: 32px; height: 32px; color: ${finalTextColor};"></i>
+                            </div>
+                            <h2 style="color: ${finalTextColor}; font-size: 20px; margin-bottom: 8px;">All Done!</h2>
+                            <p style="color: ${finalTextColor}; font-size: 14px; margin-bottom: 16px;">${escapeHtml(checklist_completion_message)}</p>
+                            <button class="view-all-tasks-btn" onclick="event.stopPropagation(); handleRestartTasks('${userReengageID}')" style="background: rgba(255, 255, 255, 0.2); color: ${finalTextColor}; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                                Restart Tasks
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="task-type-header">
+                            <div class="task-type-icon" style="color: ${textColor};">
+                                <i data-lucide="${iconName}"></i>
+                            </div>
+                            <h3 class="task-type-text" style="color: ${textColor};">${taskStatus}</h3>
+                            <div class="task-time" style="color: ${textColor};">${escapeHtml(nextTask.time || '15m')}</div>
+                        </div>
+
+                        <div class="task-main-content">
+                            <div class="task-checkbox ${nextTask.completed ? 'checked' : ''}" style="border-color: ${textColor}; --task-text-color: ${textColor};"></div>
+                            <div class="task-details">
+                                <h4 class="task-title" style="color: ${textColor};">${escapeHtml(nextTask.task || 'Untitled Task')}</h4>
+                                <div class="task-action" style="color: ${textColor};">${escapeHtml(nextTask.action_to_take || 'No action specified')}</div>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                <div class="external-tasks-btn" onclick="handleViewAllTasksClick(event, '${userReengageID}')">
+                    <i data-lucide="list-todo" style="color: #007AFF; width: 16px; height: 16px; margin-right: 8px;"></i>
+                    <span>View All Tasks →</span>
+                </div>
+            `;
+        }
+
+        // Add a counter to ensure unique IDs
+        let cardPreviewCounter = 0;
+
+        function createCardTrail(response, userReengageID) {
+            const { title, subtitle, cards } = response;
+            const cardCount = cards.length;
+
+            // Prioritize liked cards, show max 3 cards
+            const likedCards = cards.filter(card => card['is-like']);
+            const nonLikedCards = cards.filter(card => !card['is-like']);
+
+            let selectedCards = [];
+            if (likedCards.length >= 3) {
+                selectedCards = likedCards.slice(0, 3);
+            } else {
+                selectedCards = [...likedCards, ...nonLikedCards].slice(0, 3);
+            }
+
+            // Generate unique ID using counter
+            const uniqueId = `cardsPreview-${Date.now()}-${cardPreviewCounter++}`;
+
+            return `
+                <div class="trail-title">${escapeHtml(title)}</div>
+                <div class="trail-subtitle">${formatTextWithBold(subtitle || 'Reflect on your reading and unlock deeper insights.')}</div>
+                <div class="cards-preview" id="${uniqueId}">
+                    ${selectedCards.map((card, index) => {
+                        const bgColors = card['background-gradient-color'] || ['#4F46E5', '#7C3AED'];
+                        const iconName = convertIconName(card.icon) || 'star';
+                        const textColor = card['text-color'] || '#FFFFFF';
+                        return `
+                            <div class="preview-card" data-card-index="${index}" style="background: linear-gradient(135deg, ${bgColors[0]}, ${bgColors[1]}); color: ${textColor};">
+                                <div class="preview-card-title">${escapeHtml(card.title || 'Card')}</div>
+                                <div class="preview-card-content">${formatTextWithBold(card.content || 'No content available')}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="liked-cards-indicator" onclick="handleViewAllCardsClick(event, '${userReengageID}')" style="cursor: pointer;">
+                    <i data-lucide="heart" style="color: #ff4757; fill: #ff4757; width: 20px; height: 20px;"></i>
+                    <span style="font-size: 12px; color: #666; margin-left: 8px;">Showing your liked cards. View All Cards →</span>
+                </div>
+            `;
+        }
+
+        function createFallbackTrail(trail, index) {
+            const title = trail.response?.title || `Trail ${index + 1}`;
+            return `
+                <div class="trail-title">${escapeHtml(title)}</div>
+                <div style="padding: 24px; text-align: center; color: #666;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📋</div>
+                    <p>Content available - tap to explore</p>
+                </div>
+            `;
+        }
+
+        function openTrail(userReengageID) {
+            if (userReengageID) {
+                const { userEmail, appName } = getUrlParams();
+                window.location.href = `reEngage.html?userReengageID=${userReengageID}&loadFromLocal=true&userEmail=${encodeURIComponent(userEmail)}&appName=${encodeURIComponent(appName)}`;
+            }
+        }
+
+        function convertIconName(iconName) {
+            if (!iconName || typeof iconName !== 'string' || iconName.trim() === '') return 'star';
+
+            // Convert camelCase to kebab-case for Lucide icons
+            if (iconName.includes('-')) {
+                return iconName.toLowerCase();
+            }
+
+            return iconName.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '');
+        }
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return text;
+
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTextWithBold(text) {
+            if (typeof text !== 'string') return text;
+
+            // First escape HTML, then format asterisks as bold
+            const escapedText = escapeHtml(text);
+            return escapedText.replace(/\*([^*]+)\*/g, '<strong style="font-weight: 500;">$1</strong>');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingContainer').style.display = 'flex';
+            document.getElementById('errorContainer').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function showContent() {
+            document.getElementById('loadingContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function setupCardsAnimations() {
+            console.log('[CARD SETUP] setupCardsAnimations() called');
+            const cardsPreviews = document.querySelectorAll('.cards-preview');
+            console.log('[CARD SETUP] Found', cardsPreviews.length, 'card preview containers');
+
+            cardsPreviews.forEach((preview, previewIndex) => {
+                const cards = preview.querySelectorAll('.preview-card');
+                console.log(`[CARD SETUP] Preview ${previewIndex}: found ${cards.length} cards`);
+
+                if (cards.length === 0) {
+                    console.log(`[CARD SETUP] Preview ${previewIndex}: no cards found, skipping`);
+                    return;
+                }
+
+                console.log(`[CARD SETUP] Preview ${previewIndex}: initializing card swiper`);
+                // Initialize card swiper
+                initCardSwiper(preview, cards);
+            });
+        }
+
+        function initCardSwiper(container, cards) {
+            console.log('[CARD SWIPER] Initializing card swiper for container:', container, 'with cards:', cards.length);
+
+            // Handle single card case immediately
+            if (cards.length <= 1) {
+                console.log('[CARD SWIPER] Single card case detected');
+                const card = cards[0];
+                if (card) {
+                    // Wait for container to have dimensions then position single card
+                    const waitForSingleCard = () => {
+                        const containerWidth = container.offsetWidth;
+                        if (containerWidth && containerWidth > 0) {
+                            const cardWidth = 180;
+                            const centerX = (containerWidth - cardWidth) / 2;
+                            console.log('[CARD SWIPER] Single card positioning - containerWidth:', containerWidth, 'centerX:', centerX);
+                            gsap.set(card, {
+                                x: centerX,
+                                y: 40,
+                                rotation: 0,
+                                scale: 1,
+                                zIndex: 3,
+                                opacity: 0
+                            });
+                            gsap.to(card, {
+                                opacity: 1,
+                                duration: 0.6,
+                                ease: "back.out(1.7)"
+                            });
+                        } else {
+                            setTimeout(waitForSingleCard, 50);
+                        }
+                    };
+                    requestAnimationFrame(() => setTimeout(waitForSingleCard, 10));
+                }
+                return;
+            }
+
+            // Multi-card setup with improved initialization
+            let currentIndex = 0;
+            let isAnimating = false;
+            let isInitialized = false;
+            let containerWidth = 0;
+            let cardPositions = {};
+
+            // Calculate fixed positions once container is ready
+            function calculatePositions() {
+                containerWidth = container.offsetWidth;
+                if (!containerWidth || containerWidth <= 0) return false;
+
+                const cardWidth = 180;
+                const centerX = (containerWidth - cardWidth) / 2; // Properly center the card in container
+                const centerY = 40;
+                const maxOffset = Math.min(60, (containerWidth - cardWidth) / 3); // Increased offset for better separation
+                const baseOffset = Math.min(maxOffset, Math.max(35, containerWidth * 0.12)); // Increased base offset
+                const sideCardOffset = Math.min(20, Math.max(10, containerWidth * 0.035)); // Increased vertical offset
+                const sideCardRotation = 18; // Increased from 8 to 18 degrees for much better visibility
+
+                cardPositions = {
+                    center: { x: centerX, y: centerY, rotation: 0, zIndex: 100, scale: 1, opacity: 1 },
+                    right: { x: centerX + baseOffset, y: centerY + sideCardOffset, rotation: sideCardRotation, zIndex: 50, scale: 0.92, opacity: 0.8 },
+                    left: { x: centerX - baseOffset, y: centerY + sideCardOffset, rotation: -sideCardRotation, zIndex: 50, scale: 0.92, opacity: 0.8 },
+                    hidden: { x: centerX, y: centerY + Math.min(25, containerWidth * 0.05), rotation: 0, zIndex: 1, scale: 0.88, opacity: 0.5 }
+                };
+
+                console.log('[CARD SWIPER] Positions calculated for width:', containerWidth, cardPositions);
+                return true;
+            }
+
+            // Core positioning function - stable and precise
+            function positionCards(animate = false) {
+                if (isAnimating && animate) {
+                    console.log('[CARD SWIPER] positionCards() blocked - animation in progress');
+                    return;
+                }
+
+                if (!calculatePositions()) {
+                    console.log('[CARD SWIPER] Container dimensions not ready, skipping positioning');
+                    return;
+                }
+
+                console.log('[CARD SWIPER] positionCards() called - currentIndex:', currentIndex, 'animate:', animate);
+
+                cards.forEach((card, index) => {
+                    const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+                    let position;
+
+                    if (relativeIndex === 0) {
+                        position = cardPositions.center;
+                    } else if (relativeIndex === 1) {
+                        position = cardPositions.right;
+                    } else if (relativeIndex === cards.length - 1) {
+                        position = cardPositions.left;
+                    } else {
+                        position = cardPositions.hidden;
+                    }
+
+                    if (animate) {
+                        gsap.to(card, {
+                            ...position,
+                            duration: 0.4,
+                            ease: "power2.out"
+                        });
+                    } else {
+                        gsap.set(card, position);
+                    }
+
+                    console.log(`[CARD SWIPER] Card ${index} (rel: ${relativeIndex}) positioned:`, position);
+                });
+            }
+
+            function animateToPosition() {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                // Force position calculation and animate
+                if (!calculatePositions()) {
+                    isAnimating = false;
+                    return;
+                }
+
+                console.log('[CARD SWIPER] animateToPosition() - currentIndex:', currentIndex);
+
+                cards.forEach((card, index) => {
+                    const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+                    let position;
+
+                    if (relativeIndex === 0) {
+                        position = cardPositions.center;
+                    } else if (relativeIndex === 1) {
+                        position = cardPositions.right;
+                    } else if (relativeIndex === cards.length - 1) {
+                        position = cardPositions.left;
+                    } else {
+                        position = cardPositions.hidden;
+                    }
+
+                    gsap.to(card, {
+                        ...position,
+                        duration: 0.4,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            if (index === currentIndex) {
+                                // Animation completed for center card
+                                isAnimating = false;
+                                setupDraggable();
+                            }
+                        }
+                    });
+
+                    console.log(`[CARD SWIPER] Card ${index} (rel: ${relativeIndex}) animating to:`, position);
+                });
+            }
+
+            function swipeToNext() {
+                console.log('[CARD SWIPER] swipeToNext() called - currentIndex:', currentIndex);
+                if (isAnimating) {
+                    console.log('[CARD SWIPER] swipeToNext() blocked - animation in progress');
+                    return;
+                }
+
+                // Play swipe audio
+                try {
+                    const audio = audioCache['audio/swipe1.mp3'];
+                    if (audio) {
+                        audio.volume = 0.4;
+                        audio.play().catch(error => {
+                            console.log('Swipe audio playback failed:', error);
+                        });
+                    }
+                } catch (error) {
+                    console.log('Swipe audio playback failed:', error);
+                }
+
+                currentIndex = (currentIndex + 1) % cards.length;
+                console.log('[CARD SWIPER] New currentIndex:', currentIndex);
+                animateToPosition();
+            }
+
+            function swipeToPrev() {
+                console.log('[CARD SWIPER] swipeToPrev() called - currentIndex:', currentIndex);
+                if (isAnimating) {
+                    console.log('[CARD SWIPER] swipeToPrev() blocked - animation in progress');
+                    return;
+                }
+
+                // Play swipe audio
+                try {
+                    const audio = audioCache['audio/swipe1.mp3'];
+                    if (audio) {
+                        audio.volume = 0.4;
+                        audio.play().catch(error => {
+                            console.log('Swipe audio playback failed:', error);
+                        });
+                    }
+                } catch (error) {
+                    console.log('Swipe audio playback failed:', error);
+                }
+
+                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                console.log('[CARD SWIPER] New currentIndex:', currentIndex);
+                animateToPosition();
+            }
+
+            function setupDraggable() {
+                if (!isInitialized) {
+                    console.log('[CARD SWIPER] setupDraggable() skipped - not initialized:', isInitialized);
+                    return;
+                }
+
+                console.log('[CARD SWIPER] Setting up gesture detection for currentIndex:', currentIndex);
+
+                // Clean up previous event listeners
+                cards.forEach(card => {
+                    // Reset interactions
+                    card.style.cursor = 'default';
+                    card.onclick = null;
+                    // Remove any existing touch/mouse listeners
+                    card.removeEventListener('touchstart', card._touchStartHandler);
+                    card.removeEventListener('touchmove', card._touchMoveHandler);
+                    card.removeEventListener('touchend', card._touchEndHandler);
+                    card.removeEventListener('mousedown', card._mouseDownHandler);
+                    card.removeEventListener('mousemove', card._mouseMoveHandler);
+                    card.removeEventListener('mouseup', card._mouseUpHandler);
+                });
+
+                // Setup interactions based on current card positions
+                cards.forEach((card, index) => {
+                    const relativeIndex = (index - currentIndex + cards.length) % cards.length;
+
+                    if (relativeIndex === 0) {
+                        // Center card - setup gesture detection
+                        console.log('[CARD SWIPER] Setting up gesture detection for center card:', index);
+                        card.style.cursor = 'pointer';
+
+                        // Gesture detection variables
+                        let startX = 0;
+                        let startTime = 0;
+                        let isDragging = false;
+
+                        // Touch handlers
+                        const touchStartHandler = function(e) {
+                            if (isAnimating) return;
+                            const touch = e.touches[0];
+                            startX = touch.clientX;
+                            startTime = Date.now();
+                            isDragging = false;
+                            console.log('[CARD SWIPER] Touch started at:', startX);
+                        };
+
+                        const touchMoveHandler = function(e) {
+                            if (isAnimating) return;
+                            const touch = e.touches[0];
+                            const deltaX = touch.clientX - startX;
+
+                            // Mark as dragging if movement is significant
+                            if (Math.abs(deltaX) > 10) {
+                                isDragging = true;
+                                e.preventDefault(); // Prevent scrolling when swiping
+                            }
+                        };
+
+                        const touchEndHandler = function(e) {
+                            if (isAnimating) return;
+                            const touch = e.changedTouches[0];
+                            const endX = touch.clientX;
+                            const deltaX = endX - startX;
+                            const deltaTime = Date.now() - startTime;
+                            const velocity = Math.abs(deltaX) / deltaTime;
+
+                            console.log('[CARD SWIPER] Touch ended - deltaX:', deltaX, 'velocity:', velocity, 'isDragging:', isDragging);
+
+                            // Check for swipe gesture
+                            if (isDragging && (Math.abs(deltaX) > 50 || velocity > 0.3)) {
+                                if (deltaX > 0) {
+                                    console.log('[CARD SWIPER] Swipe right detected - triggering swipeToPrev');
+                                    swipeToPrev();
+                                } else {
+                                    console.log('[CARD SWIPER] Swipe left detected - triggering swipeToNext');
+                                    swipeToNext();
+                                }
+                            } else if (!isDragging) {
+                                // Simple tap/click - advance to next card
+                                console.log('[CARD SWIPER] Tap detected - triggering swipeToNext');
+                                swipeToNext();
+                            }
+                        };
+
+                        // Mouse handlers (for desktop)
+                        const mouseDownHandler = function(e) {
+                            if (isAnimating) return;
+                            startX = e.clientX;
+                            startTime = Date.now();
+                            isDragging = false;
+                            console.log('[CARD SWIPER] Mouse down at:', startX);
+                        };
+
+                        const mouseMoveHandler = function(e) {
+                            if (isAnimating) return;
+                            const deltaX = e.clientX - startX;
+
+                            // Mark as dragging if movement is significant
+                            if (Math.abs(deltaX) > 10) {
+                                isDragging = true;
+                            }
+                        };
+
+                        const mouseUpHandler = function(e) {
+                            if (isAnimating) return;
+                            const endX = e.clientX;
+                            const deltaX = endX - startX;
+                            const deltaTime = Date.now() - startTime;
+                            const velocity = Math.abs(deltaX) / deltaTime;
+
+                            console.log('[CARD SWIPER] Mouse up - deltaX:', deltaX, 'velocity:', velocity, 'isDragging:', isDragging);
+
+                            // Check for swipe gesture
+                            if (isDragging && (Math.abs(deltaX) > 50 || velocity > 0.3)) {
+                                if (deltaX > 0) {
+                                    console.log('[CARD SWIPER] Mouse swipe right detected - triggering swipeToPrev');
+                                    swipeToPrev();
+                                } else {
+                                    console.log('[CARD SWIPER] Mouse swipe left detected - triggering swipeToNext');
+                                    swipeToNext();
+                                }
+                            } else if (!isDragging) {
+                                // Simple click - advance to next card
+                                console.log('[CARD SWIPER] Click detected - triggering swipeToNext');
+                                swipeToNext();
+                            }
+                        };
+
+                        // Store handlers for cleanup
+                        card._touchStartHandler = touchStartHandler;
+                        card._touchMoveHandler = touchMoveHandler;
+                        card._touchEndHandler = touchEndHandler;
+                        card._mouseDownHandler = mouseDownHandler;
+                        card._mouseMoveHandler = mouseMoveHandler;
+                        card._mouseUpHandler = mouseUpHandler;
+
+                        // Add event listeners
+                        card.addEventListener('touchstart', touchStartHandler, { passive: false });
+                        card.addEventListener('touchmove', touchMoveHandler, { passive: false });
+                        card.addEventListener('touchend', touchEndHandler, { passive: false });
+                        card.addEventListener('mousedown', mouseDownHandler);
+                        card.addEventListener('mousemove', mouseMoveHandler);
+                        card.addEventListener('mouseup', mouseUpHandler);
+
+                    } else if (relativeIndex === 1) {
+                        // Right card - click advances to next
+                        console.log('[CARD SWIPER] Setting up right card click for card:', index);
+                        card.style.cursor = 'pointer';
+                        card.onclick = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('[CARD SWIPER] Right card clicked - triggering swipeToNext');
+                            swipeToNext();
+                        };
+
+                    } else if (relativeIndex === cards.length - 1) {
+                        // Left card - click goes to previous
+                        console.log('[CARD SWIPER] Setting up left card click for card:', index);
+                        card.style.cursor = 'pointer';
+                        card.onclick = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('[CARD SWIPER] Left card clicked - triggering swipeToPrev');
+                            swipeToPrev();
+                        };
+
+                    } else {
+                        // Hidden cards - no interaction
+                        card.style.cursor = 'default';
+                        card.onclick = null;
+                    }
+                });
+            }
+
+            // Controlled resize handling
+            let resizeTimeout;
+            let lastContainerWidth = 0;
+
+            function handleResize() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    const currentWidth = container.offsetWidth;
+                    if (isInitialized && !isAnimating && currentWidth !== lastContainerWidth && currentWidth > 0) {
+                        lastContainerWidth = currentWidth;
+                        console.log('[CARD SWIPER] Handling resize to width:', currentWidth);
+                        // Force recalculation to prevent drift
+                        containerWidth = 0;
+                        cardPositions = {};
+                        positionCards(false);
+                        setupDraggable(); // Re-setup after resize
+                    }
+                }, 200);
+            }
+
+            window.addEventListener('resize', handleResize);
+
+            // Initialize cards with proper timing and single positioning call
+            function initialize() {
+                const currentWidth = container.offsetWidth;
+                if (currentWidth && currentWidth > 0) {
+                    console.log('[CARD SWIPER] Initializing with container width:', currentWidth);
+                    lastContainerWidth = currentWidth;
+
+                    // Calculate positions and set initial state (no animation)
+                    if (calculatePositions()) {
+                        positionCards(false);
+
+                        // Animate cards in with entrance effect
+                        console.log('[CARD SWIPER] Starting entrance animations');
+                        cards.forEach((card, index) => {
+                            gsap.from(card, {
+                                opacity: 0,
+                                scale: 0.8,
+                                duration: 0.6,
+                                delay: index * 0.1,
+                                ease: "back.out(1.7)",
+                                onComplete: () => {
+                                    if (index === cards.length - 1) {
+                                        isInitialized = true;
+                                        setupDraggable();
+                                        console.log('[CARD SWIPER] Initialization complete');
+                                    }
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    console.log('[CARD SWIPER] Container not ready, waiting...');
+                    setTimeout(initialize, 50);
+                }
+            }
+
+            // Start initialization with a single call
+            requestAnimationFrame(() => {
+                setTimeout(initialize, 10);
+            });
+        }
+
+        function toggleTaskFilter() {
+            const filterBtn = document.getElementById('filterBtn');
+            const filterIcon = document.getElementById('filterIcon');
+
+            console.log('toggleTaskFilter called, current state:', taskFilterState);
+
+            if (!filterBtn || !filterIcon || !apiData) {
+                console.log('Missing elements:', { filterBtn: !!filterBtn, filterIcon: !!filterIcon, apiData: !!apiData });
+                return;
+            }
+
+            if (taskFilterState === 'all') {
+                // Switch to hide completed tasks (show pending only)
+                taskFilterState = 'completion';
+                filterIcon.setAttribute('data-lucide', 'layout-list');
+                console.log('Switched to hide completed tasks');
+            } else {
+                // Switch to show all tasks
+                taskFilterState = 'all';
+                filterIcon.setAttribute('data-lucide', 'list-todo');
+                console.log('Switched to show all tasks');
+            }
+
+            lucide.createIcons();
+            applyTaskFilter();
+        }
+
+        function applyTaskFilter() {
+            if (!apiData || !apiData.data) return;
+
+            const allTrailItems = document.querySelectorAll('.trail-item');
+            let visibleItemsCount = 0;
+            let totalTasksCount = 0;
+            let totalCardsCount = 0;
+
+            allTrailItems.forEach((trailItem, globalIndex) => {
+                const correspondingTrail = apiData.data[globalIndex];
+                let shouldShow = true;
+
+                if (correspondingTrail && correspondingTrail.type === 'tasks' && correspondingTrail.response.tasks) {
+                    totalTasksCount++;
+
+                    // Get current state from cache (which reflects any in-page task completions)
+                    const cachedTrail = getCachedTrailData(correspondingTrail.userReengageID);
+                    const currentTasks = cachedTrail ? cachedTrail.response.tasks : correspondingTrail.response.tasks;
+
+                    const allCompleted = currentTasks.every(task => task.completed);
+
+                    if (taskFilterState === 'completion') {
+                        // Hide only completed tasks, show pending tasks
+                        shouldShow = !allCompleted;
+                    } else {
+                        // Show all tasks (default behavior)
+                        shouldShow = true;
+                    }
+                } else if (correspondingTrail && correspondingTrail.type === 'cards') {
+                    totalCardsCount++;
+
+                    // Always show card trails regardless of filter state
+                    shouldShow = true;
+                }
+
+                if (shouldShow) {
+                    trailItem.classList.remove('filter-hidden');
+                    trailItem.style.display = '';
+                    visibleItemsCount++;
+                } else {
+                    trailItem.classList.add('filter-hidden');
+                    trailItem.style.display = 'none';
+                }
+            });
+
+            // Check if we need to show empty state
+            // Only show empty state when filtering and there are no visible items AND no cards exist
+            if (taskFilterState === 'completion' && visibleItemsCount === 0 && totalCardsCount === 0) {
+                showNoPendingTasksEmptyState();
+            } else {
+                hideNoPendingTasksEmptyState();
+            }
+        }
+
+        function showNoPendingTasksEmptyState() {
+            const container = document.getElementById('trailsContainer');
+            if (!container) return;
+
+            // Hide all existing content
+            const allTrailItems = container.querySelectorAll('.trail-item');
+            allTrailItems.forEach(item => {
+                item.style.display = 'none';
+            });
+
+            // Remove any existing empty state
+            const existingEmptyState = container.querySelector('.no-pending-tasks-empty-state');
+            if (existingEmptyState) {
+                existingEmptyState.remove();
+            }
+
+            // Create and show empty state
+            const emptyStateDiv = document.createElement('div');
+            emptyStateDiv.className = 'no-pending-tasks-empty-state';
+            emptyStateDiv.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: #666;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">📋</div>
+                    <h2 style="font-size: 24px; margin-bottom: 16px; color: #333;">No Pending Tasks</h2>
+                    <p style="font-size: 16px; line-height: 1.4;">You have completed all available trails. Awesome!</p>
+                </div>
+            `;
+
+            container.appendChild(emptyStateDiv);
+        }
+
+        function hideNoPendingTasksEmptyState() {
+            const container = document.getElementById('trailsContainer');
+            if (!container) return;
+
+            // Remove empty state if it exists
+            const existingEmptyState = container.querySelector('.no-pending-tasks-empty-state');
+            if (existingEmptyState) {
+                existingEmptyState.remove();
+            }
+        }
+
+        // Debouncing for rapid clicks
+        let taskClickTimeout = null;
+        const TASK_CLICK_DEBOUNCE = 100; // 100ms debounce
+
+        // Handle task card click to toggle checkbox
+        async function handleTaskCardClick(event, userReengageID) {
+            event.stopPropagation();
+            console.log('[TASK CLICK] Task card clicked for userReengageID:', userReengageID);
+
+            // Find the checkbox within the clicked card
+            const taskCard = event.currentTarget;
+            const checkbox = taskCard.querySelector('.task-checkbox');
+
+            console.log('[TASK CLICK] Found checkbox:', !!checkbox, 'Is checked:', checkbox?.classList.contains('checked'), 'Is animating:', taskCard.classList.contains('animating'));
+
+            // Debounce rapid clicks
+            if (taskClickTimeout) {
+                clearTimeout(taskClickTimeout);
+            }
+
+            if (checkbox && !checkbox.classList.contains('checked') && !taskCard.classList.contains('animating')) {
+                console.log('[TASK CLICK] Processing task completion...');
+
+                // Prevent multiple clicks during animation
+                taskCard.classList.add('animating');
+
+                // Track local change time to prevent background sync conflicts
+                localStorage.setItem('lastLocalChangeTime', Date.now().toString());
+                console.log('[TASK CLICK] Set last local change time:', Date.now());
+
+                // Add slight delay to ensure DOM stability
+                taskClickTimeout = setTimeout(async () => {
+                    try {
+                        // Get current trail data from cache for immediate access
+                        const currentTrail = getCachedTrailData(userReengageID);
+                        if (!currentTrail) {
+                            console.warn('[TASK CLICK] No cached trail data found');
+                            taskCard.classList.remove('animating');
+                            return;
+                        }
+
+                        console.log('[TASK CLICK] Current trail before update:', currentTrail);
+
+                        // Mark the first incomplete task as completed in cached data
+                        const updatedTrail = markTaskAsCompletedInCache(currentTrail);
+                        console.log('[TASK CLICK] Updated trail after marking complete:', updatedTrail);
+
+                        // Determine if this completion makes all tasks complete (check AFTER marking as completed)
+                        const allTasksCompleted = updatedTrail.response.tasks.every(task => task.completed);
+                        console.log('[TASK CLICK] All tasks completed:', allTasksCompleted);
+
+                        // Play audio based on completion type
+                        try {
+                            const audioFile = allTasksCompleted ? 'audio/completed3.mp3' : 'audio/completed1.mp3';
+                            const audio = audioCache[audioFile];
+                            if (audio) {
+                                audio.volume = 0.4; // Set volume to 40%
+                                audio.play().catch(error => {
+                                    console.log('[TASK CLICK] Task completion audio playback failed:', error);
+                                });
+                            }
+                        } catch (error) {
+                            console.log('[TASK CLICK] Task completion audio playback failed:', error);
+                        }
+
+                        // Play confetti animation for all task completions (keeping logic for future changes)
+                        if (!allTasksCompleted) {
+                            console.log('[TASK CLICK] Playing confetti animation for non-final task');
+                        } else {
+                            console.log('[TASK CLICK] Playing confetti animation for final task completion');
+                        }
+                        playConfettiAnimation(taskCard);
+
+                        // Animate checkbox completion
+                        await animateTaskCompletion(taskCard, checkbox);
+
+                        // Small delay to ensure animation positioning is stable
+                        await new Promise(resolve => setTimeout(resolve, 50));
+
+                        // Immediately animate to next task using cached data
+                        await animateToNextTask(taskCard, userReengageID, updatedTrail);
+
+                        // Save task completion to API in background (non-blocking)
+                        saveTaskCompletionToAPI(userReengageID, updatedTrail);
+
+                    } catch (error) {
+                        console.error('[TASK CLICK] Error in task completion:', error);
+                    } finally {
+                        // Remove animation lock
+                        taskCard.classList.remove('animating');
+                        console.log('[TASK CLICK] Task completion processing finished');
+                    }
+                }, TASK_CLICK_DEBOUNCE);
+            } else {
+                console.log('[TASK CLICK] Task click ignored - conditions not met');
+            }
+        }
+
+        // Get cached trail data for specific userReengageID
+        function getCachedTrailData(userReengageID) {
+            try {
+                const cachedData = getCachedData();
+                if (cachedData && cachedData.data) {
+                    return cachedData.data.find(trail => 
+                        trail.userReengageID == userReengageID && 
+                        trail.type === 'tasks' && 
+                        trail.response && trail.response.tasks
+                    );
+                }
+            } catch (error) {
+                console.warn('Failed to get cached trail data:', error);
+            }
+            return null;
+        }
+
+        // Mark task as completed in cached data and return updated trail
+        function markTaskAsCompletedInCache(trail) {
+            console.log('[MARK COMPLETED] Input trail:', trail);
+
+            if (!trail || !trail.response || !trail.response.tasks) {
+                console.warn('[MARK COMPLETED] Invalid trail data');
+                return trail;
+            }
+
+            // Create a deep copy to avoid mutating original cached data
+            const updatedTrail = JSON.parse(JSON.stringify(trail));
+            const tasks = updatedTrail.response.tasks;
+
+            console.log('[MARK COMPLETED] Tasks before update:', tasks.map(t => ({ task: t.task, completed: t.completed })));
+
+            // Find and mark the first incomplete task as completed
+            const firstIncompleteTaskIndex = tasks.findIndex(task => !task.completed);
+            console.log('[MARK COMPLETED] First incomplete task index:', firstIncompleteTaskIndex);
+
+            if (firstIncompleteTaskIndex !== -1) {
+                const taskBeforeUpdate = tasks[firstIncompleteTaskIndex];
+                console.log('[MARK COMPLETED] Marking task as completed:', taskBeforeUpdate.task);
+
+                tasks[firstIncompleteTaskIndex].completed = true;
+
+                console.log('[MARK COMPLETED] Tasks after update:', tasks.map(t => ({ task: t.task, completed: t.completed })));
+
+                // Update cache with new state
+                updateCachedTrail(updatedTrail.userReengageID, updatedTrail.response);
+            } else {
+                console.log('[MARK COMPLETED] No incomplete tasks found');
+            }
+
+            return updatedTrail;
+        }
+
+        // Save task completion to API in background (non-blocking)
+        async function saveTaskCompletionToAPI(userReengageID, updatedTrail) {
+            try {
+                console.log('[API SAVE] Saving task completion to API in background...', {
+                    userReengageID: parseInt(userReengageID),
+                    type: updatedTrail.type,
+                    reEngageResponse: updatedTrail.response
+                });
+
+                const response = await fetch('https://streak-flask-api.onrender.com/api/save_reengage_event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-KEY': 'g5DSD-5X1JrPzK_WM_MxP3Bc4zyLK0jk5sRHIMmVb-o'
+                    },
+                    body: JSON.stringify({
+                        userReengageID: parseInt(userReengageID),
+                        type: updatedTrail.type,
+                        reEngageResponse: updatedTrail.response
+                    })
+                });
+
+                console.log('[API SAVE] Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('[API SAVE] Task completion saved successfully:', result);
+
+                return result;
+
+            } catch (error) {
+                console.error('[API SAVE] Failed to save task completion to API:', error);
+                // Don't throw error since this is non-blocking background operation
+                return null;
+            }
+        }
+
+        // Play Lottie confetti animation
+        function playConfettiAnimation(taskCard) {
+            console.log('[CONFETTI DEBUG] === Starting confetti animation debug ===');
+            
+            const lottieContainer = document.getElementById('lottieContainer');
+            const lottieElement = document.getElementById('lottieAnimation');
+
+            console.log('[CONFETTI DEBUG] Elements found:', {
+                lottieContainer: !!lottieContainer,
+                lottieElement: !!lottieElement,
+                taskCard: !!taskCard,
+                lottieContainerElement: lottieContainer,
+                lottieElementElement: lottieElement,
+                taskCardElement: taskCard
+            });
+
+            if (lottieContainer && lottieElement && taskCard) {
+                console.log('[CONFETTI DEBUG] All elements found - proceeding with animation');
+                
+                // Clear any existing animation first
+                lottieElement.innerHTML = '';
+                console.log('[CONFETTI DEBUG] Cleared existing animation content');
+
+                // Wait for DOM to be stable before calculating position
+                requestAnimationFrame(() => {
+                    console.log('[CONFETTI DEBUG] requestAnimationFrame callback executed');
+                    
+                    // Get task card position and dimensions
+                    const cardRect = taskCard.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+                    console.log('[CONFETTI DEBUG] Raw positioning data:', {
+                        cardRect: {
+                            left: cardRect.left,
+                            top: cardRect.top,
+                            width: cardRect.width,
+                            height: cardRect.height,
+                            right: cardRect.right,
+                            bottom: cardRect.bottom
+                        },
+                        scrollTop,
+                        scrollLeft,
+                        windowInnerWidth: window.innerWidth,
+                        windowInnerHeight: window.innerHeight
+                    });
+
+                    // Calculate center position of the task card relative to viewport
+                    const cardCenterX = cardRect.left + (cardRect.width / 2);
+                    const cardCenterY = cardRect.top + (cardRect.height / 2);
+
+                    console.log('[CONFETTI DEBUG] Calculated card center (viewport relative):', {
+                        cardCenterX,
+                        cardCenterY,
+                        calculationBreakdown: {
+                            cardCenterX_formula: `${cardRect.left} + (${cardRect.width} / 2) = ${cardCenterX}`,
+                            cardCenterY_formula: `${cardRect.top} + (${cardRect.height} / 2) = ${cardCenterY}`
+                        }
+                    });
+
+                    // Calculate final positioning (fixed position relative to viewport)
+                    const finalLeft = cardCenterX - 150; // 150px is half of animation width (300px)
+                    const finalTop = cardCenterY - 150; // 150px is half of animation height (300px)
+
+                    console.log('[CONFETTI DEBUG] Final positioning calculations:', {
+                        finalLeft,
+                        finalTop,
+                        animationWidth: 300,
+                        animationHeight: 300,
+                        halfWidth: 150,
+                        halfHeight: 150
+                    });
+
+                    // Position the lottie container at the card center using fixed positioning
+                    lottieContainer.style.position = 'fixed';
+                    lottieContainer.style.left = `${finalLeft}px`;
+                    lottieContainer.style.top = `${finalTop}px`;
+                    lottieContainer.style.zIndex = '99999';
+                    lottieContainer.style.display = 'flex';
+                    lottieContainer.style.pointerEvents = 'none';
+                    lottieContainer.style.width = '300px';
+                    lottieContainer.style.height = '300px';
+                    lottieContainer.style.alignItems = 'center';
+                    lottieContainer.style.justifyContent = 'center';
+
+                    console.log('[CONFETTI DEBUG] Applied styles to lottie container:', {
+                        position: lottieContainer.style.position,
+                        left: lottieContainer.style.left,
+                        top: lottieContainer.style.top,
+                        zIndex: lottieContainer.style.zIndex,
+                        display: lottieContainer.style.display,
+                        width: lottieContainer.style.width,
+                        height: lottieContainer.style.height,
+                        visibility: window.getComputedStyle(lottieContainer).visibility,
+                        opacity: window.getComputedStyle(lottieContainer).opacity
+                    });
+
+                    // Check if container is actually visible
+                    const containerRect = lottieContainer.getBoundingClientRect();
+                    console.log('[CONFETTI DEBUG] Container position after styling:', {
+                        containerRect: {
+                            left: containerRect.left,
+                            top: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height,
+                            right: containerRect.right,
+                            bottom: containerRect.bottom
+                        },
+                        isInViewport: {
+                            horizontal: containerRect.left < window.innerWidth && containerRect.right > 0,
+                            vertical: containerRect.top < window.innerHeight && containerRect.bottom > 0
+                        }
+                    });
+
+                    // Load and play confetti animation with error handling
+                    try {
+                        const animationData = lottieCache['lottie/confetti.json'];
+
+                        console.log('[CONFETTI DEBUG] Animation data check:', {
+                            cacheExists: !!lottieCache,
+                            animationDataExists: !!animationData,
+                            animationDataType: typeof animationData,
+                            lottieLibraryExists: typeof lottie !== 'undefined'
+                        });
+
+                        if (!animationData) {
+                            console.warn('[CONFETTI DEBUG] Animation data not preloaded, using fallback path');
+                        }
+
+                        console.log('[CONFETTI DEBUG] Creating lottie animation...');
+
+                        const animation = lottie.loadAnimation({
+                            container: lottieElement,
+                            renderer: 'svg',
+                            loop: false,
+                            autoplay: true,
+                            animationData: animationData || undefined,
+                            path: !animationData ? 'lottie/confetti.json' : undefined
+                        });
+
+                        let animationCompleted = false;
+
+                        console.log('[CONFETTI DEBUG] Animation created:', {
+                            animation: !!animation,
+                            animationContainer: animation.wrapper,
+                            animationRenderer: animation.renderer
+                        });
+
+                        // Check lottie element content after animation load
+                        setTimeout(() => {
+                            console.log('[CONFETTI DEBUG] Lottie element content after load:', {
+                                innerHTML: lottieElement.innerHTML.substring(0, 200) + '...',
+                                childElementCount: lottieElement.childElementCount,
+                                clientWidth: lottieElement.clientWidth,
+                                clientHeight: lottieElement.clientHeight
+                            });
+                        }, 100);
+
+                        // Hide container after animation completes
+                        animation.addEventListener('complete', () => {
+                            console.log('[CONFETTI DEBUG] Animation completed');
+                            if (!animationCompleted) {
+                                animationCompleted = true;
+                                lottieContainer.style.display = 'none';
+                                console.log('[CONFETTI DEBUG] Animation hidden after completion');
+                                try {
+                                    animation.destroy();
+                                    console.log('[CONFETTI DEBUG] Animation destroyed successfully');
+                                } catch (e) {
+                                    console.warn('[CONFETTI DEBUG] Error destroying animation:', e);
+                                }
+                            }
+                        });
+
+                        // Error handler for failed animation loading
+                        animation.addEventListener('data_failed', () => {
+                            console.warn('[CONFETTI DEBUG] Failed to load confetti animation');
+                            lottieContainer.style.display = 'none';
+                        });
+
+                        // Log when animation starts playing
+                        animation.addEventListener('DOMLoaded', () => {
+                            console.log('[CONFETTI DEBUG] Animation DOM loaded');
+                        });
+
+                        animation.addEventListener('data_ready', () => {
+                            console.log('[CONFETTI DEBUG] Animation data ready');
+                        });
+
+                        // Failsafe: hide after 5 seconds regardless
+                        setTimeout(() => {
+                            if (!animationCompleted && lottieContainer.style.display !== 'none') {
+                                console.log('[CONFETTI DEBUG] Failsafe timeout - hiding animation');
+                                animationCompleted = true;
+                                lottieContainer.style.display = 'none';
+                                try {
+                                    animation.destroy();
+                                    console.log('[CONFETTI DEBUG] Animation destroyed via failsafe');
+                                } catch (e) {
+                                    console.warn('[CONFETTI DEBUG] Error destroying animation via failsafe:', e);
+                                }
+                            }
+                        }, 5000);
+
+                    } catch (error) {
+                        console.error('[CONFETTI DEBUG] Error creating lottie animation:', error);
+                        lottieContainer.style.display = 'none';
+                    }
+                });
+            } else {
+                console.error('[CONFETTI DEBUG] Missing required elements:', {
+                    lottieContainer: !!lottieContainer,
+                    lottieElement: !!lottieElement,
+                    taskCard: !!taskCard,
+                    lottieContainerDetails: lottieContainer ? {
+                        id: lottieContainer.id,
+                        className: lottieContainer.className,
+                        display: lottieContainer.style.display
+                    } : null
+                });
+            }
+        }
+
+        // Animate task completion with snappy 360-degree rotation
+        async function animateTaskCompletion(taskCard, checkbox) {
+            return new Promise((resolve) => {
+                // Mark checkbox as checked immediately for visual feedback
+                checkbox.classList.add('checked');
+
+                // Create snappy 360-degree rotation animation
+                const tl = gsap.timeline({
+                    onComplete: resolve
+                });
+
+                // Quick checkbox scale animation
+                tl.to(checkbox, {
+                    scale: 1.15,
+                    duration: 0.1,
+                    ease: "power2.out"
+                })
+                .to(checkbox, {
+                    scale: 1,
+                    duration: 0.1,
+                    ease: "power2.out"
+                });
+
+                // 360-degree card rotation with scale and glow effect
+                tl.to(taskCard, {
+                    rotationY: 360,
+                    scale: 1.05,
+                    boxShadow: "0 0 40px rgba(255, 255, 255, 0.6)",
+                    duration: 0.6,
+                    ease: "power2.inOut",
+                    transformOrigin: "center center",
+                    force3D: true
+                }, 0.1)
+                .to(taskCard, {
+                    scale: 1,
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                    duration: 0.2,
+                    ease: "power2.out"
+                }, "-=0.1");
+            });
+        }
+
+        // Animate transition to next task with single snappy rotation
+        async function animateToNextTask(taskCard, userReengageID, updatedTrail) {
+            return new Promise((resolve) => {
+                // Find next incomplete task from updated trail
+                const nextTask = updatedTrail.response.tasks.find(task => !task.completed);
+
+                if (!nextTask) {
+                    // All tasks completed - animate to completion state
+                    animateToCompletionState(taskCard, updatedTrail);
+                    resolve();
+                    return;
+                }
+
+                // Get task details for animation
+                const taskKey = generateTaskKey(nextTask);
+                const colorCombo = getPersistentColorCombo(taskKey);
+                const iconName = convertIconName(nextTask.icon) || 'check-circle';
+
+                // Create timeline for single rotation transition
+                const tl = gsap.timeline({
+                    onComplete: resolve
+                });
+
+                // Rotate card 180 degrees while content fades out
+                tl.to(taskCard, {
+                    rotationY: 180,
+                    scale: 0.95,
+                    duration: 0.3,
+                    ease: "power2.inOut",
+                    force3D: true
+                })
+                .to([taskCard.querySelector('.task-main-content'), taskCard.querySelector('.task-type-header')], {
+                    opacity: 0,
+                    duration: 0.2,
+                    ease: "power2.in"
+                }, 0);
+
+                // Update content at 180 degrees (card is flipped/invisible)
+                tl.call(() => {
+                    updateTaskCardContent(taskCard, nextTask, updatedTrail, colorCombo, iconName);
+                }, null, 0.3);
+
+                // Rotate back to 0 degrees (normal view) while new content fades in
+                tl.to(taskCard, {
+                    rotationY: 0,
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.inOut",
+                    force3D: true
+                })
+                .to([taskCard.querySelector('.task-main-content'), taskCard.querySelector('.task-type-header')], {
+                    opacity: 1,
+                    duration: 0.25,
+                    ease: "power2.out"
+                }, "-=0.2");
+
+                // Re-initialize Lucide icons
+                tl.call(() => {
+                    lucide.createIcons();
+                });
+            });
+        }
+
+        // Update task card content with new task
+        function updateTaskCardContent(taskCard, nextTask, updatedTrail, colorCombo, iconName) {
+            // Generate proper color for the new task
+            const taskKey = generateTaskKey(nextTask);
+            const newColorCombo = getPersistentColorCombo(taskKey);
+            const gradientBG = newColorCombo.gradientBG;
+            const textColor = newColorCombo.textColor;
+
+            console.log('[UPDATE TASK CONTENT] New task color combo:', { gradientBG, textColor });
+
+            // Update card background gradient
+            taskCard.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
+            taskCard.style.color = textColor;
+
+            // Update header
+            const header = taskCard.querySelector('.task-type-header');
+            header.innerHTML = `
+                <div class="task-type-icon" style="color: ${textColor};">
+                    <i data-lucide="${iconName}"></i>
+                </div>
+                <h3 class="task-type-text" style="color: ${textColor};">Next Task</h3>
+                <div class="task-time" style="color: ${textColor};">${escapeHtml(nextTask.time || '15m')}</div>
+            `;
+
+            // Update main content
+            const mainContent = taskCard.querySelector('.task-main-content');
+            mainContent.innerHTML = `
+                <div class="task-checkbox" style="border-color: ${textColor}; --task-text-color: ${textColor};"></div>
+                <div class="task-details">
+                    <h4 class="task-title" style="color: ${textColor};">${escapeHtml(nextTask.task || 'Untitled Task')}</h4>
+                    <div class="task-action" style="color: ${textColor};">${escapeHtml(nextTask.action_to_take || 'No action specified')}</div>
+                </div>
+            `;
+        }
+
+        // Animate to completion state with snappy rotation
+        function animateToCompletionState(taskCard, updatedTrail) {
+            console.log('[ANIMATE COMPLETION] Starting completion animation');
+
+            // Generate or retrieve persistent color for this completion state
+            const completionColorCombo = getPersistentCompletionColorCombo(updatedTrail.userReengageID);
+            const completionGradientBG = completionColorCombo.gradientBG;
+            const completionTextColor = completionColorCombo.textColor;
+
+            console.log('[ANIMATE COMPLETION] Using completion colors:', { completionGradientBG, completionTextColor });
+
+            const timeline = gsap.timeline();
+
+            // First phase: rotate and fade out current content
+            timeline
+                .to(taskCard, {
+                    rotationY: 180,
+                    scale: 0.95,
+                    duration: 0.25,
+                    ease: "power2.inOut",
+                    force3D: true
+                })
+                .to([taskCard.querySelector('.task-main-content'), taskCard.querySelector('.task-type-header')], {
+                    opacity: 0,
+                    duration: 0.15,
+                    ease: "power2.in"
+                }, 0);
+
+            // Second phase: update content with persistent completion colors
+            timeline.call(() => {
+                console.log('[ANIMATE COMPLETION] Updating task card content with completion colors');
+
+                taskCard.classList.add('completed-card');
+
+                // Update card background gradient to completion colors
+                taskCard.style.background = `linear-gradient(135deg, ${completionGradientBG[0]}, ${completionGradientBG[1]})`;
+                taskCard.style.color = completionTextColor;
+
+                taskCard.innerHTML = `
+                    <div class="completion-message-item" onclick="openTrail('${updatedTrail.userReengageID}')">
+                        <div style="margin-bottom: 12px;">
+                            <i data-lucide="sparkles" style="width: 32px; height: 32px; color: ${completionTextColor};"></i>
+                        </div>
+                        <h2 style="color: ${completionTextColor}; font-size: 20px; margin-bottom: 8px;">All Done!</h2>
+                        <p style="color: ${completionTextColor}; font-size: 14px; margin-bottom: 16px;">${escapeHtml(updatedTrail.response.checklist_completion_message)}</p>
+                        <button class="view-all-tasks-btn" onclick="event.stopPropagation(); handleRestartTasks('${updatedTrail.userReengageID}')" style="background: rgba(255, 255, 255, 0.2); color: ${completionTextColor}; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="rotate-ccw" style="width: 16px; height: 16px;"></i>
+                            Restart Tasks
+                        </button>
+                    </div>
+                `;
+
+                // Re-initialize Lucide icons for the dynamically created content
+                lucide.createIcons();
+            }, null, 0.25);
+
+            // Third phase: rotate back and fade in new content
+            timeline
+                .to(taskCard, {
+                    rotationY: 360,
+                    scale: 1,
+                    duration: 0.25,
+                    ease: "power2.inOut",
+                    force3D: true
+                })
+                .set(taskCard, {
+                    rotationY: 0
+                });
+
+            // Fourth phase: animate in the completion message (with safety check)
+            timeline.call(() => {
+                const completionMessage = taskCard.querySelector('.completion-message-item');
+                if (completionMessage) {
+                    console.log('[ANIMATE COMPLETION] Animating completion message');
+
+                    gsap.fromTo(completionMessage, {
+                        opacity: 0,
+                        scale: 0.9
+                    }, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.3,
+                        ease: "back.out(1.7)"
+                    });
+                } else {
+                    console.warn('[ANIMATE COMPLETION] Completion message element not found');
+                }
+            }, null, "-=0.15");
+
+            console.log('[ANIMATE COMPLETION] Completion animation timeline created');
+        }
+
+        // Play firework animation for completion state
+        function playCompletionFireworkAnimation(taskCard) {
+            console.log('[FIREWORK DEBUG] === Starting firework animation debug ===');
+            
+            const lottieContainer = document.getElementById('lottieContainer');
+            const lottieElement = document.getElementById('lottieAnimation');
+
+            console.log('[FIREWORK DEBUG] Elements found:', {
+                lottieContainer: !!lottieContainer,
+                lottieElement: !!lottieElement,
+                taskCard: !!taskCard,
+                lottieContainerElement: lottieContainer,
+                lottieElementElement: lottieElement
+            });
+
+            if (lottieContainer && lottieElement && taskCard) {
+                console.log('[FIREWORK DEBUG] All elements found - proceeding with animation');
+                
+                // Clear any existing animation first
+                lottieElement.innerHTML = '';
+                console.log('[FIREWORK DEBUG] Cleared existing animation content');
+
+                // Wait for DOM to be stable before calculating position
+                requestAnimationFrame(() => {
+                    console.log('[FIREWORK DEBUG] requestAnimationFrame callback executed');
+                    
+                    // Get task card position and dimensions
+                    const cardRect = taskCard.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+                    console.log('[FIREWORK DEBUG] Raw positioning data:', {
+                        cardRect: {
+                            left: cardRect.left,
+                            top: cardRect.top,
+                            width: cardRect.width,
+                            height: cardRect.height
+                        },
+                        scrollTop,
+                        scrollLeft
+                    });
+
+                    // Calculate center position of the task card relative to viewport
+                    const cardCenterX = cardRect.left + (cardRect.width / 2);
+                    const cardCenterY = cardRect.top + (cardRect.height / 2);
+
+                    console.log('[FIREWORK DEBUG] Calculated card center (viewport relative):', {
+                        cardCenterX,
+                        cardCenterY
+                    });
+
+                    // Calculate final positioning (fixed position relative to viewport)
+                    const finalLeft = cardCenterX - 150;
+                    const finalTop = cardCenterY - 150;
+
+                    // Position the lottie container at the card center using fixed positioning
+                    lottieContainer.style.position = 'fixed';
+                    lottieContainer.style.left = `${finalLeft}px`;
+                    lottieContainer.style.top = `${finalTop}px`;
+                    lottieContainer.style.zIndex = '99999';
+                    lottieContainer.style.display = 'flex';
+                    lottieContainer.style.pointerEvents = 'none';
+                    lottieContainer.style.width = '300px';
+                    lottieContainer.style.height = '300px';
+                    lottieContainer.style.alignItems = 'center';
+                    lottieContainer.style.justifyContent = 'center';
+
+                    console.log('[FIREWORK DEBUG] Applied styles to lottie container:', {
+                        left: lottieContainer.style.left,
+                        top: lottieContainer.style.top,
+                        display: lottieContainer.style.display
+                    });
+
+                    // Load and play firework animation
+                    try {
+                        const animationData = lottieCache['lottie/firework.json'];
+
+                        console.log('[FIREWORK DEBUG] Animation data check:', {
+                            animationDataExists: !!animationData,
+                            lottieLibraryExists: typeof lottie !== 'undefined'
+                        });
+
+                        if (!animationData) {
+                            console.warn('[FIREWORK DEBUG] Animation data not preloaded, using fallback path');
+                        }
+
+                        console.log('[FIREWORK DEBUG] Creating lottie animation');
+
+                        const animation = lottie.loadAnimation({
+                            container: lottieElement,
+                            renderer: 'svg',
+                            loop: false,
+                            autoplay: true,
+                            animationData: animationData || undefined,
+                            path: !animationData ? 'lottie/firework.json' : undefined
+                        });
+
+                        let animationCompleted = false;
+
+                        console.log('[FIREWORK DEBUG] Animation created and started');
+
+                        // Check lottie element content after animation load
+                        setTimeout(() => {
+                            console.log('[FIREWORK DEBUG] Lottie element content after load:', {
+                                innerHTML: lottieElement.innerHTML.substring(0, 200) + '...',
+                                childElementCount: lottieElement.childElementCount
+                            });
+                        }, 100);
+
+                        // Hide container after animation completes
+                        animation.addEventListener('complete', () => {
+                            console.log('[FIREWORK DEBUG] Animation completed');
+                            if (!animationCompleted) {
+                                animationCompleted = true;
+                                lottieContainer.style.display = 'none';
+                                try {
+                                    animation.destroy();
+                                    console.log('[FIREWORK DEBUG] Animation destroyed successfully');
+                                } catch (e) {
+                                    console.warn('[FIREWORK DEBUG] Error destroying firework animation:', e);
+                                }
+                            }
+                        });
+
+                        // Error handler for failed animation loading
+                        animation.addEventListener('data_failed', () => {
+                            console.warn('[FIREWORK DEBUG] Failed to load firework animation');
+                            lottieContainer.style.display = 'none';
+                        });
+
+                        // Failsafe: hide after 6 seconds regardless
+                        setTimeout(() => {
+                            if (!animationCompleted && lottieContainer.style.display !== 'none') {
+                                console.log('[FIREWORK DEBUG] Failsafe timeout - hiding animation');
+                                animationCompleted = true;
+                                lottieContainer.style.display = 'none';
+                                try {
+                                    animation.destroy();
+                                } catch (e) {
+                                    console.warn('[FIREWORK DEBUG] Error destroying firework animation:', e);
+                                }
+                            }
+                        }, 6000);
+
+                    } catch (error) {
+                        console.error('[FIREWORK DEBUG] Error creating firework animation:', error);
+                        lottieContainer.style.display = 'none';
+                    }
+                });
+            } else {
+                console.error('[FIREWORK DEBUG] Missing required elements:', {
+                    lottieContainer: !!lottieContainer,
+                    lottieElement: !!lottieElement,
+                    taskCard: !!taskCard
+                });
+            }
+        }
+
+        // Function to determine if we are completing the last pending task
+        function isCompletingLastPendingTask(userReengageID) {
+            try {
+                // Find the current trail
+                const currentTrail = getCachedTrailData(userReengageID);
+
+                if (!currentTrail || !currentTrail.response || !currentTrail.response.tasks) {
+                    console.warn('No cached trail data found to determine if last task is pending');
+                    return false;
+                }
+
+                const tasks = currentTrail.response.tasks;
+
+                // Count the number of incomplete tasks
+                const incompleteTaskCount = tasks.filter(task => !task.completed).length;
+
+                // If there is only one incomplete task, we are completing the last one
+                return incompleteTaskCount === 1;
+
+            } catch (error) {
+                console.warn('Failed to determine if completing last pending task:', error);
+                return false;
+            }
+        }
+
+
+        // Handle "View all tasks" button click
+        function handleViewAllTasksClick(event, userReengageID) {
+            event.stopPropagation();
+
+            if (userReengageID) {
+                const { userEmail, appName } = getUrlParams();
+                window.location.href = `reEngage.html?userReengageID=${userReengageID}&loadFromLocal=true&userEmail=${encodeURIComponent(userEmail)}&appName=${encodeURIComponent(appName)}`;
+            }
+        }
+
+        // Handle "View all cards" button click
+        function handleViewAllCardsClick(event, userReengageID) {
+            event.stopPropagation();
+
+            if (userReengageID) {
+                const { userEmail, appName } = getUrlParams();
+                window.location.href = `reEngage.html?userReengageID=${userReengageID}&loadFromLocal=true&userEmail=${encodeURIComponent(userEmail)}&appName=${encodeURIComponent(appName)}`;
+            }
+        }
+
+        // Handle restart tasks functionality
+        async function handleRestartTasks(userReengageID) {
+            try {
+                console.log('[RESTART TASKS] Starting task restart for userReengageID:', userReengageID);
+
+                // Track local change time to prevent background sync conflicts
+                localStorage.setItem('lastLocalChangeTime', Date.now().toString());
+                console.log('[RESTART TASKS] Set last local change time:', Date.now());
+
+                // Get current trail data from cache
+                const currentTrail = getCachedTrailData(userReengageID);
+                if (!currentTrail) {
+                    console.warn('[RESTART TASKS] No cached trail data found for restart');
+                    return;
+                }
+
+                console.log('[RESTART TASKS] Current trail before restart:', currentTrail);
+
+                // Find the task card for animation
+                const taskCard = document.querySelector(`[data-user-reengage-id="${userReengageID}"]`);
+                if (!taskCard) {
+                    console.warn('[RESTART TASKS] Task card not found for animation');
+                    return;
+                }
+
+                // Prevent multiple clicks during animation
+                taskCard.classList.add('animating');
+
+                // Reset all tasks to incomplete
+                const restartedTrail = JSON.parse(JSON.stringify(currentTrail));
+                restartedTrail.response.tasks.forEach(task => {
+                    task.completed = false;
+                });
+
+                console.log('[RESTART TASKS] Restarted trail:', restartedTrail);
+
+                // Update cache immediately
+                updateCachedTrail(userReengageID, restartedTrail.response);
+                console.log('[RESTART TASKS] Cache updated with restarted tasks');
+
+                // Animate the restart transition with 360-degree rotation
+                await animateRestartTransition(taskCard, restartedTrail);
+
+                // Update apiData to reflect the changes
+                if (apiData && apiData.data) {
+                    const trailIndex = apiData.data.findIndex(trail => trail.userReengageID == userReengageID);
+                    if (trailIndex !== -1) {
+                        apiData.data[trailIndex] = restartedTrail;
+                        console.log('[RESTART TASKS] Updated apiData with restarted trail');
+                    }
+                }
+
+                console.log('[RESTART TASKS] Tasks restarted without affecting cards layout');
+
+                // Save to API in background (non-blocking)
+                saveTaskCompletionToAPI(userReengageID, restartedTrail);
+
+            } catch (error) {
+                console.error('[RESTART TASKS] Failed to restart tasks:', error);
+            }
+        }
+
+        // Animate restart transition with 360-degree rotation
+        async function animateRestartTransition(taskCard, restartedTrail) {
+            return new Promise((resolve) => {
+                console.log('[ANIMATE RESTART] Starting restart animation');
+
+                // Play transition audio
+                try {
+                    const audio = audioCache['audio/transition.mp3'];
+                    if (audio) {
+                        audio.volume = 0.4;
+                        audio.play().catch(error => {
+                            console.log('Restart transition audio playback failed:', error);
+                        });
+                    }
+                } catch (error) {
+                    console.log('Restart transition audio playback failed:', error);
+                }
+
+                // Get the first task for the new content
+                const firstTask = restartedTrail.response.tasks[0];
+                const taskKey = generateTaskKey(firstTask);
+                const colorCombo = getPersistentColorCombo(taskKey);
+                const gradientBG = colorCombo.gradientBG;
+                const textColor = colorCombo.textColor;
+                const iconName = convertIconName(firstTask?.icon) || 'check-circle';
+
+                // Get current completion message element before animation starts
+                const completionMessage = taskCard.querySelector('.completion-message-item');
+
+                // Create timeline for smooth 360-degree rotation transition
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        taskCard.classList.remove('animating');
+                        resolve();
+                    }
+                });
+
+                // Phase 1: Rotate 180 degrees while content fades out
+                tl.to(taskCard, {
+                    rotationY: 180,
+                    scale: 0.95,
+                    duration: 0.4,
+                    ease: "power2.inOut",
+                    force3D: true
+                });
+
+                // Only animate completion message if it exists
+                if (completionMessage) {
+                    tl.to(completionMessage, {
+                        opacity: 0,
+                        scale: 0.9,
+                        duration: 0.3,
+                        ease: "power2.in"
+                    }, 0);
+                }
+
+                // Phase 2: Update content at 180 degrees (card is flipped/invisible)
+                tl.call(() => {
+                    console.log('[ANIMATE RESTART] Updating card content to first task');
+
+                    // Remove completed card class
+                    taskCard.classList.remove('completed-card');
+
+                    // Update card background and color
+                    taskCard.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
+                    taskCard.style.color = textColor;
+
+                    // Update card content to show first task
+                    taskCard.innerHTML = `
+                        <div class="task-type-header" style="opacity: 0;">
+                            <div class="task-type-icon" style="color: ${textColor};">
+                                <i data-lucide="${iconName}"></i>
+                            </div>
+                            <h3 class="task-type-text" style="color: ${textColor};">Next Task</h3>
+                            <div class="task-time" style="color: ${textColor};">${escapeHtml(firstTask.time || '15m')}</div>
+                        </div>
+
+                        <div class="task-main-content" style="opacity: 0;">
+                            <div class="task-checkbox" style="border-color: ${textColor}; --task-text-color: ${textColor};"></div>
+                            <div class="task-details">
+                                <h4 class="task-title" style="color: ${textColor};">${escapeHtml(firstTask.task || 'Untitled Task')}</h4>
+                                <div class="task-action" style="color: ${textColor};">${escapeHtml(firstTask.action_to_take || 'No action specified')}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Re-initialize Lucide icons
+                    lucide.createIcons();
+                }, null, 0.4);
+
+                // Phase 3: Continue rotation to 360 degrees while new content fades in
+                tl.to(taskCard, {
+                    rotationY: 360,
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "power2.inOut",
+                    force3D: true
+                });
+
+                // Phase 4: Animate in the new content (with safety check for DOM elements)
+                tl.call(() => {
+                    const newHeader = taskCard.querySelector('.task-type-header');
+                    const newContent = taskCard.querySelector('.task-main-content');
+
+                    if (newHeader && newContent) {
+                        gsap.to([newHeader, newContent], {
+                            opacity: 1,
+                            scale: 1,
+                            duration: 0.3,
+                            ease: "back.out(1.7)"
+                        });
+                    }
+                }, null, "-=0.2");
+
+                // Phase 5: Reset rotation to 0 for future animations
+                tl.set(taskCard, {
+                    rotationY: 0
+                });
+
+                console.log('[ANIMATE RESTART] Restart animation timeline created');
+            });
+        }
+
+        // Handle back button click with conditional logic
+        function handleBackButtonClick() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const callDeeplink = urlParams.get('callDeeplink');
+
+            if (callDeeplink === 'true') {
+                window.location.assign("http://riafy.me/go-back");
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize the app
+        loadContent();
+    </script>
+</body>
+</html>

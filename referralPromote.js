@@ -124,12 +124,28 @@ class ReferralPromotePage {
       benefits.forEach((benefit, index) => {
         const titleElement = document.getElementById(`benefit-${index + 1}-title`);
         const descElement = document.getElementById(`benefit-${index + 1}-desc`);
+        const cardElement = document.querySelector(`[data-index="${index}"]`);
+        
         // According to mapping: benefit.desc goes to title, benefit.title goes to desc
         if (titleElement && benefit.title) {
           titleElement.textContent = replaceVariables(benefit.title);
         }
         if (descElement && benefit.desc) {
           descElement.textContent = replaceVariables(benefit.desc);
+        }
+        
+        // Apply dynamic color combination to each card
+        if (cardElement) {
+          const colorCombo = getRandomColorCombo();
+          const gradientBG = colorCombo.gradientBG;
+          const textColor = colorCombo.textColor;
+          
+          cardElement.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
+          cardElement.style.color = textColor;
+          
+          // Also apply color to child elements
+          if (titleElement) titleElement.style.color = textColor;
+          if (descElement) descElement.style.color = textColor;
         }
       });
     }
@@ -182,7 +198,7 @@ class ReferralPromotePage {
         const waitForSingleCard = () => {
           const containerWidth = container.offsetWidth;
           if (containerWidth && containerWidth > 0) {
-            const cardWidth = 280;
+            const cardWidth = 180;
             const centerX = (containerWidth - cardWidth) / 2;
             console.log('[CARD SWIPER] Single card positioning - containerWidth:', containerWidth, 'centerX:', centerX);
             gsap.set(card, {
@@ -220,7 +236,7 @@ class ReferralPromotePage {
       containerWidth = container.offsetWidth;
       if (!containerWidth || containerWidth <= 0) return false;
 
-      const cardWidth = 280;
+      const cardWidth = 180;
       const centerX = (containerWidth - cardWidth) / 2; // Properly center the card in container
       const centerY = 40;
       const maxOffset = Math.min(60, (containerWidth - cardWidth) / 3); // Increased offset for better separation
