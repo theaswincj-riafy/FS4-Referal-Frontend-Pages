@@ -562,6 +562,11 @@ p {
   margin: 0;
 }
 
+#how-it-works-download {
+  padding-bottom: 15rem;
+  padding-top: 3rem;
+}
+
 /* Download Page Footer */
 .download-footer {
   position: sticky;
