@@ -740,6 +740,14 @@ p {
   font-size: 12px;
 }
 
+#progress-subtitle{
+  margin-bottom:0px;
+}
+
+.centered-heading-area{
+  margin-bottom:0px;
+}
+
 /* Bottom Status Pill within Combined Section */
 .combined-card-section .bottom-status-pill {
   margin: 0;
