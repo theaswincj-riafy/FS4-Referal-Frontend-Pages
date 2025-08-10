@@ -52,7 +52,7 @@ class ReferralRedeemPage {
     const appName = btoa(this.params.app_package_name);
     return `referralRedeem_${userId}_${appName}`;
   }
-  
+
   // Clean up any duplicate localStorage entries for this user
   cleanupStorageKeys() {
     const baseKey = this.getStorageKey();
@@ -67,7 +67,7 @@ class ReferralRedeemPage {
     const storedData = localStorage.getItem(storageKey);
     console.log('Checking for stored data with key:', storageKey);
     console.log('Found stored data:', !!storedData);
-    
+
     if (storedData) {
       try {
         // Parse as plain JSON (no encryption needed for this simple case)
@@ -94,19 +94,19 @@ class ReferralRedeemPage {
       userId: this.params.userId,
       appName: this.params.app_package_name
     };
-    
+
     // Clean up any existing fallback entries first
     const fallbackKey = storageKey + '_fallback';
     localStorage.removeItem(fallbackKey);
-    
+
     try {
       const jsonString = JSON.stringify(dataToStore);
       console.log('Attempting to save localStorage data with alreadyRedeemed:', alreadyRedeemed);
-      
+
       // Try to save as plain JSON first (simpler and more reliable)
       localStorage.setItem(storageKey, jsonString);
       console.log('Redemption data saved to localStorage with key:', storageKey);
-      
+
       // Verify the save worked
       const verification = localStorage.getItem(storageKey);
       console.log('Verification - stored data exists:', !!verification);
@@ -119,7 +119,7 @@ class ReferralRedeemPage {
   getStoredRedemptionData() {
     const storageKey = this.getStorageKey();
     const storedData = localStorage.getItem(storageKey);
-    
+
     if (storedData) {
       try {
         // Parse as plain JSON
@@ -138,14 +138,14 @@ class ReferralRedeemPage {
   async init() {
     try {
       console.log('ReferralRedeemPage: Starting init with params:', this.params);
-      
+
       // Clean up any old localStorage entries first
       this.cleanupStorageKeys();
-      
+
       // Check if user has already redeemed
       const alreadyRedeemed = this.checkAlreadyRedeemed();
       console.log('ReferralRedeemPage: Already redeemed check result:', alreadyRedeemed);
-      
+
       if (alreadyRedeemed) {
         // Load stored data and render success state
         const storedData = this.getStoredRedemptionData();
@@ -160,7 +160,7 @@ class ReferralRedeemPage {
           return;
         }
       }
-      
+
       // Normal flow - load fresh data
       console.log('ReferralRedeemPage: Loading fresh data from API');
       await this.loadPageData();
@@ -174,7 +174,7 @@ class ReferralRedeemPage {
         } else {
           console.log('ReferralRedeemPage: Found existing localStorage data, not overwriting');
         }
-        
+
         this.populateContent();
         this.loadThemeColors();
         this.hideLoader();
@@ -200,7 +200,7 @@ class ReferralRedeemPage {
 
         console.log('Making API call to:', endpoint);
         console.log('Request body:', body);
-        
+
         this.data = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
         console.log('Loaded API data:', this.data);
       } catch (apiError) {
@@ -264,10 +264,10 @@ class ReferralRedeemPage {
 
     // Populate hero section - use hero_title for hero-title
     document.getElementById('hero-title').textContent = hero.hero_title || 'This is a placeholder';
-    
+
     // Use subtitle for hero-subtitle
     document.getElementById('hero-subtitle').textContent = hero.subtitle || 'This is a placeholder';
-    
+
     // Update input placeholder - use referral_code as placeholder value
     const redeemInput = document.getElementById('redeem-input');
     if (redeemInput) {
@@ -303,7 +303,7 @@ class ReferralRedeemPage {
   loadThemeColors() {
     if (typeof THEME_ONE !== 'undefined') {
       console.log('Loading THEME_ONE colors:', THEME_ONE);
-      
+
       // Apply hero section background color
       const heroSection = document.querySelector('.hero-section');
       if (heroSection) {
@@ -349,7 +349,7 @@ class ReferralRedeemPage {
   hideLoader() {
     const loader = document.getElementById('page-loader');
     const content = document.getElementById('page-content-wrapper');
-    
+
     if (loader) loader.style.display = 'none';
     if (content) content.style.display = 'block';
   }
@@ -385,13 +385,13 @@ class ReferralRedeemPage {
       input.addEventListener('input', () => {
         this.validateInput();
       });
-      
+
       input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           this.redeemCode();
         }
       });
-      
+
       // Test feature: Double-click input to simulate successful redemption
       input.addEventListener('dblclick', () => {
         console.log('Test mode: Simulating successful redemption');
@@ -429,7 +429,7 @@ class ReferralRedeemPage {
   validateInput() {
     const input = document.getElementById('redeem-input');
     const redeemBtn = document.getElementById('primary-cta');
-    
+
     if (input && redeemBtn) {
       const hasValue = input.value.trim().length > 0;
       redeemBtn.disabled = !hasValue;
@@ -440,7 +440,7 @@ class ReferralRedeemPage {
   async redeemCode() {
     const input = document.getElementById('redeem-input');
     const redeemBtn = document.getElementById('primary-cta');
-    
+
     // Use validation messages from API
     if (!input || !input.value.trim()) {
       const emptyMessage = this.validationMessages?.empty || 'Please enter a referral code';
@@ -449,7 +449,7 @@ class ReferralRedeemPage {
     }
 
     const code = input.value.trim();
-    
+
     // Disable button during processing
     if (redeemBtn) {
       redeemBtn.disabled = true;
@@ -466,7 +466,7 @@ class ReferralRedeemPage {
       };
 
       const result = await ReferralUtils.makeApiCall(endpoint, 'POST', body);
-      
+
       if (result.success || result.status === 'success') {
         // Mark as redeemed and save to localStorage
         console.log('ReferralRedeemPage: Successful redemption, saving to localStorage');
@@ -500,34 +500,34 @@ class ReferralRedeemPage {
   showSuccessState(result) {
     console.log('ReferralRedeemPage: Showing success state and updating localStorage');
     console.log('API result:', result);
-    
+
     // Extract referrer_name from the API response
     const referrerName = result.referrer_name || 'your friend';
     console.log('Referrer name from API:', referrerName);
-    
+
     // Update localStorage data with personalized referrer_name
     if (referrerName && referrerName !== 'your friend') {
       this.personalizeDataWithReferrerName(referrerName);
     }
-    
+
     // Mark as redeemed and save to localStorage immediately
     this.data.alreadyRedeemed = true;
     this.saveRedemptionData(true);
-    
+
     // Replace primary CTA button immediately
     this.replacePrimaryCTAButton();
-    
+
     // Replace the entire page content with success state
     this.renderAlreadyRedeemedState();
   }
-  
+
   // Personalize data by replacing {{referrer_name}} placeholders
   personalizeDataWithReferrerName(referrerName) {
     console.log('Personalizing data with referrer name:', referrerName);
-    
+
     const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
     const successData = pageData.redeem?.redemptionSuccess;
-    
+
     if (successData) {
       // Update subtitle
       if (successData.subtitle && successData.subtitle.includes('{{referrer_name}}')) {
@@ -535,7 +535,7 @@ class ReferralRedeemPage {
         successData.subtitle = successData.subtitle.replace(/\{\{referrer_name\}\}/g, referrerName);
         console.log('Updated subtitle from:', originalSubtitle, 'to:', successData.subtitle);
       }
-      
+
       // Update nudges array
       if (successData.nudges && Array.isArray(successData.nudges)) {
         successData.nudges = successData.nudges.map(nudge => {
@@ -548,7 +548,7 @@ class ReferralRedeemPage {
           return nudge;
         });
       }
-      
+
       console.log('Personalized success data:', successData);
     }
   }
@@ -569,19 +569,19 @@ class ReferralRedeemPage {
   replacePrimaryCTAButton() {
     const primaryCta = document.getElementById('primary-cta');
     if (!primaryCta) return;
-    
+
     const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
     const successData = pageData.redeem?.redemptionSuccess || {};
-    
+
     // Create new premium button
     const premiumButton = document.createElement('button');
     premiumButton.id = 'primary-cta-premium';
     premiumButton.className = primaryCta.className; // Copy existing classes
     premiumButton.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
-    
+
     // Copy styles from original button
     premiumButton.style.cssText = primaryCta.style.cssText;
-    
+
     // Apply theme colors if available
     if (typeof THEME_ONE !== 'undefined') {
       premiumButton.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
@@ -591,14 +591,14 @@ class ReferralRedeemPage {
       premiumButton.style.color = 'white';
     }
     premiumButton.style.fontWeight = '600';
-    
+
     // Add click handler for deeplink
     premiumButton.addEventListener('click', () => {
       const deeplink = 'riafy.me/buy1weekpremium';
       ReferralUtils.showToast(deeplink);
       console.log('Premium button clicked, deeplink:', deeplink);
     });
-    
+
     // Replace the button
     primaryCta.parentNode.replaceChild(premiumButton, primaryCta);
     console.log('Replaced primary-cta with primary-cta-premium');
@@ -607,45 +607,54 @@ class ReferralRedeemPage {
   // Render the already redeemed state (success page)
   renderAlreadyRedeemedState() {
     console.log('ReferralRedeemPage: Rendering already redeemed state');
-    
+
+    // Remove vertical scroll when showing success state
+    document.body.style.overflow = 'hidden';
+
+    // Set scrollable-content background color to pastelBG
+    const scrollableContent = document.querySelector('.scrollable-content');
+    if (scrollableContent && typeof THEME_ONE !== 'undefined') {
+      scrollableContent.style.backgroundColor = THEME_ONE.pastelBG;
+    }
+
     // Get redemption success data
     const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
     const successData = pageData.redeem?.redemptionSuccess || {};
-    
+
     console.log('Success data for rendering:', successData);
-    
+
     // Update header title to match the success state
     const headerTitle = document.getElementById('header-title');
     if (headerTitle) {
       headerTitle.textContent = 'Redeem Referral Code'; // Keep header consistent
     }
-    
+
     // Get content wrapper and completely replace with success UI
     const contentWrapper = document.getElementById('page-content-wrapper');
     if (!contentWrapper) return;
-    
+
     // Replace entire content with success state matching the screenshot
     contentWrapper.innerHTML = `
       <!-- Success State Content -->
-      <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
-        
+      <section class="success-section" style="text-align: center; padding: 0rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
+
         <!-- Success image with crown -->
         <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
           <img src="images/crown.png" alt="Success Crown" style="width: 280px; height: 280px; object-fit: contain;" />
         </div>
-        
+
         <!-- Main success title -->
         <h1 class="success-title" style="font-size: 2rem; font-weight: 700; color: #1a202c; margin-bottom: 1rem; line-height: 1.2;">
           ${successData.hero_title || "You're all set!"}
         </h1>
-        
+
         <!-- Success subtitle -->
         <p class="success-subtitle" style="font-size: 1rem; color: #718096; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
           ${successData.subtitle || 'You have redeemed a valid referral code from John!'}
         </p>
-        
+
         <!-- Info nudge with icon -->
-        <div class="info-nudge" style="background: #f7fafc; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto; border: 1px solid #e2e8f0;">
+        <div id="info-nudge-component" class="info-nudge" style="background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%); border: 1px solid #F59E0B; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto;">
           <div class="info-icon" style="color: #4a5568; margin-top: 0.125rem; flex-shrink: 0;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -658,11 +667,11 @@ class ReferralRedeemPage {
         </div>
       </section>
     `;
-    
+
     // Check if we need to replace the footer CTA button
     const footerCTA = document.getElementById('primary-cta');
     const footerPremiumCTA = document.getElementById('primary-cta-premium');
-    
+
     if (footerCTA && !footerPremiumCTA) {
       // Replace with premium button if not already replaced
       this.replacePrimaryCTAButton();
@@ -671,7 +680,7 @@ class ReferralRedeemPage {
       footerPremiumCTA.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
       footerPremiumCTA.disabled = false;
     }
-    
+
     console.log('Successfully rendered already redeemed state');
   }
 }

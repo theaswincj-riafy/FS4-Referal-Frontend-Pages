@@ -587,22 +587,12 @@ p {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 52px;
 }
 
 .download-btn:hover {
   background: #2ba7e3;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(82, 197, 247, 0.3);
-}
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1d1d1f;
-  margin-bottom: 20px;
-  text-align: center;
-  padding-top: 24px;
 }
 
 /* Sticky Footer Updates */
@@ -1399,26 +1389,24 @@ p {
 }
 
 /* Success State Styles */
+.success-section {
+  padding: 0rem 1rem;
+}
+
+/* Remove vertical scroll when in already redeemed state */
+.success-section ~ .sticky-footer {
+  position: relative;
+}
+
+/* Info nudge styling for already redeemed state */
+#info-nudge-redeemed {
+  background: linear-gradient(135deg, #FEF3E2 0%, #FDE8CC 100%);
+  border: 1px solid #F59E0B;
+}
+
 .success-nudge {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #f8f9fa;
-  padding: 16px;
-  border-radius: 12px;
-  margin-top: 24px;
-  border-left: 4px solid #28a745;
-}
-
-.nudge-icon {
-  color: #28a745;
-  flex-shrink: 0;
-}
-
-.nudge-text {
-  color: #666;
-  font-size: 14px;
-  line-height: 1.4;
 }
 
 /* Notifications Banner */
