@@ -304,11 +304,16 @@ class ReferralRedeemPage {
     if (typeof THEME_ONE !== 'undefined') {
       console.log('Loading THEME_ONE colors:', THEME_ONE);
       
-      // Apply theme colors to paste button
-      const pasteBtn = document.getElementById('paste-btn');
-      if (pasteBtn) {
-        pasteBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
-        pasteBtn.style.color = THEME_ONE.textColor;
+      // Apply hero section background color
+      const heroSection = document.querySelector('.hero-section');
+      if (heroSection) {
+        heroSection.style.backgroundColor = THEME_ONE.pastelBG;
+      }
+
+      // Apply hero subtitle color
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      if (heroSubtitle) {
+        heroSubtitle.style.color = THEME_ONE.secondaryTextColor;
       }
 
       // Apply theme colors to redeem input
@@ -316,6 +321,27 @@ class ReferralRedeemPage {
       if (redeemInput) {
         redeemInput.style.borderColor = THEME_ONE.border;
         redeemInput.style.backgroundColor = THEME_ONE.pastelBGFill;
+      }
+
+      // Apply theme colors to paste button
+      const pasteBtn = document.getElementById('paste-btn');
+      if (pasteBtn) {
+        pasteBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        pasteBtn.style.color = THEME_ONE.textColor;
+      }
+
+      // Apply theme colors to primary CTA button
+      const primaryCta = document.getElementById('primary-cta');
+      if (primaryCta) {
+        primaryCta.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        primaryCta.style.color = THEME_ONE.textColor;
+      }
+
+      // Apply theme colors to premium CTA button if it exists
+      const primaryCtaPremium = document.getElementById('primary-cta-premium');
+      if (primaryCtaPremium) {
+        primaryCtaPremium.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+        primaryCtaPremium.style.color = THEME_ONE.textColor;
       }
     }
   }
@@ -555,8 +581,15 @@ class ReferralRedeemPage {
     
     // Copy styles from original button
     premiumButton.style.cssText = primaryCta.style.cssText;
-    premiumButton.style.background = 'linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%)';
-    premiumButton.style.color = 'white';
+    
+    // Apply theme colors if available
+    if (typeof THEME_ONE !== 'undefined') {
+      premiumButton.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
+      premiumButton.style.color = THEME_ONE.textColor;
+    } else {
+      premiumButton.style.background = 'linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%)';
+      premiumButton.style.color = 'white';
+    }
     premiumButton.style.fontWeight = '600';
     
     // Add click handler for deeplink
