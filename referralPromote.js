@@ -170,6 +170,11 @@ class ReferralPromotePage {
           if (descElement) descElement.style.color = textColor;
         }
       });
+
+      // Calculate and apply uniform height to all cards after content is populated
+      this.adjustCardHeights();
+    }
+      });
     }
 
     // Populate tip using data mapping - randomly select from nudges array
@@ -204,19 +209,49 @@ class ReferralPromotePage {
   applyButtonColors() {
     // Select a random color combo for buttons
     const selectedColorCombo = COLOR_COMBOS[Math.floor(Math.random() * COLOR_COMBOS.length)];
-    const buttonColor = selectedColorCombo.gradientBG[0]; // Use first gradient color as solid color
+    const gradientBG = selectedColorCombo.gradientBG;
+    const textColor = selectedColorCombo.textColor;
 
     // Apply color to view-referrals button
     const viewReferralsBtn = document.getElementById('view-referrals');
     if (viewReferralsBtn) {
-      viewReferralsBtn.style.background = buttonColor;
+      viewReferralsBtn.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
+      viewReferralsBtn.style.color = textColor;
     }
 
     // Apply same color to primary CTA button
     const primaryCta = document.getElementById('primary-cta');
     if (primaryCta) {
-      primaryCta.style.background = buttonColor;
+      primaryCta.style.background = `linear-gradient(135deg, ${gradientBG[0]}, ${gradientBG[1]})`;
+      primaryCta.style.color = textColor;
     }
+  }
+
+  adjustCardHeights() {
+    // Wait for next frame to ensure content is rendered
+    requestAnimationFrame(() => {
+      const cards = document.querySelectorAll('.benefit-card');
+      if (cards.length === 0) return;
+
+      // Reset heights to auto to measure natural height
+      cards.forEach(card => {
+        card.style.height = 'auto';
+      });
+
+      // Find the tallest card
+      let maxHeight = 0;
+      cards.forEach(card => {
+        const cardHeight = card.scrollHeight;
+        if (cardHeight > maxHeight) {
+          maxHeight = cardHeight;
+        }
+      });
+
+      // Apply the max height to all cards
+      cards.forEach(card => {
+        card.style.height = `${maxHeight}px`;
+      });
+    });
   }
 
   hideLoader() {

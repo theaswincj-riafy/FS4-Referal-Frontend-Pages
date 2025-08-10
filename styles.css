@@ -692,7 +692,7 @@ p {
 .benefit-card {
   position: absolute;
   width: 180px;
-  height: 200px;
+  min-height: 200px;
   border-radius: 24px;
   padding: 20px;
   color: white;
