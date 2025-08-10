@@ -364,6 +364,13 @@ class ReferralRedeemPage {
           this.redeemCode();
         }
       });
+      
+      // Test feature: Double-click input to simulate successful redemption
+      input.addEventListener('dblclick', () => {
+        console.log('Test mode: Simulating successful redemption');
+        ReferralUtils.showToast('Test Mode: Simulating success!');
+        this.showSuccessState({ success: true, message: 'Test redemption successful' });
+      });
     }
   }
 
@@ -458,54 +465,14 @@ class ReferralRedeemPage {
   }
 
   showSuccessState(result) {
-    // Extract success data from API response
-    const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
-    const successData = pageData.redeem?.redemptionSuccess || {};
+    console.log('ReferralRedeemPage: Showing success state and updating localStorage');
     
-    // Update hero-title with redemptionSuccess.hero_title
-    const heroTitle = document.getElementById('hero-title');
-    if (heroTitle) {
-      heroTitle.textContent = successData.hero_title || 'This is a placeholder';
-    }
+    // Mark as redeemed and save to localStorage immediately
+    this.data.alreadyRedeemed = true;
+    this.saveRedemptionData(true);
     
-    // Update hero-subtitle with redemptionSuccess.subtitle
-    const heroSubtitle = document.getElementById('hero-subtitle');
-    if (heroSubtitle) {
-      heroSubtitle.textContent = successData.subtitle || 'This is a placeholder';
-    }
-    
-    // Get content wrapper and add success nudge if it doesn't exist
-    const contentWrapper = document.getElementById('page-content-wrapper');
-    if (contentWrapper && !contentWrapper.querySelector('.success-nudge')) {
-      const heroSection = contentWrapper.querySelector('.hero-section');
-      if (heroSection) {
-        const successNudge = document.createElement('div');
-        successNudge.className = 'success-nudge';
-        successNudge.innerHTML = `
-          <div class="nudge-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <span class="nudge-text">${(successData.nudges && successData.nudges[0]) || "This is a placeholder"}</span>
-        `;
-        heroSection.appendChild(successNudge);
-      }
-    } else if (contentWrapper) {
-      // Update existing nudge text
-      const nudgeText = contentWrapper.querySelector('.nudge-text');
-      if (nudgeText) {
-        nudgeText.textContent = (successData.nudges && successData.nudges[0]) || "This is a placeholder";
-      }
-    }
-    
-    // Update footer CTA with redemptionSuccess.primary_cta
-    const footerCTA = document.getElementById('primary-cta');
-    if (footerCTA) {
-      footerCTA.textContent = successData.primary_cta || 'This is a placeholder';
-      footerCTA.disabled = false;
-    }
+    // Replace the entire page content with success state
+    this.renderAlreadyRedeemedState();
   }
 
   showError(message) {
@@ -522,65 +489,77 @@ class ReferralRedeemPage {
 
   // Render the already redeemed state (success page)
   renderAlreadyRedeemedState() {
+    console.log('ReferralRedeemPage: Rendering already redeemed state');
+    
     // Get redemption success data
     const pageData = this.data.data?.page4_referralRedeem || this.data.data || this.data;
     const successData = pageData.redeem?.redemptionSuccess || {};
     
-    // Get content wrapper and replace with success UI
+    console.log('Success data for rendering:', successData);
+    
+    // Update header title to match the success state
+    const headerTitle = document.getElementById('header-title');
+    if (headerTitle) {
+      headerTitle.textContent = 'Redeem Referral Code'; // Keep header consistent
+    }
+    
+    // Get content wrapper and completely replace with success UI
     const contentWrapper = document.getElementById('page-content-wrapper');
     if (!contentWrapper) return;
     
-    // Update header title
-    const headerTitle = document.getElementById('header-title');
-    if (headerTitle) {
-      headerTitle.textContent = successData.hero_title || 'You\'re all set!';
-    }
-    
-    // Replace main content with success state
+    // Replace entire content with success state matching the screenshot
     contentWrapper.innerHTML = `
-      <!-- Hero Section - Success State -->
-      <section class="hero-section" style="text-align: center; padding: 2rem 1rem;">
-        <div class="success-image-container" style="width: 200px; height: 200px; margin: 0 auto 2rem; background: #f0f0f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
-          <div style="font-size: 4rem;">🎁</div>
+      <!-- Success State Content -->
+      <section class="success-section" style="text-align: center; padding: 2rem 1rem; min-height: 70vh; display: flex; flex-direction: column; justify-content: center;">
+        
+        <!-- Gray placeholder image box -->
+        <div class="success-image-container" style="width: 280px; height: 280px; margin: 0 auto 2rem; background: #e2e8f0; border-radius: 16px; display: flex; align-items: center; justify-content: center;">
+          <div style="color: #a0aec0; font-size: 3rem;">🎁</div>
         </div>
         
-        <h1 class="hero-title" style="font-size: 1.75rem; font-weight: 700; color: #2d3748; margin-bottom: 1rem;">
-          ${successData.hero_title || 'You\'re all set!'}
+        <!-- Main success title -->
+        <h1 class="success-title" style="font-size: 2rem; font-weight: 700; color: #1a202c; margin-bottom: 1rem; line-height: 1.2;">
+          ${successData.hero_title || "You're all set!"}
         </h1>
         
-        <p class="hero-subtitle" style="font-size: 1rem; color: #4a5568; line-height: 1.5; margin-bottom: 2rem;">
-          ${successData.subtitle || 'You have redeemed a valid referral code!'}
+        <!-- Success subtitle -->
+        <p class="success-subtitle" style="font-size: 1rem; color: #718096; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+          ${successData.subtitle || 'You have redeemed a valid referral code from John!'}
         </p>
         
-        <!-- Success Nudge -->
-        <div class="success-nudge" style="background: #f0fff4; border: 1px solid #9ae6b4; border-radius: 12px; padding: 1rem; margin-bottom: 3rem; display: flex; align-items: flex-start; gap: 0.75rem;">
-          <div class="nudge-icon" style="color: #38a169; margin-top: 0.125rem;">
+        <!-- Info nudge with icon -->
+        <div class="info-nudge" style="background: #f7fafc; border-radius: 12px; padding: 1.25rem; margin-bottom: 4rem; display: flex; align-items: flex-start; gap: 0.75rem; max-width: 350px; margin-left: auto; margin-right: auto; border: 1px solid #e2e8f0;">
+          <div class="info-icon" style="color: #4a5568; margin-top: 0.125rem; flex-shrink: 0;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
               <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <span class="nudge-text" style="color: #2f855a; font-size: 0.875rem; line-height: 1.4;">
-            ${(successData.nudges && successData.nudges[0]) || 'Your redemption helps your friend progress toward a reward.'}
+          <span class="info-text" style="color: #4a5568; font-size: 0.875rem; line-height: 1.4; text-align: left;">
+            ${(successData.nudges && successData.nudges[0]) || 'Your redemption also helps John progress toward a reward.'}
           </span>
         </div>
       </section>
     `;
     
-    // Update footer CTA
+    // Update footer CTA with success button text and styling
     const footerCTA = document.getElementById('primary-cta');
     if (footerCTA) {
-      footerCTA.textContent = successData.primary_cta || 'Continue';
+      footerCTA.textContent = successData.primary_cta || 'Unlock 1 Week Premium 🎉';
       footerCTA.disabled = false;
+      
+      // Update button style for success state
+      footerCTA.style.background = 'linear-gradient(135deg, #4fd1c7 0%, #38b2ac 100%)';
+      footerCTA.style.color = 'white';
+      footerCTA.style.fontWeight = '600';
       
       // Add click handler for the CTA in success state
       footerCTA.onclick = () => {
-        // You can customize this behavior - perhaps navigate somewhere else or close the page
         ReferralUtils.showToast('Premium access activated!');
       };
     }
     
-    console.log('Rendered already redeemed state with data:', successData);
+    console.log('Successfully rendered already redeemed state');
   }
 }
 
