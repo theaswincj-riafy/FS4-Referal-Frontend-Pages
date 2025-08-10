@@ -1,111 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redeem Your Invite Code</title>
-    <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="Redeem your referral invite code and join the community">
-    <meta name="theme-color" content="#667eea">
-</head>
-<body>
-    <div class="container">
-        <!-- Sticky Header -->
-        <header class="sticky-header" role="banner">
-            <button class="back-btn" id="back-btn" aria-label="Go back">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <h1 class="header-title" id="header-title">Redeem Referral Code</h1>
-        </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Redeem Your Invite Code</title>
+        <link rel="stylesheet" href="styles.css" />
+        <meta
+            name="description"
+            content="Redeem your referral invite code and join the community"
+        />
+        <meta name="theme-color" content="#667eea" />
+    </head>
+    <body>
+        <div class="container">
+            <!-- Sticky Header -->
+            <header class="sticky-header" role="banner">
+                <button class="back-btn" id="back-btn" aria-label="Go back">
+                    <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M15 18L9 12L15 6"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </button>
+                <h1 class="header-title" id="header-title">
+                    Redeem Referral Code
+                </h1>
+            </header>
 
-        <!-- Scrollable Content -->
-        <main class="scrollable-content" id="main-content">
-            <!-- Full Page Loader -->
-            <div class="page-loader" id="page-loader">
-                <div class="loading-container">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <p>Loading...</p>
+            <!-- Scrollable Content -->
+            <main class="scrollable-content" id="main-content">
+                <!-- Full Page Loader -->
+                <div class="page-loader" id="page-loader">
+                    <div class="loading-container">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Main Content (Hidden during loading) -->
-            <div class="page-content-wrapper" id="page-content-wrapper" style="display: none;">
-                <!-- Hero Section -->
-                <section class="hero-section">
-                    <div class="hero-image-placeholder"></div>
-                    <h1 class="hero-title" id="hero-title">Redeem Referral Invite Code</h1>
-                    <p class="hero-subtitle" id="hero-subtitle">Enter or paste the invite from your friend to continue.</p>
-                    <div class="hero-code-cta-container">
-                        <input type="text" class="redeem-input" id="redeem-input" placeholder="Enter Code" maxlength="20">
-                        <button class="view-referrals-btn" id="paste-btn">Paste from Clipboard</button>
-                    </div>
-                </section>
-
-                <!-- How It Works Section -->
-                <section class="how-it-works">
-                    <h2 class="section-title">How it works</h2>
-                    <div class="steps-container" id="steps-container">
-                        <!-- Step 1: Image left -->
-                        <div class="step-row step-left" data-step="1">
-                            <img
-                                src="images/avatar1tp.png"
-                                alt="Step 1"
-                                class="step-number-image"
+                <!-- Main Content (Hidden during loading) -->
+                <div
+                    class="page-content-wrapper"
+                    id="page-content-wrapper"
+                    style="display: none"
+                >
+                    <!-- Hero Section -->
+                    <section class="hero-section">
+                        <div class="hero-image-placeholder"></div>
+                        <h1 class="hero-title" id="hero-title">
+                            Redeem Referral Invite Code
+                        </h1>
+                        <p class="hero-subtitle" id="hero-subtitle">
+                            Enter or paste the invite from your friend to
+                            continue.
+                        </p>
+                        <div class="hero-code-cta-container">
+                            <input
+                                type="text"
+                                class="redeem-input"
+                                id="redeem-input"
+                                placeholder="Enter Code"
+                                maxlength="20"
                             />
-                            <div class="step-card">
-                                <p class="step-description" id="step-1">
-                                    This is a placeholder
-                                </p>
+                            <button class="view-referrals-btn" id="paste-btn">
+                                Paste from Clipboard
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- How It Works Section -->
+                    <section class="how-it-works">
+                        <h2 class="section-title">How it works</h2>
+                        <div class="steps-container" id="steps-container">
+                            <!-- Step 1: Image left -->
+                            <div class="step-row step-left" data-step="1">
+                                <img
+                                    src="images/avatar1tp.png"
+                                    alt="Step 1"
+                                    class="step-number-image"
+                                />
+                                <div class="step-card">
+                                    <p class="step-description" id="step-1">
+                                        This is a placeholder
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Image right -->
+                            <div class="step-row step-right" data-step="2">
+                                <img
+                                    src="images/avatar2tp.png"
+                                    alt="Step 2"
+                                    class="step-number-image"
+                                />
+                                <div class="step-card">
+                                    <p class="step-description" id="step-2">
+                                        This is a placeholder
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Image left, premium styling -->
+                            <div
+                                class="step-row step-left premium-step"
+                                data-step="3"
+                            >
+                                <img
+                                    src="images/avatar5tp.png"
+                                    alt="Step 3"
+                                    class="step-number-image"
+                                />
+                                <div class="step-card premium-card">
+                                    <p class="step-description" id="step-3">
+                                        This is a placeholder
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                    </section>
+                </div>
+            </main>
 
-                        <!-- Step 2: Image right -->
-                        <div class="step-row step-right" data-step="2">
-                            <img
-                                src="images/avatar2tp.png"
-                                alt="Step 2"
-                                class="step-number-image"
-                            />
-                            <div class="step-card">
-                                <p class="step-description" id="step-2">
-                                    This is a placeholder
-                                </p>
-                            </div>
-                        </div>
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <button class="primary-cta" id="primary-cta">
+                    Redeem Code
+                </button>
+            </footer>
+        </div>
 
-                        <!-- Step 3: Image left, premium styling -->
-                        <div class="step-row step-left premium-step" data-step="3">
-                            <img
-                                src="images/avatar3tp.png"
-                                alt="Step 3"
-                                class="step-number-image"
-                            />
-                            <div class="step-card premium-card">
-                                <p class="step-description" id="step-3">
-                                    This is a placeholder
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-
-        <!-- Sticky Footer -->
-        <footer class="sticky-footer">
-            <button class="primary-cta" id="primary-cta">Redeem Code</button>
-        </footer>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="appTheme.js"></script>
-    <script src="colorCombos.js"></script>
-    <script src="utils.js"></script>
-    <script src="referralRedeem.js"></script>
-</body>
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+        <script src="appTheme.js"></script>
+        <script src="colorCombos.js"></script>
+        <script src="utils.js"></script>
+        <script src="referralRedeem.js"></script>
+    </body>
 </html>
