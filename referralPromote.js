@@ -3,30 +3,11 @@ class ReferralPromotePage {
   constructor() {
     this.data = null;
     this.params = ReferralUtils.getUrlParams();
-    this.preloadedImages = [];
-    this.cardStack = null;
-    this.isDragging = false;
-    this.dragStartX = 0;
-    this.dragStartY = 0;
     this.currentCardIndex = 0;
-    this.cards = [];
-    this.clearBrowserCache();
+    this.appTheme = null;
+    this.preloadedImages = [];
+    this.swipeAudio = null;
     this.init();
-  }
-
-  // Clear browser cache and localStorage
-  clearBrowserCache() {
-    try {
-      // Clear all localStorage data
-      localStorage.clear();
-
-      // Clear sessionStorage
-      sessionStorage.clear();
-
-      console.log('Browser cache and storage cleared');
-    } catch (error) {
-      console.error('Error clearing cache:', error);
-    }
   }
 
   async init() {
@@ -39,7 +20,7 @@ class ReferralPromotePage {
         this.hideLoader();
         this.initCardStack();
         this.bindEvents();
-
+        
         // Start share card preloading after page is fully loaded (non-blocking)
         setTimeout(() => {
           this.preloadShareCard();
@@ -97,7 +78,7 @@ class ReferralPromotePage {
   // Transform referral URL to netlify format
   transformReferralUrl(originalUrl) {
     if (!originalUrl) return null;
-
+    
     try {
       // Extract referral code from the original URL
       // Expected format: https://referral-system-o0yw.onrender.com/share/aswin2792
@@ -111,7 +92,7 @@ class ReferralPromotePage {
     } catch (error) {
       console.error("Error transforming referral URL:", error);
     }
-
+    
     return originalUrl; // Return original if transformation fails
   }
 
@@ -119,7 +100,7 @@ class ReferralPromotePage {
   async preloadAssets() {
     try {
       console.log("Preloading assets for referralPromote page...");
-
+      
       // Images used in this page
       const imagesToPreload = [
         'images/crown.png',
@@ -149,15 +130,15 @@ class ReferralPromotePage {
       this.swipeAudio = new Audio('audio/swipe1.mp3');
       this.swipeAudio.preload = 'auto';
       this.swipeAudio.volume = 0.7;
-
+      
       // Preload clipboard copy success audio
       this.clipboardCopyAudio = new Audio('audio/completed1.mp3');
       this.clipboardCopyAudio.preload = 'auto';
       this.clipboardCopyAudio.volume = 0.8;
-
+      
       // Load html-to-image library for share card rendering
       await this.loadHtmlToImageLibrary();
-
+      
       console.log("Assets preloaded successfully");
     } catch (error) {
       console.error("Error preloading assets:", error);
@@ -205,7 +186,7 @@ class ReferralPromotePage {
   async preloadShareCard() {
     try {
       console.log("Starting share card preload process...");
-
+      
       // Wait for library to be fully loaded
       let attempts = 0;
       while (!window.htmlToImage && attempts < 10) {
@@ -213,17 +194,17 @@ class ReferralPromotePage {
         await new Promise(resolve => setTimeout(resolve, 500));
         attempts++;
       }
-
+      
       if (!window.htmlToImage) {
         throw new Error("html-to-image library failed to load after 5 seconds");
       }
-
+      
       console.log("html-to-image library ready, generating share card...");
-
+      
       // Generate the share card blob and store it as PNG for UI cards with text
       this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname, 'png');
       this.shareCardFile = new File([this.shareCardBlob], 'share-card.png', { type: 'image/png' });
-
+      
       console.log("✅ Share card preloaded successfully!");
       console.log("File name:", this.shareCardFile.name);
       console.log("File size:", this.shareCardBlob.size, "bytes");
@@ -241,11 +222,11 @@ class ReferralPromotePage {
       const iframe = document.createElement('iframe');
       // Keep it renderable but invisible (don't use display:none)
       Object.assign(iframe.style, {
-        position: 'fixed',
-        left: '-99999px',
-        top: '0',
-        width: '400px',
-        height: '600px',
+        position: 'fixed', 
+        left: '-99999px', 
+        top: '0', 
+        width: '400px', 
+        height: '600px', 
         visibility: 'hidden',
         pointerEvents: 'none',
         border: 'none'
@@ -253,7 +234,7 @@ class ReferralPromotePage {
       // Get additional parameters from API data
       const pendingRedemptions = this.data?.data?.pendingredemptions || 0;
       const referralCode = this.data?.data?.referral_code || '';
-
+      
       iframe.src = `/share-card.html?name=${encodeURIComponent(name)}&pendingredemptions=${pendingRedemptions}&referral_code=${encodeURIComponent(referralCode)}`;
       document.body.appendChild(iframe);
 
@@ -261,8 +242,8 @@ class ReferralPromotePage {
 
       // Wait for webfonts/images inside iframe
       if (iframe.contentDocument?.fonts?.ready) {
-        try {
-          await iframe.contentDocument.fonts.ready;
+        try { 
+          await iframe.contentDocument.fonts.ready; 
         } catch {}
       }
 
@@ -271,21 +252,21 @@ class ReferralPromotePage {
 
       // Pick the element to snapshot
       const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
-
+      
       if (!window.htmlToImage) {
         throw new Error('html-to-image library not available');
       }
-
+      
       let blob;
       if (format === 'png') {
         // Use toPng for PNG format (better for UI cards with text/lines)
-        const dataUrl = await window.htmlToImage.toPng(root, {
+        const dataUrl = await window.htmlToImage.toPng(root, { 
           pixelRatio: 2,
           width: 400,
           height: 600,
           skipAutoScale: true
         });
-
+        
         // Convert data URL to binary blob properly
         const base64Data = dataUrl.split(',')[1];
         const binaryData = atob(base64Data);
@@ -296,14 +277,14 @@ class ReferralPromotePage {
         blob = new Blob([bytes], { type: 'image/png' });
       } else if (format === 'jpeg' || format === 'jpg') {
         // Use toJpeg for JPEG format with quality
-        const dataUrl = await window.htmlToImage.toJpeg(root, {
+        const dataUrl = await window.htmlToImage.toJpeg(root, { 
           pixelRatio: 2,
           width: 400,
           height: 600,
           quality: 0.9,
           backgroundColor: '#ffffff'
         });
-
+        
         // Convert data URL to binary blob properly
         const base64Data = dataUrl.split(',')[1];
         const binaryData = atob(base64Data);
@@ -314,7 +295,7 @@ class ReferralPromotePage {
         blob = new Blob([bytes], { type: 'image/jpeg' });
       } else {
         // Default to PNG using toBlob
-        blob = await window.htmlToImage.toBlob(root, {
+        blob = await window.htmlToImage.toBlob(root, { 
           pixelRatio: 2,
           width: 400,
           height: 600
@@ -323,12 +304,12 @@ class ReferralPromotePage {
 
       iframe.remove();
       console.log("Generated blob:", blob.type, blob.size, "bytes");
-
+      
       // Verify blob size is under limits (8MB)
       if (blob.size > 8 * 1024 * 1024) {
         console.warn("Blob size exceeds 8MB:", blob.size);
       }
-
+      
       return blob;
     } catch (error) {
       console.error("Error rendering share card:", error);
@@ -340,7 +321,7 @@ class ReferralPromotePage {
   async shareImageFromTemplate(name, fallbackText) {
     try {
       console.log("Starting image share for:", name);
-
+      
       // Use preloaded share card if available, otherwise generate new one
       let file = this.shareCardFile;
       if (!file) {
@@ -359,16 +340,16 @@ class ReferralPromotePage {
       console.log("File type:", file.type);
       console.log("File constructor:", file.constructor.name);
       console.log("File extension:", file.name.split('.').pop());
-
+      
       // Verify file integrity
       if (file.size === 0) {
         throw new Error("Generated file is empty");
       }
-
+      
       console.log("Checking Web Share API capabilities...");
       console.log("navigator.canShare exists:", !!navigator.canShare);
       console.log("navigator.share exists:", !!navigator.share);
-
+      
       if (navigator.canShare) {
         console.log("Can share files:", navigator.canShare({ files: [file] }));
         console.log("Can share text:", navigator.canShare({ text: fallbackText }));
@@ -381,7 +362,7 @@ class ReferralPromotePage {
       // Try different sharing approaches for better compatibility
       if (navigator.share) {
         console.log("Attempting multiple share approaches...");
-
+        
         // Approach 1: Share image with text (best compatibility with Telegram/WhatsApp)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
@@ -389,19 +370,19 @@ class ReferralPromotePage {
             // Get the transformed referral URL and construct proper share text
             const originalUrl = this.data?.data?.referral_url;
             const transformedUrl = this.transformReferralUrl(originalUrl);
-
+            
             // Create share text with the transformed URL
             let shareText = fallbackText || `${name} invited you to join Keto Recipes App!`;
-
+            
             // Remove old URL if present in fallbackText and append the transformed URL
             if (transformedUrl) {
               // Remove any existing URLs (both old and new formats)
               shareText = shareText.replace(/https:\/\/[^\s]+/g, '').trim();
               shareText = `${shareText} ${transformedUrl}`;
             }
-
+            
             console.log("Final share text:", shareText);
-
+            
             await navigator.share({
               files: [file],
               text: shareText
@@ -412,7 +393,7 @@ class ReferralPromotePage {
             console.log("Image + text share failed:", shareError.message);
           }
         }
-
+        
         // Approach 1b: Share image only as fallback
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
@@ -426,7 +407,7 @@ class ReferralPromotePage {
             console.log("Image-only share failed:", shareError.message);
           }
         }
-
+        
         // Approach 2: Share image with caption (alternative format)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
@@ -441,7 +422,7 @@ class ReferralPromotePage {
             console.log("Image with caption failed:", shareError.message);
           }
         }
-
+        
         // Approach 3: Share text with URL only
         try {
           console.log("Trying text + URL share...");
@@ -454,7 +435,7 @@ class ReferralPromotePage {
         } catch (shareError) {
           console.log("Text + URL failed:", shareError.message);
         }
-
+        
         // Approach 4: Share text only
         try {
           console.log("Trying text-only share...");
@@ -476,7 +457,7 @@ class ReferralPromotePage {
           console.log("Text-only failed:", shareError.message);
         }
       }
-
+      
       // Final fallback - copy text to clipboard only (no download)
       console.log("All sharing methods failed, copying text as final fallback...");
       if (navigator.clipboard) {
@@ -485,7 +466,7 @@ class ReferralPromotePage {
       } else {
         ReferralUtils.showToast("Sharing not supported on this device");
       }
-
+      
     } catch (error) {
       console.error("Error sharing image:", error);
       // Fallback to text sharing if everything fails
@@ -1219,7 +1200,7 @@ class ReferralPromotePage {
       await this.shareImageFromTemplate(this.params.firstname, shareText);
     } catch (error) {
       console.log("Image sharing failed, falling back to text sharing:", error);
-
+      
       // Fallback to standard text sharing
       if (navigator.share) {
         try {

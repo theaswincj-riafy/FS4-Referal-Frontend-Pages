@@ -7,23 +7,7 @@ class ReferralRedeemPage {
     this.preloadedImages = [];
     this.completedAudio = null;
     this.confettiInstance = null;
-    this.clearBrowserCache();
     this.init();
-  }
-
-  // Clear browser cache and localStorage
-  clearBrowserCache() {
-    try {
-      // Clear all localStorage data
-      localStorage.clear();
-
-      // Clear sessionStorage
-      sessionStorage.clear();
-
-      console.log('Browser cache and storage cleared');
-    } catch (error) {
-      console.error('Error clearing cache:', error);
-    }
   }
 
   // Simple encryption using base64 and character shifting
@@ -169,7 +153,7 @@ class ReferralRedeemPage {
   async preloadAssets() {
     try {
       console.log("Preloading assets for referralRedeem page...");
-
+      
       // Images used in this page
       const imagesToPreload = [
         'images/redeemcode.png',
@@ -201,12 +185,12 @@ class ReferralRedeemPage {
       this.completedAudio = new Audio('audio/completed3.mp3');
       this.completedAudio.preload = 'auto';
       this.completedAudio.volume = 0.8;
-
+      
       // Preload clipboard paste success audio
       this.clipboardPasteAudio = new Audio('audio/transition.mp3');
       this.clipboardPasteAudio.preload = 'auto';
       this.clipboardPasteAudio.volume = 0.8;
-
+      
       console.log("Assets preloaded successfully for referralRedeem");
     } catch (error) {
       console.error("Error preloading assets:", error);
@@ -218,10 +202,10 @@ class ReferralRedeemPage {
     try {
       // Play completed sound
       this.playCompletedSound();
-
+      
       // Show confetti animation
       this.createConfettiAnimation();
-
+      
       console.log("Success animation started (audio + confetti)");
     } catch (error) {
       console.error("Error showing success animation:", error);
@@ -256,7 +240,7 @@ class ReferralRedeemPage {
   createConfettiAnimation() {
     try {
       console.log("🎉 [CONFETTI] Starting createConfettiAnimation...");
-
+      
       // Remove any existing confetti
       this.removeConfettiAnimation();
 
@@ -283,16 +267,16 @@ class ReferralRedeemPage {
           console.log("🎉 [CONFETTI] Canvas-confetti module imported successfully:", confettiModule);
           console.log("🎉 [CONFETTI] Module default:", confettiModule.default);
           console.log("🎉 [CONFETTI] Module type:", typeof confettiModule.default);
-
+          
           const confetti = confettiModule.default;
-
+          
           if (typeof confetti !== 'function') {
             console.error("🎉 [CONFETTI] ERROR: confetti is not a function:", confetti);
             throw new Error('canvas-confetti is not a function');
           }
 
           console.log("🎉 [CONFETTI] Starting canvas-confetti animation...");
-
+          
           // Fire confetti with wind-like effects
           const count = 200;
           const defaults = {
@@ -359,7 +343,7 @@ class ReferralRedeemPage {
   createFallbackConfetti() {
     try {
       console.log("🎉 [FALLBACK] Creating fallback confetti animation...");
-
+      
       const confettiContainer = document.getElementById('confetti-container');
       if (!confettiContainer) {
         console.error("🎉 [FALLBACK] ERROR: No confetti container found");
@@ -380,7 +364,7 @@ class ReferralRedeemPage {
             opacity: 0;
           }
         }
-
+        
         .confetti-particle {
           position: absolute;
           animation: confetti-fall 3s linear forwards;
@@ -390,22 +374,22 @@ class ReferralRedeemPage {
       console.log("🎉 [FALLBACK] CSS styles added");
 
       const colors = ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
-
+      
       // Create all particles simultaneously falling straight down with varied shapes
       for (let i = 0; i < 150; i++) {
         const particle = document.createElement('div');
         particle.className = 'confetti-particle';
-
+        
         const color = colors[Math.floor(Math.random() * colors.length)];
         const size = Math.random() * 8 + 4;
         const leftPosition = Math.random() * 100;
         const animationDelay = Math.random() * 0.5; // Small random delay for natural effect
         const animationDuration = 2 + Math.random() * 2; // 2-4 second fall time
-
+        
         // Create varied shapes: circle, square, triangle, diamond, star
         const shapeType = Math.floor(Math.random() * 5);
         let shapeCSS = '';
-
+        
         switch (shapeType) {
           case 0: // Circle
             shapeCSS = `border-radius: 50%;`;
@@ -435,7 +419,7 @@ class ReferralRedeemPage {
             `;
             break;
         }
-
+        
         particle.style.cssText = `
           left: ${leftPosition}%;
           top: -20px;
@@ -448,10 +432,10 @@ class ReferralRedeemPage {
           animation-duration: ${animationDuration}s;
           position: absolute;
         `;
-
+        
         confettiContainer.appendChild(particle);
       }
-
+      
       console.log("🎉 [FALLBACK] Fallback confetti animation started with 150 particles");
     } catch (error) {
       console.error("🎉 [FALLBACK] ERROR creating fallback confetti:", error);
@@ -464,7 +448,7 @@ class ReferralRedeemPage {
     if (this.confettiInstance && typeof this.confettiInstance.stop === 'function') {
       this.confettiInstance.stop();
     }
-
+    
     // Remove DOM elements
     const existing = document.getElementById('confetti-container');
     if (existing) {

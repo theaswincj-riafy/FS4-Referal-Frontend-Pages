@@ -639,17 +639,15 @@ p {
 
 /* Sticky Footer Updates */
 .sticky-footer {
-  position: sticky !important;
-  bottom: 0 !important;
-  z-index: 100 !important;
-  background: #ffffff !important;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: #ffffff;
   border-top: 1px solid #e5e5ea;
   padding: 16px 20px 32px;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
   margin-top: auto;
   width: 100%;
-  display: block !important;
-  visibility: visible !important;
 }
 
 /* Steps container with proper spacing */
@@ -1038,15 +1036,13 @@ p {
 
 /* New Sticky Footer Class for referralPromote.html & referralRedeem.html */
 .sticky-promo-footer {
-  position: sticky !important;
-  bottom: 0 !important;
-  z-index: 100 !important;
-  background: #ffffff !important;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: #ffffff;
   border-top: 1px solid #f2f2f7;
   padding: 16px 20px 32px;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
-  display: block !important;
-  visibility: visible !important;
 }
 
 .download-footer {
