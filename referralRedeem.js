@@ -181,10 +181,15 @@ class ReferralRedeemPage {
 
       this.preloadedImages = await Promise.all(imagePromises);
 
-      // Preload audio file for success state
+      // Preload audio files
       this.completedAudio = new Audio('audio/completed3.mp3');
       this.completedAudio.preload = 'auto';
       this.completedAudio.volume = 0.8;
+      
+      // Preload clipboard paste success audio
+      this.clipboardPasteAudio = new Audio('audio/transition.mp3');
+      this.clipboardPasteAudio.preload = 'auto';
+      this.clipboardPasteAudio.volume = 0.8;
       
       console.log("Assets preloaded successfully for referralRedeem");
     } catch (error) {
@@ -216,6 +221,18 @@ class ReferralRedeemPage {
       }
     } catch (error) {
       console.error("Error playing completed sound:", error);
+    }
+  }
+
+  // Play clipboard paste success sound
+  playClipboardPasteAudio() {
+    try {
+      if (this.clipboardPasteAudio && this.clipboardPasteAudio.readyState >= 2) {
+        this.clipboardPasteAudio.currentTime = 0;
+        this.clipboardPasteAudio.play().catch(e => console.log("Audio play failed:", e));
+      }
+    } catch (error) {
+      console.error("Error playing clipboard paste sound:", error);
     }
   }
 
@@ -754,6 +771,7 @@ class ReferralRedeemPage {
           input.value = text.trim();
           this.validateInput();
           ReferralUtils.showToast("Code pasted successfully!");
+          this.playClipboardPasteAudio();
         }
       } else {
         ReferralUtils.showToast(

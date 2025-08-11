@@ -105,6 +105,11 @@ class ReferralPromotePage {
       this.swipeAudio.preload = 'auto';
       this.swipeAudio.volume = 0.7;
       
+      // Preload clipboard copy success audio
+      this.clipboardCopyAudio = new Audio('audio/completed1.mp3');
+      this.clipboardCopyAudio.preload = 'auto';
+      this.clipboardCopyAudio.volume = 0.8;
+      
       console.log("Assets preloaded successfully");
     } catch (error) {
       console.error("Error preloading assets:", error);
@@ -120,6 +125,18 @@ class ReferralPromotePage {
       }
     } catch (error) {
       console.error("Error playing swipe sound:", error);
+    }
+  }
+
+  // Play clipboard copy success sound
+  playClipboardCopyAudio() {
+    try {
+      if (this.clipboardCopyAudio && this.clipboardCopyAudio.readyState >= 2) {
+        this.clipboardCopyAudio.currentTime = 0;
+        this.clipboardCopyAudio.play().catch(e => console.log("Audio play failed:", e));
+      }
+    } catch (error) {
+      console.error("Error playing clipboard copy sound:", error);
     }
   }
 
@@ -800,6 +817,7 @@ class ReferralPromotePage {
           if (navigator.clipboard) {
             await navigator.clipboard.writeText(lowercaseCode);
             ReferralUtils.showToast("Code copied to clipboard!");
+            this.playClipboardCopyAudio();
           } else {
             // Fallback for older browsers
             const textArea = document.createElement("textarea");
@@ -809,6 +827,7 @@ class ReferralPromotePage {
             document.execCommand("copy");
             document.body.removeChild(textArea);
             ReferralUtils.showToast("Code copied to clipboard!");
+            this.playClipboardCopyAudio();
           }
         } catch (error) {
           console.error("Failed to copy code:", error);

@@ -84,6 +84,12 @@ class ReferralDownloadPage {
       });
 
       this.preloadedImages = await Promise.all(imagePromises);
+      
+      // Preload clipboard copy success audio
+      this.clipboardCopyAudio = new Audio('audio/completed1.mp3');
+      this.clipboardCopyAudio.preload = 'auto';
+      this.clipboardCopyAudio.volume = 0.8;
+      
       console.log("Assets preloaded successfully for referralDownload");
     } catch (error) {
       console.error("Error preloading assets:", error);
@@ -179,6 +185,18 @@ class ReferralDownloadPage {
     
     // Apply theme colors after populating content
     this.applyThemeColors();
+  }
+
+  // Play clipboard copy success sound
+  playClipboardCopyAudio() {
+    try {
+      if (this.clipboardCopyAudio && this.clipboardCopyAudio.readyState >= 2) {
+        this.clipboardCopyAudio.currentTime = 0;
+        this.clipboardCopyAudio.play().catch(e => console.log("Audio play failed:", e));
+      }
+    } catch (error) {
+      console.error("Error playing clipboard copy sound:", error);
+    }
   }
 
   // Apply theme colors from appTheme.js
@@ -292,6 +310,7 @@ class ReferralDownloadPage {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
         ReferralUtils.showToast('Code copied to clipboard!');
+        this.playClipboardCopyAudio();
       }).catch(err => {
         console.error('Failed to copy: ', err);
         this.fallbackCopyTextToClipboard(text);
@@ -316,6 +335,7 @@ class ReferralDownloadPage {
       const successful = document.execCommand('copy');
       if (successful) {
         ReferralUtils.showToast('Code copied to clipboard!');
+        this.playClipboardCopyAudio();
       } else {
         console.error('Fallback: Copying text command was unsuccessful');
       }
