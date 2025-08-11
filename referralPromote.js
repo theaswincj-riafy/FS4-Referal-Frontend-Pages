@@ -281,42 +281,62 @@ class ReferralPromotePage {
 
 
 
-      // Try Web Share Level 2 with files only (no text to avoid JSON issues)
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        console.log("Attempting to share image only via Web Share API...");
-        try {
-          await navigator.share({
-            files: [file]
-            // Removing text to avoid JSON serialization issues
-          });
-          console.log("Image shared successfully via Web Share API");
-          return;
-        } catch (shareError) {
-          console.error("File sharing failed:", shareError);
-          // Continue to fallback options
-        }
-      } 
-      
-      // Try sharing both image and text separately for better compatibility
+      // Try different sharing approaches for better compatibility
       if (navigator.share) {
-        console.log("Attempting combined share approach...");
-        try {
-          // First try to share the image
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file] });
-            console.log("Image shared successfully");
+        console.log("Attempting multiple share approaches...");
+        
+        // Approach 1: Share image with title (avoid text field that may cause JSON issues)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            console.log("Trying image + title share...");
+            await navigator.share({
+              files: [file],
+              title: `${name} invited you to join!`
+            });
+            console.log("Image + title shared successfully");
             return;
+          } catch (shareError) {
+            console.log("Image + title failed:", shareError.message);
           }
-          
-          // If image sharing fails, try text with URL
+        }
+        
+        // Approach 2: Share image only
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            console.log("Trying image-only share...");
+            await navigator.share({
+              files: [file]
+            });
+            console.log("Image-only shared successfully");
+            return;
+          } catch (shareError) {
+            console.log("Image-only failed:", shareError.message);
+          }
+        }
+        
+        // Approach 3: Share text with URL only
+        try {
+          console.log("Trying text + URL share...");
           await navigator.share({
             text: fallbackText || `${name} invited you to join Keto Recipes App!`,
             url: this.data?.data?.referral_url || window.location.origin
           });
-          console.log("Text shared successfully via Web Share API");
+          console.log("Text + URL shared successfully");
           return;
         } catch (shareError) {
-          console.warn("Web Share API failed:", shareError);
+          console.log("Text + URL failed:", shareError.message);
+        }
+        
+        // Approach 4: Share text only
+        try {
+          console.log("Trying text-only share...");
+          await navigator.share({
+            text: fallbackText || `${name} invited you to join Keto Recipes App! ${this.data?.data?.referral_url || window.location.origin}`
+          });
+          console.log("Text-only shared successfully");
+          return;
+        } catch (shareError) {
+          console.log("Text-only failed:", shareError.message);
         }
       }
       
