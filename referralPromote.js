@@ -279,16 +279,7 @@ class ReferralPromotePage {
         console.log("Can share text:", navigator.canShare({ text: fallbackText }));
       }
 
-      // Debug: Always download the file for inspection
-      console.log("DEBUG: Downloading file for inspection...");
-      const debugUrl = URL.createObjectURL(file);
-      const debugA = document.createElement('a');
-      debugA.href = debugUrl;
-      debugA.download = 'debug-' + file.name;
-      document.body.appendChild(debugA);
-      debugA.click();
-      document.body.removeChild(debugA);
-      URL.revokeObjectURL(debugUrl);
+
 
       // Try Web Share Level 2 with files only (no text to avoid JSON issues)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
