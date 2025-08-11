@@ -1,6 +1,16 @@
 // Shared utilities for all referral pages
 
 class ReferralUtils {
+  
+  // Get random loading text for all referral pages
+  static getRandomLoadingText() {
+    const loadingTexts = [
+      "Fetching your Referral Boost",
+      "Loading your Referral Boost", 
+      "Referral Boosts Incoming!"
+    ];
+    return loadingTexts[Math.floor(Math.random() * loadingTexts.length)];
+  }
   /**
    * Get URL parameters with fallback values
    */

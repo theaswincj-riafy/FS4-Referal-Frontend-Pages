@@ -524,6 +524,12 @@ class ReferralRedeemPage {
         this.params,
       );
 
+      // Set dynamic loading text
+      const loadingTextElement = document.getElementById('loading-text');
+      if (loadingTextElement) {
+        loadingTextElement.textContent = ReferralUtils.getRandomLoadingText();
+      }
+
       // Clean up any old localStorage entries first
       this.cleanupStorageKeys();
 

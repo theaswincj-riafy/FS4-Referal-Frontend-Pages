@@ -9,6 +9,12 @@ class ReferralDownloadPage {
 
   async init() {
     try {
+      // Set dynamic loading text
+      const loadingTextElement = document.getElementById('loading-text');
+      if (loadingTextElement) {
+        loadingTextElement.textContent = ReferralUtils.getRandomLoadingText();
+      }
+      
       await this.loadPageData();
       if (this.data) {
         await this.preloadAssets();

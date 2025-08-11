@@ -12,6 +12,12 @@ class ReferralPromotePage {
 
   async init() {
     try {
+      // Set dynamic loading text
+      const loadingTextElement = document.getElementById('loading-text');
+      if (loadingTextElement) {
+        loadingTextElement.textContent = ReferralUtils.getRandomLoadingText();
+      }
+      
       await this.loadAppTheme();
       await this.loadPageData();
       if (this.data) {
