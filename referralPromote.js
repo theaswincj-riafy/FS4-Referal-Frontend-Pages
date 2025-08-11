@@ -691,6 +691,9 @@ class ReferralPromotePage {
 
     // Apply app theme colors
     this.applyAppTheme();
+
+    // Hide combined-card-section and adjust padding if pending_redemptions is 0
+    this.handlePendingRedemptionsVisibility();
   }
 
   applyButtonColors() {
@@ -752,6 +755,42 @@ class ReferralPromotePage {
     stepCards.forEach((card) => {
       card.style.backgroundColor = this.appTheme.whiteCardBG;
     });
+  }
+
+  handlePendingRedemptionsVisibility() {
+    // Get pending_redemptions from API data
+    const apiData = this.data.data || this.data;
+    const pendingRedemptions = apiData.pending_redemptions || 0;
+
+    console.log("Checking pending_redemptions:", pendingRedemptions);
+
+    // Hide combined-card-section if pending_redemptions is 0
+    const combinedCardSection = document.querySelector(".combined-card-section");
+    const howItWorksSection = document.querySelector(".how-it-works");
+
+    if (pendingRedemptions === 0) {
+      console.log("pending_redemptions is 0, hiding combined-card-section and adding padding to how-it-works");
+      
+      if (combinedCardSection) {
+        combinedCardSection.style.visibility = "hidden";
+        combinedCardSection.style.display = "none";
+      }
+      
+      if (howItWorksSection) {
+        howItWorksSection.style.paddingBottom = "10rem";
+      }
+    } else {
+      console.log("pending_redemptions is not 0, showing combined-card-section");
+      
+      if (combinedCardSection) {
+        combinedCardSection.style.visibility = "visible";
+        combinedCardSection.style.display = "block";
+      }
+      
+      if (howItWorksSection) {
+        howItWorksSection.style.paddingBottom = "";
+      }
+    }
   }
 
   adjustCardHeights() {
