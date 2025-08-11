@@ -332,20 +332,32 @@ class ReferralPromotePage {
 
 
 
-      // TEST: Try sharing base64 test image first
+      // TEST: Try sharing base64 test image first (only during actual user interaction)
       try {
         console.log("Testing base64 image sharing...");
         const response = await fetch('/testImage.txt');
         const base64Data = await response.text();
         
-        // Convert base64 to blob
-        const binaryData = atob(base64Data.trim());
+        // Remove data URL prefix if present and clean the base64 data
+        let cleanBase64 = base64Data.trim();
+        if (cleanBase64.startsWith('data:')) {
+          cleanBase64 = cleanBase64.split(',')[1];
+        }
+        // Remove any whitespace and line breaks
+        cleanBase64 = cleanBase64.replace(/\s/g, '');
+        
+        // Convert base64 to blob with proper error handling
+        const binaryData = atob(cleanBase64);
         const bytes = new Uint8Array(binaryData.length);
         for (let i = 0; i < binaryData.length; i++) {
           bytes[i] = binaryData.charCodeAt(i);
         }
         const testBlob = new Blob([bytes], { type: 'image/png' });
-        const testFile = new File([testBlob], 'test-image.png', { type: 'image/png' });
+        const testFile = new File([testBlob], 'test-share.png', { type: 'image/png' });
+        
+        console.log("Base64 original length:", base64Data.length);
+        console.log("Base64 cleaned length:", cleanBase64.length);
+        console.log("Binary data length:", binaryData.length);
         
         console.log("Test file created:", testFile.name, testFile.size, "bytes");
         
