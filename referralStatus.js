@@ -228,6 +228,12 @@ class ReferralStatusPage {
           user_id: this.params.userId,
         };
 
+        // Add FCM token to request body if provided via URL parameter
+        if (this.params.fb_token) {
+          body.fb_token = this.params.fb_token;
+          console.log("FCM Token included in request:", this.params.fb_token);
+        }
+
         console.log("Making API call to:", endpoint);
         console.log("Request body:", body);
 
