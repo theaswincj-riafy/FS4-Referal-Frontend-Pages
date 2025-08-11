@@ -692,9 +692,6 @@ class ReferralPromotePage {
     // Apply app theme colors
     this.applyAppTheme();
 
-    // Update hero image based on current_redemptions
-    this.updateHeroImage();
-
     // Hide combined-card-section and adjust padding if pending_redemptions is 0
     this.handlePendingRedemptionsVisibility();
   }
@@ -758,26 +755,6 @@ class ReferralPromotePage {
     stepCards.forEach((card) => {
       card.style.backgroundColor = this.appTheme.whiteCardBG;
     });
-  }
-
-  updateHeroImage() {
-    // Get current_redemptions from API data
-    const apiData = this.data.data || this.data;
-    const currentRedemptions = apiData.current_redemptions || 0;
-
-    console.log("Checking current_redemptions for hero image:", currentRedemptions);
-
-    // Update hero image based on current_redemptions
-    const heroImage = document.querySelector(".hero-image");
-    if (heroImage) {
-      if (currentRedemptions === 0) {
-        console.log("current_redemptions is 0, changing hero image to level0tp.png");
-        heroImage.src = "images/level0tp.png";
-      } else {
-        console.log("current_redemptions is not 0, keeping crown.png");
-        heroImage.src = "images/crown.png";
-      }
-    }
   }
 
   handlePendingRedemptionsVisibility() {
