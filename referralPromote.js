@@ -69,6 +69,11 @@ class ReferralPromotePage {
 
       this.data = await ReferralUtils.makeApiCall(endpoint, "POST", body);
       console.log("Loaded API data:", this.data);
+      
+      // Immediately start preloading share card after API response (before hiding loader)
+      console.log("🔄 Starting share card preload after API response...");
+      this.preloadShareCardToLocalStorage();
+      
     } catch (error) {
       console.error("API call error:", error);
       this.data = null;
@@ -183,7 +188,81 @@ class ReferralPromotePage {
     }
   }
 
-  // Preload share card for instant sharing
+  // Preload share card to localStorage for instant sharing
+  async preloadShareCardToLocalStorage() {
+    try {
+      console.log("🔄 Starting share card preload to localStorage...");
+      
+      // Wait for library to be fully loaded
+      let attempts = 0;
+      while (!window.htmlToImage && attempts < 20) {
+        console.log("Waiting for html-to-image library... attempt", attempts + 1);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        attempts++;
+      }
+      
+      if (!window.htmlToImage) {
+        console.warn("html-to-image library failed to load, will generate on demand");
+        return;
+      }
+      
+      console.log("html-to-image library ready, generating share card...");
+      
+      // Generate storage key
+      const storageKey = `shareCard_${this.params.userId}_${this.params.app_package_name}`;
+      
+      // Generate the share card base64
+      const base64Data = await this.renderShareCardToBase64(this.params.firstname);
+      
+      // Store in localStorage with timestamp
+      const shareCardData = {
+        base64: base64Data,
+        timestamp: Date.now(),
+        userId: this.params.userId,
+        appPackage: this.params.app_package_name
+      };
+      
+      localStorage.setItem(storageKey, JSON.stringify(shareCardData));
+      console.log("✅ Share card saved to localStorage with key:", storageKey);
+      console.log("Base64 data size:", base64Data.length, "characters");
+      
+    } catch (error) {
+      console.warn("❌ Failed to preload share card to localStorage:", error);
+    }
+  }
+
+  // Get share card from localStorage
+  getShareCardFromLocalStorage() {
+    try {
+      const storageKey = `shareCard_${this.params.userId}_${this.params.app_package_name}`;
+      const storedData = localStorage.getItem(storageKey);
+      
+      if (!storedData) {
+        console.log("No cached share card found for key:", storageKey);
+        return null;
+      }
+      
+      const shareCardData = JSON.parse(storedData);
+      
+      // Check if data is less than 24 hours old
+      const isRecent = (Date.now() - shareCardData.timestamp) < (24 * 60 * 60 * 1000);
+      
+      if (!isRecent) {
+        console.log("Cached share card is too old, removing...");
+        localStorage.removeItem(storageKey);
+        return null;
+      }
+      
+      console.log("✅ Found cached share card:", storageKey);
+      return shareCardData.base64;
+      
+    } catch (error) {
+      console.error("Error retrieving share card from localStorage:", error);
+      return null;
+    }
+  }
+
+  // Preload share card for instant sharing (legacy method for fallback)
   async preloadShareCard() {
     try {
       console.log("Starting share card preload process...");
@@ -250,8 +329,28 @@ class ReferralPromotePage {
         } catch {}
       }
 
-      // Additional wait for images to load
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Ensure all images are loaded before taking screenshot
+      const images = iframe.contentDocument.querySelectorAll('img');
+      if (images.length > 0) {
+        console.log(`Waiting for ${images.length} images to load...`);
+        const imagePromises = Array.from(images).map(img => {
+          return new Promise((resolve) => {
+            if (img.complete && img.naturalWidth > 0) {
+              resolve();
+            } else {
+              img.onload = resolve;
+              img.onerror = resolve; // Still resolve to avoid hanging
+              // Timeout after 5 seconds
+              setTimeout(resolve, 5000);
+            }
+          });
+        });
+        await Promise.all(imagePromises);
+        console.log("All images loaded or timed out");
+      }
+
+      // Additional wait for layout stabilization
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Pick the element to snapshot
       const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
@@ -320,29 +419,125 @@ class ReferralPromotePage {
     }
   }
 
-  // Share image from template
+  // Render share card to base64 for localStorage caching
+  async renderShareCardToBase64(name) {
+    try {
+      const iframe = document.createElement('iframe');
+      // Keep it renderable but invisible (don't use display:none)
+      Object.assign(iframe.style, {
+        position: 'fixed', 
+        left: '-99999px', 
+        top: '0', 
+        width: '400px', 
+        height: '600px', 
+        visibility: 'hidden',
+        pointerEvents: 'none',
+        border: 'none'
+      });
+      
+      // Get additional parameters from API data
+      const pendingRedemptions = this.data?.data?.pending_redemptions || 0;
+      const referralCode = this.data?.data?.referral_code || '';
+      const appImage = this.data?.data?.app_image || '';
+      const appName = this.data?.data?.app_name || '';
+      
+      iframe.src = `/share-card.html?name=${encodeURIComponent(name)}&pendingredemptions=${pendingRedemptions}&referral_code=${encodeURIComponent(referralCode)}&app_image=${encodeURIComponent(appImage)}&app_name=${encodeURIComponent(appName)}`;
+      document.body.appendChild(iframe);
+
+      await new Promise(res => iframe.onload = res);
+
+      // Wait for webfonts/images inside iframe
+      if (iframe.contentDocument?.fonts?.ready) {
+        try { 
+          await iframe.contentDocument.fonts.ready; 
+        } catch {}
+      }
+
+      // Ensure all images are loaded before taking screenshot
+      const images = iframe.contentDocument.querySelectorAll('img');
+      if (images.length > 0) {
+        console.log(`Waiting for ${images.length} images to load in base64 generation...`);
+        const imagePromises = Array.from(images).map(img => {
+          return new Promise((resolve) => {
+            if (img.complete && img.naturalWidth > 0) {
+              resolve();
+            } else {
+              img.onload = resolve;
+              img.onerror = resolve; // Still resolve to avoid hanging
+              // Timeout after 8 seconds for base64 generation
+              setTimeout(resolve, 8000);
+            }
+          });
+        });
+        await Promise.all(imagePromises);
+        console.log("All images loaded or timed out for base64 generation");
+      }
+
+      // Additional wait for layout stabilization
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Pick the element to snapshot
+      const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
+      
+      if (!window.htmlToImage) {
+        throw new Error('html-to-image library not available');
+      }
+      
+      // Generate PNG data URL with high quality
+      const dataUrl = await window.htmlToImage.toPng(root, { 
+        pixelRatio: 2,
+        width: 400,
+        height: 600,
+        skipAutoScale: true
+      });
+
+      iframe.remove();
+      console.log("Generated base64 data URL for localStorage");
+      
+      return dataUrl;
+    } catch (error) {
+      console.error("Error rendering share card to base64:", error);
+      throw error;
+    }
+  }
+
+  // Share image from template with localStorage caching priority
   async shareImageFromTemplate(name, fallbackText) {
     try {
-      console.log("Starting image share for:", name);
+      console.log("🚀 Starting enhanced image share for:", name);
       
-      // Use preloaded share card if available, otherwise generate new one
-      let file = this.shareCardFile;
+      let file = null;
+      
+      // Priority 1: Try to use cached share card from localStorage
+      const cachedBase64 = this.getShareCardFromLocalStorage();
+      if (cachedBase64) {
+        console.log("✅ Using cached share card from localStorage");
+        // Convert base64 to blob
+        const response = await fetch(cachedBase64);
+        const blob = await response.blob();
+        file = new File([blob], 'share-card.png', { type: 'image/png' });
+        console.log("✅ Cached share card converted to file");
+      }
+      
+      // Priority 2: Use preloaded share card if available
+      if (!file && this.shareCardFile) {
+        console.log("✅ Using preloaded share card from memory");
+        file = this.shareCardFile;
+      }
+      
+      // Priority 3: Generate on demand as last resort
       if (!file) {
-        console.log("⚠️ Share card not preloaded, generating on demand...");
+        console.log("⚠️ No cached card available, generating on demand...");
         ReferralUtils.showToast("Preparing your share card...");
         const blob = await this.renderShareCardToBlob(name, 'png');
         file = new File([blob], 'share-card.png', { type: 'image/png' });
         console.log("✅ Share card generated on demand");
-      } else {
-        console.log("✅ Using preloaded share card");
       }
 
       console.log("Share file ready:", file);
       console.log("File name:", file.name);
       console.log("File size:", file.size, "bytes", "(" + (file.size / 1024 / 1024).toFixed(2) + " MB)");
       console.log("File type:", file.type);
-      console.log("File constructor:", file.constructor.name);
-      console.log("File extension:", file.name.split('.').pop());
       
       // Verify file integrity
       if (file.size === 0) {
@@ -362,130 +557,140 @@ class ReferralPromotePage {
 
 
 
-      // Try different sharing approaches for better compatibility
+      // Enhanced sharing approach - ALWAYS try to share text + image first
       if (navigator.share) {
-        console.log("Attempting multiple share approaches...");
+        console.log("🎯 Attempting optimized sharing for mobile compatibility...");
         
-        // Approach 1: Share image with text (best compatibility with Telegram/WhatsApp)
+        // Get the transformed referral URL and construct proper share text
+        const originalUrl = this.data?.data?.referral_url;
+        const transformedUrl = this.transformReferralUrl(originalUrl);
+        
+        // Create comprehensive share text with the transformed URL
+        let shareText = fallbackText || `${name} invited you to join this amazing app!`;
+        
+        // Clean and append URL if available
+        if (transformedUrl) {
+          // Remove any existing URLs
+          shareText = shareText.replace(/https:\/\/[^\s]+/g, '').trim();
+          shareText = `${shareText} ${transformedUrl}`;
+        }
+        
+        console.log("Final share text for all approaches:", shareText);
+        
+        // Priority Approach 1: Image + Text (Best for WhatsApp/Telegram)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            console.log("Trying image + text share...");
-            // Get the transformed referral URL and construct proper share text
-            const originalUrl = this.data?.data?.referral_url;
-            const transformedUrl = this.transformReferralUrl(originalUrl);
-            
-            // Create share text with the transformed URL
-            let shareText = fallbackText || `${name} invited you to join Keto Recipes App!`;
-            
-            // Remove old URL if present in fallbackText and append the transformed URL
-            if (transformedUrl) {
-              // Remove any existing URLs (both old and new formats)
-              shareText = shareText.replace(/https:\/\/[^\s]+/g, '').trim();
-              shareText = `${shareText} ${transformedUrl}`;
-            }
-            
-            console.log("Final share text:", shareText);
-            
+            console.log("🔥 Attempt 1: Image + Text (Mobile Optimized)");
             await navigator.share({
               files: [file],
               text: shareText
             });
-            console.log("Share card image with text shared successfully!");
+            console.log("✅ SUCCESS: Share card image with text shared!");
             return;
           } catch (shareError) {
-            console.log("Image + text share failed:", shareError.message);
+            console.log("❌ Image + text share failed:", shareError.message);
           }
         }
         
-        // Approach 1b: Share image only as fallback
+        // Priority Approach 2: Image + Title + Text (Alternative format)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            console.log("Trying image-only share...");
+            console.log("🔥 Attempt 2: Image + Title + Text");
+            await navigator.share({
+              files: [file],
+              title: "Join me on this app!",
+              text: shareText
+            });
+            console.log("✅ SUCCESS: Share card with title shared!");
+            return;
+          } catch (shareError) {
+            console.log("❌ Image + title + text failed:", shareError.message);
+          }
+        }
+        
+        // Priority Approach 3: Image Only (as backup)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            console.log("🔥 Attempt 3: Image Only");
             await navigator.share({
               files: [file]
             });
-            console.log("Share card image shared successfully!");
+            console.log("✅ SUCCESS: Share card image shared!");
+            // Even if only image is shared, show the text for user to copy
+            ReferralUtils.showToast(`Image shared! Share this text: ${shareText}`);
             return;
           } catch (shareError) {
-            console.log("Image-only share failed:", shareError.message);
+            console.log("❌ Image-only share failed:", shareError.message);
           }
         }
         
-        // Approach 2: Share image with caption (alternative format)
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            console.log("Trying image with caption share...");
-            await navigator.share({
-              files: [file],
-              text: `${name} invited you to join!`
-            });
-            console.log("Image with caption shared successfully");
-            return;
-          } catch (shareError) {
-            console.log("Image with caption failed:", shareError.message);
-          }
-        }
-        
-        // Approach 3: Share text with URL only
+        // Priority Approach 4: Text + URL (Reliable fallback)
         try {
-          console.log("Trying text + URL share...");
+          console.log("🔥 Attempt 4: Text + URL");
           await navigator.share({
-            text: fallbackText || `${name} invited you to join Keto Recipes App!`,
-            url: this.data?.data?.referral_url || window.location.origin
+            text: shareText,
+            url: transformedUrl || this.data?.data?.referral_url || window.location.origin
           });
-          console.log("Text + URL shared successfully");
+          console.log("✅ SUCCESS: Text + URL shared!");
           return;
         } catch (shareError) {
-          console.log("Text + URL failed:", shareError.message);
+          console.log("❌ Text + URL failed:", shareError.message);
         }
         
-        // Approach 4: Share text only
+        // Priority Approach 5: Text Only (Last resort)
         try {
-          console.log("Trying text-only share...");
+          console.log("🔥 Attempt 5: Text Only");
           await navigator.share({
-            text: (() => {
-              const transformedUrl = this.transformReferralUrl(this.data?.data?.referral_url);
-              let text = fallbackText || `${name} invited you to join Keto Recipes App!`;
-              // Remove any existing URLs and append the transformed URL
-              if (transformedUrl) {
-                text = text.replace(/https:\/\/[^\s]+/g, '').trim();
-                text = `${text} ${transformedUrl}`;
-              }
-              return text;
-            })()
+            text: shareText
           });
-          console.log("Text-only shared successfully");
+          console.log("✅ SUCCESS: Text shared!");
           return;
         } catch (shareError) {
-          console.log("Text-only failed:", shareError.message);
+          console.log("❌ Text-only failed:", shareError.message);
         }
-      }
-      
-      // Final fallback - copy text to clipboard only (no download)
-      console.log("All sharing methods failed, copying text as final fallback...");
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(fallbackText || `${name} invited you to join Keto Recipes App! ${this.data?.data?.referral_url || window.location.origin}`);
-        ReferralUtils.showToast("Text copied to clipboard! Please share manually.");
       } else {
-        ReferralUtils.showToast("Sharing not supported on this device");
+        console.log("❌ Native sharing not supported on this device");
+        // Direct clipboard fallback when Web Share API is not available
+        const originalUrl = this.data?.data?.referral_url;
+        const transformedUrl = this.transformReferralUrl(originalUrl);
+        let shareText = fallbackText || `${name} invited you to join this amazing app!`;
+        
+        if (transformedUrl) {
+          shareText = shareText.replace(/https:\/\/[^\s]+/g, '').trim();
+          shareText = `${shareText} ${transformedUrl}`;
+        }
+        
+        if (navigator.clipboard) {
+          try {
+            await navigator.clipboard.writeText(shareText);
+            ReferralUtils.showToast("Share text copied! Send this message to your friends.");
+          } catch (error) {
+            console.error("Clipboard copy failed:", error);
+            ReferralUtils.showToast("Unable to share. Please try again later.");
+          }
+        } else {
+          ReferralUtils.showToast("Sharing not available on this device");
+        }
       }
       
-    } catch (error) {
-      console.error("Error sharing image:", error);
-      // Fallback to text sharing if everything fails
-      if (navigator.share) {
+      // Final fallback - Copy to clipboard 
+      console.log("🔥 Final Attempt: Copy to clipboard");
+      if (navigator.clipboard) {
         try {
-          await navigator.share({
-            text: fallbackText || `${name} invited you to join Keto Recipes App!`,
-            url: this.data?.data?.referral_url || window.location.origin
-          });
-        } catch (shareError) {
-          console.error("Text sharing also failed:", shareError);
-          ReferralUtils.showToast("Sharing not available on this device");
+          await navigator.clipboard.writeText(shareText);
+          ReferralUtils.showToast("Share text copied! Paste it anywhere to share.");
+          console.log("✅ SUCCESS: Copied to clipboard as final fallback");
+        } catch (clipboardError) {
+          console.error("❌ Final clipboard fallback failed:", clipboardError);
+          ReferralUtils.showToast("Unable to share. Please try again later.");
         }
       } else {
         ReferralUtils.showToast("Sharing not available on this device");
       }
+      
+    } catch (error) {
+      console.error("🚨 Share error:", error);
+      ReferralUtils.showToast("Failed to share. Please try again.");
     }
   }
 
