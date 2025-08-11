@@ -75,6 +75,20 @@
                 grid-column: 1 / -1;
                 padding: 16px;
                 background: #e5fff0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .avatar-dancing {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 80px;
+                height: 80px;
+                opacity: 0.6;
+                z-index: 1;
+                mask: radial-gradient(circle at center, black 70%, transparent 90%);
+                -webkit-mask: radial-gradient(circle at center, black 70%, transparent 90%);
             }
 
             .app-title {
@@ -148,6 +162,7 @@
                 <div class="app-title" id="app-title">Loading...</div>
                 <div class="code-label" id="code-label">Referral Code is:</div>
                 <div class="code-value" id="referral-code">LOADING</div>
+                <img src="images/avatardancingtp.png" alt="Dancing Avatar" class="avatar-dancing" />
             </div>
 
             <!-- Row 3: Help text and Avatar image -->
