@@ -5,6 +5,8 @@ class ReferralPromotePage {
     this.params = ReferralUtils.getUrlParams();
     this.currentCardIndex = 0;
     this.appTheme = null;
+    this.preloadedImages = [];
+    this.swipeAudio = null;
     this.init();
   }
 
@@ -13,6 +15,7 @@ class ReferralPromotePage {
       await this.loadAppTheme();
       await this.loadPageData();
       if (this.data) {
+        await this.preloadAssets();
         this.populateContent();
         this.hideLoader();
         this.initCardStack();
@@ -64,6 +67,59 @@ class ReferralPromotePage {
       console.error("API call error:", error);
       this.data = null;
       throw new Error("API call failed");
+    }
+  }
+
+  // Preload images and audio used in this page
+  async preloadAssets() {
+    try {
+      console.log("Preloading assets for referralPromote page...");
+      
+      // Images used in this page
+      const imagesToPreload = [
+        'images/crown.png',
+        'images/avatar3tp.png',
+        'images/avatardancingtp.png'
+      ];
+
+      // Preload images
+      const imagePromises = imagesToPreload.map(src => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`Preloaded image: ${src}`);
+            resolve(img);
+          };
+          img.onerror = () => {
+            console.warn(`Failed to preload image: ${src}`);
+            resolve(null); // Don't reject, just resolve with null
+          };
+          img.src = src;
+        });
+      });
+
+      this.preloadedImages = await Promise.all(imagePromises);
+
+      // Preload swipe audio
+      this.swipeAudio = new Audio('audio/swipe1.mp3');
+      this.swipeAudio.preload = 'auto';
+      this.swipeAudio.volume = 0.7;
+      
+      console.log("Assets preloaded successfully");
+    } catch (error) {
+      console.error("Error preloading assets:", error);
+    }
+  }
+
+  // Play swipe sound
+  playSwipeSound() {
+    try {
+      if (this.swipeAudio && this.swipeAudio.readyState >= 2) {
+        this.swipeAudio.currentTime = 0;
+        this.swipeAudio.play().catch(e => console.log("Audio play failed:", e));
+      }
+    } catch (error) {
+      console.error("Error playing swipe sound:", error);
     }
   }
 
@@ -556,9 +612,11 @@ class ReferralPromotePage {
     }
 
     // Rotate to next card
-    function rotateNext() {
+    const rotateNext = () => {
       if (isAnimating) return;
       isAnimating = true;
+      // Play swipe sound when rotating cards
+      this.playSwipeSound();
       currentIndex = (currentIndex + 1) % cards.length;
       console.log(
         "[CARD SWIPER] Rotating to next - currentIndex:",
@@ -568,12 +626,14 @@ class ReferralPromotePage {
       setTimeout(() => {
         isAnimating = false;
       }, 400);
-    }
+    };
 
     // Rotate to previous card
-    function rotatePrev() {
+    const rotatePrev = () => {
       if (isAnimating) return;
       isAnimating = true;
+      // Play swipe sound when rotating cards
+      this.playSwipeSound();
       currentIndex = (currentIndex - 1 + cards.length) % cards.length;
       console.log(
         "[CARD SWIPER] Rotating to previous - currentIndex:",
@@ -583,7 +643,7 @@ class ReferralPromotePage {
       setTimeout(() => {
         isAnimating = false;
       }, 400);
-    }
+    };
 
     // Setup simple interactions
     function setupInteractions() {

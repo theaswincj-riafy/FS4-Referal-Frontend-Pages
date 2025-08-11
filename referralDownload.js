@@ -3,6 +3,7 @@ class ReferralDownloadPage {
   constructor() {
     this.data = null;
     this.params = ReferralUtils.getUrlParams();
+    this.preloadedImages = [];
     this.init();
   }
 
@@ -10,6 +11,7 @@ class ReferralDownloadPage {
     try {
       await this.loadPageData();
       if (this.data) {
+        await this.preloadAssets();
         this.populateContent();
         this.hideLoader();
         this.bindEvents();
@@ -47,6 +49,44 @@ class ReferralDownloadPage {
       console.error('ReferralDownloadPage: API call error:', error);
       this.data = null;
       throw new Error('API call failed');
+    }
+  }
+
+  // Preload images used in this page
+  async preloadAssets() {
+    try {
+      console.log("Preloading assets for referralDownload page...");
+      
+      // Images used in this page
+      const imagesToPreload = [
+        'images/downloadapp.png',
+        'images/avatar1tp.png',
+        'images/avatar2tp.png',
+        'images/avatar5tp.png',
+        'images/google-play-badge.png',
+        'images/app-store-badge.svg'
+      ];
+
+      // Preload images
+      const imagePromises = imagesToPreload.map(src => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`Preloaded image: ${src}`);
+            resolve(img);
+          };
+          img.onerror = () => {
+            console.warn(`Failed to preload image: ${src}`);
+            resolve(null); // Don't reject, just resolve with null
+          };
+          img.src = src;
+        });
+      });
+
+      this.preloadedImages = await Promise.all(imagePromises);
+      console.log("Assets preloaded successfully for referralDownload");
+    } catch (error) {
+      console.error("Error preloading assets:", error);
     }
   }
 

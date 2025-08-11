@@ -4,6 +4,9 @@ class ReferralRedeemPage {
     this.data = null;
     this.params = ReferralUtils.getUrlParams();
     this.validationMessages = {};
+    this.preloadedImages = [];
+    this.completedAudio = null;
+    this.confettiInstance = null;
     this.init();
   }
 
@@ -146,6 +149,182 @@ class ReferralRedeemPage {
     return null;
   }
 
+  // Preload images and audio used in this page
+  async preloadAssets() {
+    try {
+      console.log("Preloading assets for referralRedeem page...");
+      
+      // Images used in this page
+      const imagesToPreload = [
+        'images/redeemcode.png',
+        'images/avatar1tp.png',
+        'images/avatar2tp.png',
+        'images/avatar5tp.png',
+        'images/crown.png'
+      ];
+
+      // Preload images
+      const imagePromises = imagesToPreload.map(src => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`Preloaded image: ${src}`);
+            resolve(img);
+          };
+          img.onerror = () => {
+            console.warn(`Failed to preload image: ${src}`);
+            resolve(null); // Don't reject, just resolve with null
+          };
+          img.src = src;
+        });
+      });
+
+      this.preloadedImages = await Promise.all(imagePromises);
+
+      // Preload audio file for success state
+      this.completedAudio = new Audio('audio/completed3.mp3');
+      this.completedAudio.preload = 'auto';
+      this.completedAudio.volume = 0.8;
+      
+      console.log("Assets preloaded successfully for referralRedeem");
+    } catch (error) {
+      console.error("Error preloading assets:", error);
+    }
+  }
+
+  // Play completed sound and show confetti
+  showSuccessAnimation() {
+    try {
+      // Play completed sound
+      this.playCompletedSound();
+      
+      // Show confetti animation
+      this.createConfettiAnimation();
+      
+      console.log("Success animation started (audio + confetti)");
+    } catch (error) {
+      console.error("Error showing success animation:", error);
+    }
+  }
+
+  // Play completed sound
+  playCompletedSound() {
+    try {
+      if (this.completedAudio && this.completedAudio.readyState >= 2) {
+        this.completedAudio.currentTime = 0;
+        this.completedAudio.play().catch(e => console.log("Audio play failed:", e));
+      }
+    } catch (error) {
+      console.error("Error playing completed sound:", error);
+    }
+  }
+
+  // Create confetti animation using canvas
+  createConfettiAnimation() {
+    try {
+      console.log("Creating confetti animation...");
+      
+      // Remove any existing confetti
+      this.removeConfettiAnimation();
+
+      // Create confetti container
+      const confettiContainer = document.createElement('div');
+      confettiContainer.id = 'confetti-container';
+      confettiContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10000;
+        overflow: hidden;
+      `;
+
+      // Create canvas for confetti
+      const canvas = document.createElement('canvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      confettiContainer.appendChild(canvas);
+      document.body.appendChild(confettiContainer);
+
+      // Simple confetti using canvas
+      const ctx = canvas.getContext('2d');
+      const particles = [];
+      const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'];
+
+      // Create particles
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: -10,
+          vx: (Math.random() - 0.5) * 4,
+          vy: Math.random() * 3 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 8 + 4,
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10
+        });
+      }
+
+      // Animation loop
+      const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach((particle, index) => {
+          // Update position
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+          particle.rotation += particle.rotationSpeed;
+          
+          // Apply gravity
+          particle.vy += 0.1;
+          
+          // Draw particle
+          ctx.save();
+          ctx.translate(particle.x, particle.y);
+          ctx.rotate(particle.rotation * Math.PI / 180);
+          ctx.fillStyle = particle.color;
+          ctx.fillRect(-particle.size/2, -particle.size/2, particle.size, particle.size);
+          ctx.restore();
+          
+          // Remove particles that are off screen
+          if (particle.y > canvas.height + 10) {
+            particles.splice(index, 1);
+          }
+        });
+        
+        if (particles.length > 0) {
+          requestAnimationFrame(animate);
+        } else {
+          this.removeConfettiAnimation();
+        }
+      };
+
+      animate();
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        this.removeConfettiAnimation();
+      }, 5000);
+
+      console.log("Confetti animation started");
+    } catch (error) {
+      console.error("Error creating confetti animation:", error);
+    }
+  }
+
+  // Remove confetti animation
+  removeConfettiAnimation() {
+    const existing = document.getElementById('confetti-container');
+    if (existing) {
+      existing.remove();
+    }
+    this.confettiInstance = null;
+  }
+
   async init() {
     try {
       console.log(
@@ -184,6 +363,7 @@ class ReferralRedeemPage {
       console.log("ReferralRedeemPage: Loading fresh data from API");
       await this.loadPageData();
       if (this.data) {
+        await this.preloadAssets();
         // Only save to localStorage if no existing data (don't overwrite alreadyRedeemed=true)
         const existingData = this.getStoredRedemptionData();
         if (!existingData) {
@@ -758,6 +938,11 @@ class ReferralRedeemPage {
     }
 
     console.log("Successfully rendered already redeemed state");
+
+    // Trigger success animation (confetti + audio) after a short delay
+    setTimeout(() => {
+      this.showSuccessAnimation();
+    }, 500);
   }
 }
 
