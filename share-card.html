@@ -24,7 +24,7 @@
         #card {
             width: 400px;
             height: 600px;
-            background: #ffffff;
+            background: #e7e7e7;
             border-radius: 0px;
             padding: 16px;
             display: grid;
@@ -70,13 +70,13 @@
         .code-grid {
             grid-column: 1 / -1;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, rgb(255, 215, 0), rgb(255, 165, 0));
         }
         
         .code-label {
             font-size: 0.8rem;
             font-weight: 600;
-            color: #ffffff;
+            color: rgb(51, 51, 51);
             opacity: 0.8;
             margin-bottom: 4px;
         }
@@ -84,7 +84,7 @@
         .code-value {
             font-size: 1.2rem;
             font-weight: 800;
-            color: #ffffff;
+            color: rgb(51, 51, 51);
             letter-spacing: 1px;
         }
         
@@ -145,17 +145,7 @@
         const pendingRedemptions = parseInt(urlParams.get('pendingredemptions') || '0');
         const referralCode = urlParams.get('referral_code') || '';
         
-        // Apply theme colors to code grid
-        const codeGrid = document.querySelector('.code-grid');
-        if (window.THEME_ONE && window.THEME_ONE.gradientBG) {
-            codeGrid.style.background = `linear-gradient(135deg, ${window.THEME_ONE.gradientBG[0]}, ${window.THEME_ONE.gradientBG[1]})`;
-        }
-        if (window.THEME_ONE && window.THEME_ONE.textColor) {
-            const codeLabel = document.querySelector('.code-label');
-            const codeValue = document.querySelector('.code-value');
-            codeLabel.style.color = window.THEME_ONE.textColor;
-            codeValue.style.color = window.THEME_ONE.textColor;
-        }
+        // Colors are now set in CSS directly
         
         // Update invitation text
         document.getElementById('invitation-text').textContent = `${userName} invited you to join this App. Download Now!`;
