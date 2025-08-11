@@ -839,7 +839,6 @@ class ReferralRedeemPage {
             // Only paste if we found a valid referral code
             input.value = extractedCode.toUpperCase();
             this.validateInput();
-            ReferralUtils.showToast("Referral code pasted successfully!");
             this.playClipboardPasteAudio();
           } else {
             // Show toast and play sound on failed paste
