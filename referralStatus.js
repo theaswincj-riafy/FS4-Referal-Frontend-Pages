@@ -755,6 +755,7 @@ class ReferralStatusPage {
     const heroImage = document.getElementById("hero-image");
     if (heroImage) {
       const imageMap = {
+        0: "images/level0tp.png",
         1: "images/level1tp.png",
         2: "images/level2tp.png",
         3: "images/level3tp.png",
