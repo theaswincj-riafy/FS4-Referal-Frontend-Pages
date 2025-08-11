@@ -134,8 +134,8 @@ class ReferralDownloadPage {
         .replace(/\{\{referrer_name\}\}/g, capitalizedReferrerName)
         .replace(/\{\{referral_code\}\}/g, (apiData.referral_code || '').toUpperCase())
         .replace(/\{\{app_name\}\}/g, apiData.app_name || '')
-        .replace(/\{\{app_store_link\}\}/g, apiData.app_store_link || '')
-        .replace(/\{\{play_store_link\}\}/g, apiData.play_store_link || '');
+        .replace(/\{\{app_store_link\}\}/g, 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130')
+        .replace(/\{\{play_store_link\}\}/g, 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1');
     };
 
     // Populate app title using page_title
@@ -181,38 +181,13 @@ class ReferralDownloadPage {
       });
     }
     
-    // Update store links using API data
+    // Store links are set but don't populate text content since we're using badge images
     const googlePlayBtn = document.getElementById('download-google');
     const appStoreBtn = document.getElementById('download-appstore');
     
-    // Use dynamic store links from API data
-    this.playStoreLink = apiData.play_store_link || 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1';
-    this.appStoreLink = apiData.app_store_link || 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130';
-    
-    console.log('Using Play Store link:', this.playStoreLink);
-    console.log('Using App Store link:', this.appStoreLink);
-    
-    // Update hero image with fallback
-    const heroImageElement = document.querySelector('.hero-image');
-    if (heroImageElement && apiData.app_image) {
-      console.log('Using app image from API:', apiData.app_image);
-      
-      // Test if the image loads properly
-      const testImage = new Image();
-      testImage.onload = () => {
-        console.log('App image loaded successfully, updating hero image');
-        heroImageElement.src = apiData.app_image;
-        heroImageElement.alt = `${apiData.app_name || 'App'} Icon`;
-      };
-      testImage.onerror = () => {
-        console.warn('App image failed to load, using fallback');
-        heroImageElement.src = 'images/downloadapp.png';
-        heroImageElement.alt = 'Download App';
-      };
-      testImage.src = apiData.app_image;
-    } else {
-      console.log('No app_image in API data, using fallback image');
-    }
+    // Use the hardcoded store links as requested
+    this.playStoreLink = 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1';
+    this.appStoreLink = 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130';
     
     // Apply theme colors after populating content
     this.applyThemeColors();
