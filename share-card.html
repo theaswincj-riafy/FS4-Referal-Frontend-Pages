@@ -93,8 +93,8 @@
         }
         
         .avatar-image {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
         }
         
@@ -103,8 +103,8 @@
         }
         
         .download-image {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             object-fit: contain;
             border-radius: 12px;
         }
@@ -147,14 +147,14 @@
         
         // Apply theme colors to code grid
         const codeGrid = document.querySelector('.code-grid');
-        if (window.appTheme && window.appTheme.gradientBG) {
-            codeGrid.style.background = `linear-gradient(135deg, ${window.appTheme.gradientBG[0]}, ${window.appTheme.gradientBG[1]})`;
+        if (window.THEME_ONE && window.THEME_ONE.gradientBG) {
+            codeGrid.style.background = `linear-gradient(135deg, ${window.THEME_ONE.gradientBG[0]}, ${window.THEME_ONE.gradientBG[1]})`;
         }
-        if (window.appTheme && window.appTheme.textColor) {
+        if (window.THEME_ONE && window.THEME_ONE.textColor) {
             const codeLabel = document.querySelector('.code-label');
             const codeValue = document.querySelector('.code-value');
-            codeLabel.style.color = window.appTheme.textColor;
-            codeValue.style.color = window.appTheme.textColor;
+            codeLabel.style.color = window.THEME_ONE.textColor;
+            codeValue.style.color = window.THEME_ONE.textColor;
         }
         
         // Update invitation text
