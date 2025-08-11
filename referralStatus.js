@@ -329,6 +329,7 @@ class ReferralStatusPage {
 
       // Images used in this page - all level images and avatars
       const imagesToPreload = [
+        "images/level0tp.png",
         "images/level1tp.png",
         "images/level2tp.png",
         "images/level3tp.png",
