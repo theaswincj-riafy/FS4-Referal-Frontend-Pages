@@ -113,6 +113,9 @@ class ReferralPromotePage {
       // Load html-to-image library for share card rendering
       this.loadHtmlToImageLibrary();
       
+      // Preload share card for instant sharing
+      this.preloadShareCard();
+      
       console.log("Assets preloaded successfully");
     } catch (error) {
       console.error("Error preloading assets:", error);
@@ -153,6 +156,23 @@ class ReferralPromotePage {
       }
     } catch (error) {
       console.error("Failed to load html-to-image library:", error);
+    }
+  }
+
+  // Preload share card for instant sharing
+  async preloadShareCard() {
+    try {
+      console.log("Preloading share card...");
+      // Wait a bit for the library to load
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Generate the share card blob and store it
+      this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname);
+      this.shareCardFile = new File([this.shareCardBlob], 'invite-card.png', { type: 'image/png' });
+      
+      console.log("Share card preloaded successfully");
+    } catch (error) {
+      console.warn("Failed to preload share card:", error);
     }
   }
 
@@ -211,44 +231,86 @@ class ReferralPromotePage {
   async shareImageFromTemplate(name, fallbackText) {
     try {
       console.log("Starting image share for:", name);
-      const blob = await this.renderShareCardToBlob(name);
-      const file = new File([blob], 'share-card.png', { type: 'image/png' });
+      
+      // Use preloaded share card if available, otherwise generate new one
+      let file = this.shareCardFile;
+      if (!file) {
+        console.log("Generating share card on demand...");
+        const blob = await this.renderShareCardToBlob(name);
+        file = new File([blob], 'invite-card.png', { type: 'image/png' });
+      }
 
-      // Try Web Share Level 2
+      console.log("Share file ready:", file);
+      console.log("Checking Web Share API capabilities...");
+      console.log("navigator.canShare exists:", !!navigator.canShare);
+      console.log("navigator.share exists:", !!navigator.share);
+      
+      if (navigator.canShare) {
+        console.log("Can share files:", navigator.canShare({ files: [file] }));
+        console.log("Can share text:", navigator.canShare({ text: fallbackText }));
+      }
+
+      // Try Web Share Level 2 with files
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        console.log("Attempting to share image with text via Web Share API...");
         await navigator.share({
           files: [file],
-          text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+          text: fallbackText || `${name} invited you to join Keto Recipes App!`
         });
         console.log("Image shared successfully via Web Share API");
-      } else if (navigator.share) {
-        // Fallback to text-only sharing
-        await navigator.share({
-          text: fallbackText || `${name} invited you to join Keto Recipes App!`,
-          url: window.location.origin
-        });
-        console.log("Text shared successfully via Web Share API");
-      } else {
-        // Final fallback - download the image
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'share-card.png';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        ReferralUtils.showToast("Share card downloaded to your device");
-        console.log("Image downloaded as fallback");
+        return;
+      } 
+      
+      // Try sharing both image and text separately for better compatibility
+      if (navigator.share) {
+        console.log("Attempting combined share approach...");
+        try {
+          // First try to share the image
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file] });
+            console.log("Image shared successfully");
+            return;
+          }
+          
+          // If image sharing fails, try text with URL
+          await navigator.share({
+            text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+            url: this.data?.data?.referral_url || window.location.origin
+          });
+          console.log("Text shared successfully via Web Share API");
+          return;
+        } catch (shareError) {
+          console.warn("Web Share API failed:", shareError);
+        }
       }
+      
+      // Final fallback - download the image and copy text
+      console.log("Using download fallback...");
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'invite-card.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // Also copy the text to clipboard
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(fallbackText || `${name} invited you to join Keto Recipes App!`);
+        ReferralUtils.showToast("Image downloaded and text copied to clipboard!");
+      } else {
+        ReferralUtils.showToast("Image downloaded to your device");
+      }
+      
     } catch (error) {
       console.error("Error sharing image:", error);
-      // Fallback to text sharing if image fails
+      // Fallback to text sharing if everything fails
       if (navigator.share) {
         try {
           await navigator.share({
             text: fallbackText || `${name} invited you to join Keto Recipes App!`,
-            url: window.location.origin
+            url: this.data?.data?.referral_url || window.location.origin
           });
         } catch (shareError) {
           console.error("Text sharing also failed:", shareError);
@@ -969,11 +1031,8 @@ class ReferralPromotePage {
       url: this.data?.data?.referral_url || window.location.origin,
     };
 
-    // Show loading toast while preparing share
-    ReferralUtils.showToast("Preparing your invite...");
-
     try {
-      // Try to share with image first
+      // Use preloaded share card for instant sharing
       await this.shareImageFromTemplate(this.params.firstname, shareText);
     } catch (error) {
       console.log("Image sharing failed, falling back to text sharing:", error);
