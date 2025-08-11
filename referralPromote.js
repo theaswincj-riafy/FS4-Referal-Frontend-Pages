@@ -110,6 +110,9 @@ class ReferralPromotePage {
       this.clipboardCopyAudio.preload = 'auto';
       this.clipboardCopyAudio.volume = 0.8;
       
+      // Load html-to-image library for share card rendering
+      this.loadHtmlToImageLibrary();
+      
       console.log("Assets preloaded successfully");
     } catch (error) {
       console.error("Error preloading assets:", error);
@@ -137,6 +140,123 @@ class ReferralPromotePage {
       }
     } catch (error) {
       console.error("Error playing clipboard copy sound:", error);
+    }
+  }
+
+  // Load html-to-image library for share card rendering
+  async loadHtmlToImageLibrary() {
+    try {
+      if (!window.htmlToImage) {
+        const module = await import('https://cdn.skypack.dev/html-to-image');
+        window.htmlToImage = module;
+        console.log("html-to-image library loaded successfully");
+      }
+    } catch (error) {
+      console.error("Failed to load html-to-image library:", error);
+    }
+  }
+
+  // Render share card to blob
+  async renderShareCardToBlob(name) {
+    try {
+      const iframe = document.createElement('iframe');
+      // Keep it renderable but invisible
+      Object.assign(iframe.style, {
+        position: 'fixed', 
+        left: '-99999px', 
+        top: '0', 
+        width: '400px', 
+        height: '600px', 
+        opacity: '0', 
+        pointerEvents: 'none',
+        border: 'none'
+      });
+      iframe.src = `/share-card.html?name=${encodeURIComponent(name)}`;
+      document.body.appendChild(iframe);
+
+      await new Promise(res => iframe.onload = res);
+
+      // Wait for webfonts/images inside iframe
+      if (iframe.contentDocument?.fonts?.ready) {
+        try { 
+          await iframe.contentDocument.fonts.ready; 
+        } catch {}
+      }
+
+      // Additional wait for images to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Pick the element to snapshot
+      const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
+      
+      if (!window.htmlToImage?.toBlob) {
+        throw new Error('html-to-image library not available');
+      }
+      
+      const blob = await window.htmlToImage.toBlob(root, { 
+        pixelRatio: 2,
+        width: 400,
+        height: 600
+      });
+
+      iframe.remove();
+      return blob;
+    } catch (error) {
+      console.error("Error rendering share card:", error);
+      throw error;
+    }
+  }
+
+  // Share image from template
+  async shareImageFromTemplate(name, fallbackText) {
+    try {
+      console.log("Starting image share for:", name);
+      const blob = await this.renderShareCardToBlob(name);
+      const file = new File([blob], 'share-card.png', { type: 'image/png' });
+
+      // Try Web Share Level 2
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+        });
+        console.log("Image shared successfully via Web Share API");
+      } else if (navigator.share) {
+        // Fallback to text-only sharing
+        await navigator.share({
+          text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+          url: window.location.origin
+        });
+        console.log("Text shared successfully via Web Share API");
+      } else {
+        // Final fallback - download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'share-card.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        ReferralUtils.showToast("Share card downloaded to your device");
+        console.log("Image downloaded as fallback");
+      }
+    } catch (error) {
+      console.error("Error sharing image:", error);
+      // Fallback to text sharing if image fails
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+            url: window.location.origin
+          });
+        } catch (shareError) {
+          console.error("Text sharing also failed:", shareError);
+          ReferralUtils.showToast("Sharing not available on this device");
+        }
+      } else {
+        ReferralUtils.showToast("Sharing not available on this device");
+      }
     }
   }
 
@@ -837,7 +957,7 @@ class ReferralPromotePage {
     }
   }
 
-  shareInvite() {
+  async shareInvite() {
     // Use the dynamically generated share message with replaced variables
     const shareText =
       this.shareMessage ||
@@ -849,13 +969,33 @@ class ReferralPromotePage {
       url: this.data?.data?.referral_url || window.location.origin,
     };
 
-    if (navigator.share) {
-      navigator.share(shareData).catch(console.error);
-    } else {
-      // Fallback to copying link
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareData.text + " " + shareData.url);
-        ReferralUtils.showToast("Link copied to clipboard!");
+    // Show loading toast while preparing share
+    ReferralUtils.showToast("Preparing your invite...");
+
+    try {
+      // Try to share with image first
+      await this.shareImageFromTemplate(this.params.firstname, shareText);
+    } catch (error) {
+      console.log("Image sharing failed, falling back to text sharing:", error);
+      
+      // Fallback to standard text sharing
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (shareError) {
+          console.error("Text sharing also failed:", shareError);
+          // Final fallback to copying link
+          if (navigator.clipboard) {
+            await navigator.clipboard.writeText(shareData.text + " " + shareData.url);
+            ReferralUtils.showToast("Link copied to clipboard!");
+          }
+        }
+      } else {
+        // Fallback to copying link
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(shareData.text + " " + shareData.url);
+          ReferralUtils.showToast("Link copied to clipboard!");
+        }
       }
     }
   }

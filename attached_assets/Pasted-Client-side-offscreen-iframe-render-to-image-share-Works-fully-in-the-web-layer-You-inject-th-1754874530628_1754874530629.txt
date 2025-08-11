@@ -1,0 +1,95 @@
+Client-side (offscreen iframe → render to image → share)
+Works fully in the web layer. You inject the user’s name into a hidden iframe that loads your share-card.html, render that iframe’s DOM to a PNG (without showing it), then share via the Web Share API (or via your native bridge if the webview doesn’t support file sharing).
+
+Pros: No server. Fast.
+Cons: Needs Web Share Level 2 for file sharing, and rendering libs. Some iOS/Android webviews may block navigator.share({ files }).
+
+Steps
+
+Put a template HTML at /share-card.html that reads ?name= and renders your card.
+
+In your main app, at share time:
+
+create an offscreen iframe
+
+set its src = /share-card.html?name=${encodeURIComponent(name)}
+
+wait for fonts/images to load
+
+snapshot the root element to a Blob (PNG)
+
+share the Blob as a File
+
+Code (vanilla + html-to-image)
+
+html
+Copy
+Edit
+<!-- include once in your app -->
+<script type="module">
+import { toBlob } from 'https://cdn.skypack.dev/html-to-image';
+
+async function renderShareCardToBlob(name) {
+  const iframe = document.createElement('iframe');
+  // Keep it renderable but invisible
+  Object.assign(iframe.style, {
+    position: 'fixed', left: '-99999px', top: '0', width: '1200px', height: '630px', opacity: '0', pointerEvents: 'none'
+  });
+  iframe.src = `/share-card.html?name=${encodeURIComponent(name)}`;
+  document.body.appendChild(iframe);
+
+  await new Promise(res => iframe.onload = res);
+
+  // optional: wait for webfonts/images inside iframe
+  if (iframe.contentDocument?.fonts?.ready) {
+    try { await iframe.contentDocument.fonts.ready; } catch {}
+  }
+  // pick the element to snapshot
+  const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
+  const blob = await toBlob(root, { pixelRatio: 2 }); // crisp
+
+  iframe.remove();
+  return blob;
+}
+
+async function shareImageFromTemplate(name, fallbackUrl) {
+  const blob = await renderShareCardToBlob(name);
+  const file = new File([blob], 'share-card.png', { type: 'image/png' });
+
+  // Try Web Share Level 2
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    await navigator.share({
+      files: [file],
+      text: `Hey, ${name} just tried this!`,
+    });
+  } else {
+    // Fallback to native bridge (if inside an app webview)
+    if (window.AndroidShare?.shareImageBase64) {
+      const b64 = await blobToBase64(blob);
+      window.AndroidShare.shareImageBase64(b64, 'image/png', `Hey, ${name} just tried this!`);
+    } else if (window.webkit?.messageHandlers?.Share) {
+      const b64 = await blobToBase64(blob);
+      window.webkit.messageHandlers.Share.postMessage({ base64: b64, mime: 'image/png', text: `Hey, ${name} just tried this!` });
+    } else {
+      // Last resort: upload the blob somewhere, or show a “Save to Photos” dialog
+      if (fallbackUrl) {
+        await navigator.share?.({ url: fallbackUrl, text: `Hey, ${name} just tried this!` }) // may still work
+      }
+    }
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',')[1]);
+    r.readAsDataURL(blob);
+  });
+}
+
+// Example usage:
+window.handleShare = () => shareImageFromTemplate(currentUserName);
+</script>
+Notes
+
+Don’t use display:none on the iframe or target element—browsers won’t lay it out. Offscreen with huge negative left is fine.
