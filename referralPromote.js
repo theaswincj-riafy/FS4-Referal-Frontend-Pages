@@ -332,73 +332,35 @@ class ReferralPromotePage {
 
 
 
-      // TEST: Try sharing base64 test image first (only during actual user interaction)
-      try {
-        console.log("Testing base64 image sharing...");
-        const response = await fetch('/testImage.txt');
-        const base64Data = await response.text();
-        
-        // Remove data URL prefix if present and clean the base64 data
-        let cleanBase64 = base64Data.trim();
-        if (cleanBase64.startsWith('data:')) {
-          cleanBase64 = cleanBase64.split(',')[1];
-        }
-        // Remove any whitespace and line breaks
-        cleanBase64 = cleanBase64.replace(/\s/g, '');
-        
-        // Convert base64 to blob with proper error handling
-        const binaryData = atob(cleanBase64);
-        const bytes = new Uint8Array(binaryData.length);
-        for (let i = 0; i < binaryData.length; i++) {
-          bytes[i] = binaryData.charCodeAt(i);
-        }
-        const testBlob = new Blob([bytes], { type: 'image/png' });
-        const testFile = new File([testBlob], 'test-share.png', { type: 'image/png' });
-        
-        console.log("Base64 original length:", base64Data.length);
-        console.log("Base64 cleaned length:", cleanBase64.length);
-        console.log("Binary data length:", binaryData.length);
-        
-        console.log("Test file created:", testFile.name, testFile.size, "bytes");
-        
-        if (navigator.canShare && navigator.canShare({ files: [testFile] })) {
-          await navigator.share({
-            files: [testFile],
-            text: fallbackText || `${name} invited you to join Keto Recipes App!`
-          });
-          console.log("Base64 test image shared successfully!");
-          return;
-        }
-      } catch (testError) {
-        console.log("Base64 test sharing failed:", testError.message);
-      }
+
 
       // Try different sharing approaches for better compatibility
       if (navigator.share) {
         console.log("Attempting multiple share approaches...");
         
-        // Approach 1: Share image only (best compatibility with Telegram/WhatsApp)
+        // Approach 1: Share image with text (best compatibility with Telegram/WhatsApp)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            console.log("Trying image + text share...");
+            await navigator.share({
+              files: [file],
+              text: fallbackText || `${name} invited you to join Keto Recipes App!`
+            });
+            console.log("Share card image with text shared successfully!");
+            return;
+          } catch (shareError) {
+            console.log("Image + text share failed:", shareError.message);
+          }
+        }
+        
+        // Approach 1b: Share image only as fallback
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             console.log("Trying image-only share...");
             await navigator.share({
               files: [file]
             });
-            console.log("Image shared successfully to social media");
-            
-            // After successful image share, try to share text separately if possible
-            try {
-              await new Promise(resolve => setTimeout(resolve, 500));
-              if (navigator.share) {
-                await navigator.share({
-                  text: fallbackText || `${name} invited you to join Keto Recipes App!`,
-                  url: this.data?.data?.referral_url || window.location.origin
-                });
-                console.log("Text message also shared");
-              }
-            } catch (textError) {
-              console.log("Text sharing failed after image:", textError.message);
-            }
+            console.log("Share card image shared successfully!");
             return;
           } catch (shareError) {
             console.log("Image-only share failed:", shareError.message);
