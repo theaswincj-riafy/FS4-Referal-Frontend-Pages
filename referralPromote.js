@@ -336,48 +336,46 @@ class ReferralPromotePage {
       if (navigator.share) {
         console.log("Attempting multiple share approaches...");
         
-        // Approach 1: Share image with text and URL (comprehensive sharing)
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            console.log("Trying image + text + URL share...");
-            await navigator.share({
-              files: [file],
-              text: fallbackText || `${name} invited you to join Keto Recipes App!`,
-              url: this.data?.data?.referral_url || window.location.origin
-            });
-            console.log("Image + text + URL shared successfully");
-            return;
-          } catch (shareError) {
-            console.log("Image + text + URL failed:", shareError.message);
-          }
-        }
-        
-        // Approach 1b: Share image with title only
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            console.log("Trying image + title share...");
-            await navigator.share({
-              files: [file],
-              title: `${name} invited you to join!`
-            });
-            console.log("Image + title shared successfully");
-            return;
-          } catch (shareError) {
-            console.log("Image + title failed:", shareError.message);
-          }
-        }
-        
-        // Approach 2: Share image only
+        // Approach 1: Share image only (best compatibility with Telegram/WhatsApp)
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             console.log("Trying image-only share...");
             await navigator.share({
               files: [file]
             });
-            console.log("Image-only shared successfully");
+            console.log("Image shared successfully to social media");
+            
+            // After successful image share, try to share text separately if possible
+            try {
+              await new Promise(resolve => setTimeout(resolve, 500));
+              if (navigator.share) {
+                await navigator.share({
+                  text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+                  url: this.data?.data?.referral_url || window.location.origin
+                });
+                console.log("Text message also shared");
+              }
+            } catch (textError) {
+              console.log("Text sharing failed after image:", textError.message);
+            }
             return;
           } catch (shareError) {
-            console.log("Image-only failed:", shareError.message);
+            console.log("Image-only share failed:", shareError.message);
+          }
+        }
+        
+        // Approach 2: Share image with caption (alternative format)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            console.log("Trying image with caption share...");
+            await navigator.share({
+              files: [file],
+              text: `${name} invited you to join!`
+            });
+            console.log("Image with caption shared successfully");
+            return;
+          } catch (shareError) {
+            console.log("Image with caption failed:", shareError.message);
           }
         }
         
@@ -407,23 +405,13 @@ class ReferralPromotePage {
         }
       }
       
-      // Final fallback - download the image and copy text
-      console.log("Using download fallback...");
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.name || 'share-card.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      // Also copy the text to clipboard
+      // Final fallback - copy text to clipboard only (no download)
+      console.log("All sharing methods failed, copying text as final fallback...");
       if (navigator.clipboard) {
-        await navigator.clipboard.writeText(fallbackText || `${name} invited you to join Keto Recipes App!`);
-        ReferralUtils.showToast("Image downloaded and text copied to clipboard!");
+        await navigator.clipboard.writeText(fallbackText || `${name} invited you to join Keto Recipes App! ${this.data?.data?.referral_url || window.location.origin}`);
+        ReferralUtils.showToast("Text copied to clipboard! Please share manually.");
       } else {
-        ReferralUtils.showToast("Image downloaded to your device");
+        ReferralUtils.showToast("Sharing not supported on this device");
       }
       
     } catch (error) {
