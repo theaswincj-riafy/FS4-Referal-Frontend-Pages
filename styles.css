@@ -1103,8 +1103,8 @@ p {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: white;
   padding: 16px;
+  padding-left:0px;
   border-radius: 16px;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.02);
 }
@@ -1121,12 +1121,11 @@ p {
 }
 
 .milestone-icon {
-  min-width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e5e5ea;
   color: #86868b;
   border-radius: 12px;
   font-size: 1.125rem;
@@ -1134,7 +1133,6 @@ p {
 }
 
 .milestone-item.completed .milestone-icon {
-  background: #34c759;
   color: white;
 }
 
