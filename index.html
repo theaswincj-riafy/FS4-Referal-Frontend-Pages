@@ -655,26 +655,22 @@
                 const notificationContainer = document.getElementById('notification-container');
                 
                 // Check if there are notifications in the response
-                if (apiResponse && apiResponse.notifications && apiResponse.notifications.length > 0) {
-                    const notifications = apiResponse.notifications;
-                    let notificationHtml = '';
+                if (apiResponse && apiResponse.notifications && apiResponse.status === 'success') {
+                    const notification = apiResponse.notifications;
+                    const appIcon = getAppIcon(formData.app_package_name);
                     
-                    notifications.forEach((notification, index) => {
-                        const timeAgo = getTimeAgo(notification.created_at || new Date().toISOString());
-                        const appIcon = getAppIcon(formData.app_package_name);
-                        
-                        notificationHtml += `
-                            <div class="mobile-notification" onclick="navigateToStatusFromNotification('${notification.id || index}')">
-                                <div class="mobile-notification-header">
-                                    <div class="notification-app-icon">${appIcon}</div>
-                                    <span class="notification-app-name">${getAppName(formData.app_package_name)}</span>
-                                    <span class="notification-time">${timeAgo}</span>
-                                </div>
-                                <div class="notification-title">${notification.title || 'Referral Update'}</div>
-                                <div class="notification-body">${notification.body || notification.message || 'You have a new referral update!'}</div>
+                    // Single notification object format
+                    const notificationHtml = `
+                        <div class="mobile-notification" onclick="navigateToStatusFromNotification('${notification.id || 'notification'}')">
+                            <div class="mobile-notification-header">
+                                <div class="notification-app-icon">${appIcon}</div>
+                                <span class="notification-app-name">${getAppName(formData.app_package_name)}</span>
+                                <span class="notification-time">now</span>
                             </div>
-                        `;
-                    });
+                            <div class="notification-title">${notification.title || 'Referral Update'}</div>
+                            <div class="notification-body">${notification.body || 'You have a new referral update!'}</div>
+                        </div>
+                    `;
                     
                     notificationContainer.innerHTML = notificationHtml;
                 } else {
