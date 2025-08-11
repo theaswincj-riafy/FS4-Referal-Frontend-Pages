@@ -587,7 +587,8 @@ class ReferralRedeemPage {
     try {
       // Try API first, then fall back to local data
       try {
-        const endpoint = `/api/referral-redeem?lang=${this.params.language}`;
+        const language = this.params.language || 'en';
+        const endpoint = `/api/referral-redeem?lang=${language}`;
         const body = {
           app_package_name: this.params.app_package_name,
           user_id: this.params.userId,
@@ -875,7 +876,8 @@ class ReferralRedeemPage {
 
     try {
       // Call the checkredeem API
-      const endpoint = `/api/checkredeem?lang=${this.params.language}`;
+      const language = this.params.language || 'en';
+      const endpoint = `/api/checkredeem?lang=${language}`;
       const body = {
         app_package_name: this.params.app_package_name,
         user_id: this.params.userId,

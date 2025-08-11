@@ -50,7 +50,8 @@ class ReferralPromotePage {
 
   async loadPageData() {
     try {
-      const endpoint = `/api/referral-promote?lang=${this.params.language}`;
+      const language = this.params.language || 'en';
+      const endpoint = `/api/referral-promote?lang=${language}`;
       const body = {
         app_package_name: this.params.app_package_name,
         username: this.params.firstname,

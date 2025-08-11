@@ -221,7 +221,8 @@ class ReferralStatusPage {
     try {
       // Try API first, then fall back to local data
       try {
-        const endpoint = `/api/referral-status?lang=${this.params.language}`;
+        const language = this.params.language || 'en';
+        const endpoint = `/api/referral-status?lang=${language}`;
         const body = {
           app_package_name: this.params.app_package_name,
           username: this.params.firstname,
