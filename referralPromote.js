@@ -231,7 +231,11 @@ class ReferralPromotePage {
         pointerEvents: 'none',
         border: 'none'
       });
-      iframe.src = `/share-card.html?name=${encodeURIComponent(name)}`;
+      // Get additional parameters from API data
+      const pendingRedemptions = this.data?.data?.pendingredemptions || 0;
+      const referralCode = this.data?.data?.referral_code || '';
+      
+      iframe.src = `/share-card.html?name=${encodeURIComponent(name)}&pendingredemptions=${pendingRedemptions}&referral_code=${encodeURIComponent(referralCode)}`;
       document.body.appendChild(iframe);
 
       await new Promise(res => iframe.onload = res);
