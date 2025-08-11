@@ -180,9 +180,9 @@ class ReferralPromotePage {
       
       console.log("html-to-image library ready, generating share card...");
       
-      // Generate the share card blob and store it as JPEG for better compatibility
-      this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname, 'jpeg');
-      this.shareCardFile = new File([this.shareCardBlob], 'invite-card.jpg', { type: 'image/jpeg' });
+      // Generate the share card blob and store it as PNG for UI cards with text
+      this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname, 'png');
+      this.shareCardFile = new File([this.shareCardBlob], 'share-card.png', { type: 'image/png' });
       
       console.log("✅ Share card preloaded successfully!");
       console.log("File name:", this.shareCardFile.name);
@@ -199,14 +199,14 @@ class ReferralPromotePage {
   async renderShareCardToBlob(name, format = 'png') {
     try {
       const iframe = document.createElement('iframe');
-      // Keep it renderable but invisible
+      // Keep it renderable but invisible (don't use display:none)
       Object.assign(iframe.style, {
         position: 'fixed', 
         left: '-99999px', 
         top: '0', 
         width: '400px', 
         height: '600px', 
-        opacity: '0', 
+        visibility: 'hidden',
         pointerEvents: 'none',
         border: 'none'
       });
@@ -223,7 +223,7 @@ class ReferralPromotePage {
       }
 
       // Additional wait for images to load
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Pick the element to snapshot
       const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
@@ -233,7 +233,24 @@ class ReferralPromotePage {
       }
       
       let blob;
-      if (format === 'jpeg' || format === 'jpg') {
+      if (format === 'png') {
+        // Use toPng for PNG format (better for UI cards with text/lines)
+        const dataUrl = await window.htmlToImage.toPng(root, { 
+          pixelRatio: 2,
+          width: 400,
+          height: 600,
+          skipAutoScale: true
+        });
+        
+        // Convert data URL to binary blob properly
+        const base64Data = dataUrl.split(',')[1];
+        const binaryData = atob(base64Data);
+        const bytes = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          bytes[i] = binaryData.charCodeAt(i);
+        }
+        blob = new Blob([bytes], { type: 'image/png' });
+      } else if (format === 'jpeg' || format === 'jpg') {
         // Use toJpeg for JPEG format with quality
         const dataUrl = await window.htmlToImage.toJpeg(root, { 
           pixelRatio: 2,
@@ -242,17 +259,17 @@ class ReferralPromotePage {
           quality: 0.9,
           backgroundColor: '#ffffff'
         });
-        // Convert data URL to blob
-        const response = await fetch(dataUrl);
-        blob = await response.blob();
         
-        // Ensure the blob has the correct MIME type
-        if (blob.type !== 'image/jpeg') {
-          console.log("Correcting blob MIME type from", blob.type, "to image/jpeg");
-          blob = new Blob([blob], { type: 'image/jpeg' });
+        // Convert data URL to binary blob properly
+        const base64Data = dataUrl.split(',')[1];
+        const binaryData = atob(base64Data);
+        const bytes = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          bytes[i] = binaryData.charCodeAt(i);
         }
+        blob = new Blob([bytes], { type: 'image/jpeg' });
       } else {
-        // Use toBlob for PNG format
+        // Default to PNG using toBlob
         blob = await window.htmlToImage.toBlob(root, { 
           pixelRatio: 2,
           width: 400,
@@ -262,6 +279,12 @@ class ReferralPromotePage {
 
       iframe.remove();
       console.log("Generated blob:", blob.type, blob.size, "bytes");
+      
+      // Verify blob size is under limits (8MB)
+      if (blob.size > 8 * 1024 * 1024) {
+        console.warn("Blob size exceeds 8MB:", blob.size);
+      }
+      
       return blob;
     } catch (error) {
       console.error("Error rendering share card:", error);
@@ -279,8 +302,8 @@ class ReferralPromotePage {
       if (!file) {
         console.log("⚠️ Share card not preloaded, generating on demand...");
         ReferralUtils.showToast("Preparing your share card...");
-        const blob = await this.renderShareCardToBlob(name, 'jpeg');
-        file = new File([blob], 'invite-card.jpg', { type: 'image/jpeg' });
+        const blob = await this.renderShareCardToBlob(name, 'png');
+        file = new File([blob], 'share-card.png', { type: 'image/png' });
         console.log("✅ Share card generated on demand");
       } else {
         console.log("✅ Using preloaded share card");
@@ -288,9 +311,16 @@ class ReferralPromotePage {
 
       console.log("Share file ready:", file);
       console.log("File name:", file.name);
-      console.log("File size:", file.size, "bytes");
+      console.log("File size:", file.size, "bytes", "(" + (file.size / 1024 / 1024).toFixed(2) + " MB)");
       console.log("File type:", file.type);
       console.log("File constructor:", file.constructor.name);
+      console.log("File extension:", file.name.split('.').pop());
+      
+      // Verify file integrity
+      if (file.size === 0) {
+        throw new Error("Generated file is empty");
+      }
+      
       console.log("Checking Web Share API capabilities...");
       console.log("navigator.canShare exists:", !!navigator.canShare);
       console.log("navigator.share exists:", !!navigator.share);
