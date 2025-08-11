@@ -811,12 +811,12 @@ class ReferralStatusPage {
             if (milestone.level <= currentRedemptions) {
               milestoneElement.classList.add("completed");
               if (iconElement) {
-                iconElement.innerHTML = `<img src="images/level${milestone.level}tp.png" alt="Level ${milestone.level} Unlocked" style="width: 60px; height: 60px; object-fit: contain;">`;
+                iconElement.innerHTML = `<img src="images/level${milestone.level}tp.png" alt="Level ${milestone.level} Unlocked" style="width: 90px; height: 90px; object-fit: contain; margin-left: 20px;">`;
               }
             } else {
               milestoneElement.classList.remove("completed");
               if (iconElement) {
-                iconElement.innerHTML = `<img src="images/locks${milestone.level}tp.png" alt="Level ${milestone.level} Locked" style="width: 60px; height: 60px; object-fit: contain;">`;
+                iconElement.innerHTML = `<img src="images/locks${milestone.level}tp.png" alt="Level ${milestone.level} Locked" style="width: 100px; height: 100px; object-fit: contain;">`;
               }
             }
 
@@ -1483,7 +1483,7 @@ class ReferralStatusPage {
         </h1>
 
         <!-- Success subtitle -->
-        <p class="success-subtitle" style="font-size: 1rem; color: #718096; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+        <p class="success-subtitle" style="font-size: 1rem; color: #86868b; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
           ${successData.subtitle}
         </p>
 
@@ -1499,7 +1499,7 @@ class ReferralStatusPage {
       </section>
 
       <!-- Premium CTA Button -->
-      <div class="fixed-footer" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 20px 32px; background: white; border-top: 1px solid #e2e8f0;">
+      <div class="fixed-footer" style="position: fixed; bottom: 0; left: auto; right: auto; padding: 16px 20px 32px; background: white; border-top: 1px solid #e2e8f0; width:390px;>
         <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; color: white; cursor: pointer;">
           ${successData.primary_cta}
         </button>

@@ -235,7 +235,7 @@ p {
   align-items: center;
   gap: 16px;
   min-height: 60px;
-  width: 100%;
+  width: 390px;;
 }
 
 .back-btn {
@@ -653,7 +653,7 @@ p {
   padding: 16px 20px 32px;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
   margin-top: auto;
-  width: 100%;
+  width: 390px;
 }
 
 /* Steps container with proper spacing */

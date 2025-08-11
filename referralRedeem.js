@@ -525,7 +525,7 @@ class ReferralRedeemPage {
       );
 
       // Set dynamic loading text
-      const loadingTextElement = document.getElementById('loading-text');
+      const loadingTextElement = document.getElementById("loading-text");
       if (loadingTextElement) {
         loadingTextElement.textContent = ReferralUtils.getRandomLoadingText();
       }
@@ -593,7 +593,7 @@ class ReferralRedeemPage {
     try {
       // Try API first, then fall back to local data
       try {
-        const language = this.params.language || 'en';
+        const language = this.params.language || "en";
         const endpoint = `/api/referral-redeem?lang=${language}`;
         const body = {
           app_package_name: this.params.app_package_name,
@@ -830,11 +830,11 @@ class ReferralRedeemPage {
       if (navigator.clipboard) {
         const text = await navigator.clipboard.readText();
         const input = document.getElementById("redeem-input");
-        
+
         if (input) {
           // Extract referral code from clipboard text intelligently
           const extractedCode = this.extractReferralCode(text);
-          
+
           if (extractedCode) {
             // Only paste if we found a valid referral code
             input.value = extractedCode.toUpperCase();
@@ -842,7 +842,10 @@ class ReferralRedeemPage {
             this.playClipboardPasteAudio();
           } else {
             // Show toast and play sound on failed paste
-            console.log("No valid referral code found in clipboard text:", text);
+            console.log(
+              "No valid referral code found in clipboard text:",
+              text,
+            );
             ReferralUtils.showToast("No referral code found");
             this.playClipboardPasteAudio();
           }
@@ -862,32 +865,36 @@ class ReferralRedeemPage {
 
   // Extract referral code from clipboard text
   extractReferralCode(text) {
-    if (!text || typeof text !== 'string') {
+    if (!text || typeof text !== "string") {
       return null;
     }
 
     const trimmedText = text.trim();
-    
+
     // Pattern 1: Extract from URL format
     // Example: "Aswin invited you to try Keto Recipes App! Get 1 week of Premium features for free using this referral: https://referralboost.netlify.app/referralDownload.html?referralCode=aswin3154"
     const urlPattern = /referralCode=([a-zA-Z0-9]+)/i;
     const urlMatch = trimmedText.match(urlPattern);
-    
+
     if (urlMatch && urlMatch[1]) {
       console.log("Extracted referral code from URL:", urlMatch[1]);
       return urlMatch[1];
     }
-    
+
     // Pattern 2: Direct referral code (alphanumeric, typically 6-20 characters)
     // Example: "aswin3154"
     // This should be the entire text or the main part without special characters
     const directCodePattern = /^[a-zA-Z0-9]+$/;
-    
-    if (directCodePattern.test(trimmedText) && trimmedText.length >= 4 && trimmedText.length <= 20) {
+
+    if (
+      directCodePattern.test(trimmedText) &&
+      trimmedText.length >= 4 &&
+      trimmedText.length <= 20
+    ) {
       console.log("Detected direct referral code:", trimmedText);
       return trimmedText;
     }
-    
+
     // If neither pattern matches, return null (no valid code found)
     console.log("No valid referral code pattern found in text:", trimmedText);
     return null;
@@ -926,7 +933,7 @@ class ReferralRedeemPage {
 
     try {
       // Call the checkredeem API
-      const language = this.params.language || 'en';
+      const language = this.params.language || "en";
       const endpoint = `/api/checkredeem?lang=${language}`;
       const body = {
         app_package_name: this.params.app_package_name,
@@ -956,20 +963,20 @@ class ReferralRedeemPage {
       }
     } catch (error) {
       console.error("Redeem error:", error);
-      
+
       // Extract error message from API response or use fallback
       let errorMessage = "Failed to redeem code. Please try again.";
-      
+
       // First try to get message from the error object (API response)
       if (error.message) {
         errorMessage = error.message;
       }
-      
+
       // If the error contains API response data, extract the message
       if (error.response && error.response.message) {
         errorMessage = error.response.message;
       }
-      
+
       ReferralUtils.showToast(errorMessage);
     } finally {
       // Re-enable button
@@ -1162,7 +1169,7 @@ class ReferralRedeemPage {
         </h1>
 
         <!-- Success subtitle -->
-        <p class="success-subtitle" style="font-size: 1rem; color: #718096; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+        <p class="success-subtitle" style="font-size: 1rem; color: #86868b; line-height: 1.5; margin-bottom: 2.5rem; max-width: 300px; margin-left: auto; margin-right: auto;">
           ${successData.subtitle || "You have redeemed a valid referral code from John!"}
         </p>
 
