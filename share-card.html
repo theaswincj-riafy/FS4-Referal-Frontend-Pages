@@ -29,7 +29,7 @@
             padding: 16px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto 1fr auto auto;
+            grid-template-rows: 2fr 1.5fr 2fr;
             gap: 12px;
             position: relative;
         }
@@ -46,8 +46,7 @@
         }
         
         .invitation-grid {
-            grid-column: 1 / -1;
-            padding: 16px;
+            padding: 12px;
         }
         
         .invitation-title {
@@ -58,7 +57,6 @@
         }
         
         .help-grid {
-            grid-column: 1 / -1;
             padding: 12px;
         }
         
@@ -72,7 +70,7 @@
         .code-grid {
             grid-column: 1 / -1;
             padding: 16px;
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
         }
         
         .code-label {
@@ -95,8 +93,8 @@
         }
         
         .avatar-image {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
         }
         
@@ -105,8 +103,8 @@
         }
         
         .download-image {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
             border-radius: 12px;
         }
@@ -114,33 +112,32 @@
 </head>
 <body>
     <div id="card">
-        <!-- Top invitation grid -->
+        <!-- Row 1: Download image and Invitation text -->
+        <div class="bento-grid download-grid">
+            <img src="images/downloadapp.png" alt="Download App" class="download-image" />
+        </div>
+        
         <div class="bento-grid invitation-grid">
             <div class="invitation-title" id="invitation-text">Welcome! invited to try out this App. Download Now!</div>
         </div>
         
-        <!-- Help grid -->
-        <div class="bento-grid help-grid">
-            <div class="help-text" id="help-text">Loading...</div>
-        </div>
-        
-        <!-- Center referral code grid -->
+        <!-- Row 2: Referral code (spans full width) -->
         <div class="bento-grid code-grid">
             <div class="code-label">Referral Code is:</div>
             <div class="code-value" id="referral-code">LOADING</div>
         </div>
         
-        <!-- Avatar grid -->
+        <!-- Row 3: Help text and Avatar image -->
+        <div class="bento-grid help-grid">
+            <div class="help-text" id="help-text">Loading...</div>
+        </div>
+        
         <div class="bento-grid avatar-grid">
             <img id="avatar-image" src="images/avatar1tp.png" alt="Avatar" class="avatar-image" />
         </div>
-        
-        <!-- Download app grid -->
-        <div class="bento-grid download-grid">
-            <img src="images/downloadapp.png" alt="Download App" class="download-image" />
-        </div>
     </div>
 
+    <script src="appTheme.js"></script>
     <script>
         // Get parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -148,8 +145,20 @@
         const pendingRedemptions = parseInt(urlParams.get('pendingredemptions') || '0');
         const referralCode = urlParams.get('referral_code') || '';
         
+        // Apply theme colors to code grid
+        const codeGrid = document.querySelector('.code-grid');
+        if (window.appTheme && window.appTheme.gradientBG) {
+            codeGrid.style.background = `linear-gradient(135deg, ${window.appTheme.gradientBG[0]}, ${window.appTheme.gradientBG[1]})`;
+        }
+        if (window.appTheme && window.appTheme.textColor) {
+            const codeLabel = document.querySelector('.code-label');
+            const codeValue = document.querySelector('.code-value');
+            codeLabel.style.color = window.appTheme.textColor;
+            codeValue.style.color = window.appTheme.textColor;
+        }
+        
         // Update invitation text
-        document.getElementById('invitation-text').textContent = `${userName} invited to try out this App. Download Now!`;
+        document.getElementById('invitation-text').textContent = `${userName} invited you to join this App. Download Now!`;
         
         // Update help text
         const helpText = `${userName} only needs ${pendingRedemptions} more levels to unlock free Premium! You can help ${userName} advance 1 level by redeeming this code!`;
