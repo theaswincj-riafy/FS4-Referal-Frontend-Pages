@@ -945,7 +945,7 @@ class ReferralRedeemPage {
         this.saveRedemptionData(true);
         this.showSuccessState(result);
       } else {
-        // Handle different validation states
+        // Handle different validation states - prioritize API response message
         let errorMessage = result.message || "Failed to redeem code";
         if (result.validation_state === "expired") {
           errorMessage = this.validationMessages?.expired || errorMessage;
@@ -956,11 +956,18 @@ class ReferralRedeemPage {
       }
     } catch (error) {
       console.error("Redeem error:", error);
-      // Try to extract message from API response or use error message
+      
+      // Extract error message from API response or use fallback
       let errorMessage = "Failed to redeem code. Please try again.";
       
+      // First try to get message from the error object (API response)
       if (error.message) {
         errorMessage = error.message;
+      }
+      
+      // If the error contains API response data, extract the message
+      if (error.response && error.response.message) {
+        errorMessage = error.response.message;
       }
       
       ReferralUtils.showToast(errorMessage);

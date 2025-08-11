@@ -1,12 +1,12 @@
 // Shared utilities for all referral pages
 
 class ReferralUtils {
-  
+
   // Get random loading text for all referral pages
   static getRandomLoadingText() {
     const loadingTexts = [
       "Fetching your Referral Boost",
-      "Loading your Referral Boost", 
+      "Loading your Referral Boost",
       "Referral Boosts Incoming!"
     ];
     return loadingTexts[Math.floor(Math.random() * loadingTexts.length)];
@@ -18,7 +18,7 @@ class ReferralUtils {
     const params = new URLSearchParams(window.location.search);
     return {
       app_package_name: params.get('app_package_name') || 'com.firestorm.testApp1',
-      firstname: params.get('firstname') || 'aju', 
+      firstname: params.get('firstname') || 'aju',
       userId: params.get('userId') || '123',
       language: params.get('language') || 'en',
       referralCode: params.get('referralCode') || 'aju2586',
@@ -40,7 +40,7 @@ class ReferralUtils {
    */
   static interpolateTokens(text, params) {
     if (typeof text !== 'string') return text;
-    
+
     let result = text;
     Object.keys(params).forEach(key => {
       const pattern = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
@@ -56,11 +56,11 @@ class ReferralUtils {
     if (typeof obj === 'string') {
       return this.interpolateTokens(obj, params);
     }
-    
+
     if (Array.isArray(obj)) {
       return obj.map(item => this.interpolateObject(item, params));
     }
-    
+
     if (obj && typeof obj === 'object') {
       const result = {};
       Object.keys(obj).forEach(key => {
@@ -68,17 +68,17 @@ class ReferralUtils {
       });
       return result;
     }
-    
+
     return obj;
   }
 
   /**
    * Make API calls to the referral system
    */
-  static async makeApiCall(endpoint, method = 'GET', body = null) {
+  static async makeApiCall(endpoint, method = "GET", body = null) {
     const apiKey = 'HJVV4XapPZVVfPSiQThYGZdAXkRLUWvRfpNE5ITMfbC3A4Q';
     const baseUrl = 'https://referral-system-o0yw.onrender.com';
-    
+
     const config = {
       method,
       headers: {
@@ -93,9 +93,22 @@ class ReferralUtils {
 
     try {
       const response = await fetch(`${baseUrl}${endpoint}`, config);
-      
+
       if (!response.ok) {
-        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+        // Try to parse JSON response for error message even if response.ok is false
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (jsonError) {
+          // If response is not JSON, use status text
+          errorMessage = response.statusText || `HTTP error! status: ${response.status}`;
+        }
+        const error = new Error(errorMessage);
+        error.response = await response.json().catch(() => ({})); // Preserve the full response data if possible
+        throw error;
       }
 
       // Handle different content types
@@ -218,12 +231,12 @@ class ReferralUtils {
   static navigateWithParams(page, additionalParams = {}) {
     const currentParams = this.getUrlParams();
     const allParams = { ...currentParams, ...additionalParams };
-    
+
     const paramString = Object.keys(allParams)
       .filter(key => allParams[key] !== null && allParams[key] !== undefined)
       .map(key => `${key}=${encodeURIComponent(allParams[key])}`)
       .join('&');
-    
+
     const url = paramString ? `${page}?${paramString}` : page;
     window.location.href = url;
   }
@@ -235,14 +248,14 @@ class ReferralUtils {
     if (!code || code.trim().length === 0) {
       return { valid: false, error: 'empty' };
     }
-    
+
     const cleanCode = code.trim().toUpperCase();
-    
+
     // Basic validation: alphanumeric, 4-12 characters
     if (!/^[A-Z0-9]{4,12}$/.test(cleanCode)) {
       return { valid: false, error: 'invalid' };
     }
-    
+
     return { valid: true, code: cleanCode };
   }
 
