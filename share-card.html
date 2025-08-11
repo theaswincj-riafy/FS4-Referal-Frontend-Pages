@@ -37,7 +37,7 @@
             }
 
             .bento-grid {
-                background: #f3f3f3;
+                background: #f0f0f0;
                 border-radius: 12px;
                 padding: 12px;
                 display: flex;
@@ -53,7 +53,7 @@
 
             .invitation-title {
                 font-size: 1.1rem;
-                font-weight: 700;
+                font-weight: 650;
                 color: #1d1d1f;
                 line-height: 1.3;
             }
@@ -72,11 +72,7 @@
             .code-grid {
                 grid-column: 1 / -1;
                 padding: 16px;
-                background: linear-gradient(
-                    135deg,
-                    rgb(255, 215, 0),
-                    rgb(255, 165, 0)
-                );
+                background: #f3f3f3;
             }
 
             .app-title {
@@ -145,7 +141,7 @@
             <!-- Row 2: Referral code (spans full width) -->
             <div class="bento-grid code-grid">
                 <div class="app-title" id="app-title">Loading...</div>
-                <div class="code-label">Referral Code is:</div>
+                <div class="code-label" id="code-label">Referral Code is:</div>
                 <div class="code-value" id="referral-code">LOADING</div>
             </div>
 
@@ -157,7 +153,7 @@
             <div class="bento-grid avatar-grid">
                 <img
                     id="avatar-image"
-                    src="images/avatar1tp.png"
+                    src="images/redeemcode.png"
                     alt="Avatar"
                     class="avatar-image"
                 />
@@ -173,8 +169,12 @@
                 urlParams.get("pendingredemptions") || "0",
             );
             const referralCode = urlParams.get("referral_code") || "";
-            const appName = decodeURIComponent(urlParams.get("app_name") || "this App");
-            const appImage = decodeURIComponent(urlParams.get("app_image") || "");
+            const appName = decodeURIComponent(
+                urlParams.get("app_name") || "this App",
+            );
+            const appImage = decodeURIComponent(
+                urlParams.get("app_image") || "",
+            );
 
             // Colors are now set in CSS directly
 
@@ -183,13 +183,13 @@
 
             // Update invitation text
             document.getElementById("invitation-text").textContent =
-                `${userName} invited you to join ${appName}. Download Now!`;
+                `${userName} invited you to try out ${appName}. Download Now!`;
 
             // Update download image
             const downloadImage = document.querySelector(".download-image");
             if (appImage && appImage.trim() !== "") {
                 downloadImage.src = appImage;
-                downloadImage.onerror = function() {
+                downloadImage.onerror = function () {
                     // Fallback to default image if app_image fails to load
                     this.src = "images/downloadapp.png";
                 };
@@ -204,13 +204,17 @@
                 helpText = `${userName} just unlocked Premium! Redeem this code after you download to claim your free Premium as well.`;
                 avatarImage.src = `images/crown.png`;
             } else {
-                helpText = `${userName} only needs ${pendingRedemptions} more levels to unlock free Premium! You can help ${userName} advance 1 level by redeeming this code after download!`;
-                avatarImage.src = `images/avatar${pendingRedemptions}tp.png`;
+                helpText = `You’ll love this app. Accept your invite & unlock a surprise reward! 🎉 <br>  <br>  You’ve got a mystery gift waiting.`;
+                avatarImage.src = `images/redeemcode.png`;
             }
-            document.getElementById("help-text").textContent = helpText;
+            document.getElementById("help-text").innerHTML = helpText;
 
             // Update referral code
-            document.getElementById("referral-code").textContent = referralCode.toUpperCase();
+            document.getElementById("referral-code").textContent =
+                referralCode.toUpperCase();
+
+            document.getElementById("code-label").textContent =
+                `Use ${userName}'s Invitation Code to Redeem`;
 
             // Update avatar image based on pending redemptions
             avatarImage.onerror = function () {
