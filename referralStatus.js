@@ -221,7 +221,7 @@ class ReferralStatusPage {
     try {
       // Try API first, then fall back to local data
       try {
-        const language = this.params.language || 'en';
+        const language = this.params.language || "en";
         const endpoint = `/api/referral-status?lang=${language}`;
         const body = {
           app_package_name: this.params.app_package_name,
@@ -750,7 +750,7 @@ class ReferralStatusPage {
     document
       .getElementById("invite-friends")
       .querySelector("span").textContent =
-      hero.quickButtonText || "This is a placeholder";
+      "Invite Friends" || "This is a placeholder";
 
     // Update hero image based on current_redemptions
     const heroImage = document.getElementById("hero-image");
