@@ -219,7 +219,7 @@ class ReferralRedeemPage {
     }
   }
 
-  // Create confetti animation using canvas
+  // Create confetti animation using CSS-based particles (CodePen style)
   createConfettiAnimation() {
     try {
       console.log("Creating confetti animation...");
@@ -241,69 +241,70 @@ class ReferralRedeemPage {
         overflow: hidden;
       `;
 
-      // Create canvas for confetti
-      const canvas = document.createElement('canvas');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      confettiContainer.appendChild(canvas);
-      document.body.appendChild(confettiContainer);
+      // Add CSS animations for confetti
+      const style = document.createElement('style');
+      style.id = 'confetti-styles';
+      style.textContent = `
+        @keyframes confetti-fall {
+          0% {
+            transform: translateY(-100vh) rotateZ(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(100vh) rotateZ(720deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes confetti-shake {
+          0%, 100% { transform: translateX(0px); }
+          50% { transform: translateX(80px); }
+        }
+        
+        .confetti-particle {
+          position: absolute;
+          animation: confetti-fall 3s linear infinite;
+        }
+        
+        .confetti-particle:nth-child(odd) {
+          animation: confetti-fall 3s linear infinite, confetti-shake 0.5s ease-in-out infinite alternate;
+        }
+      `;
+      document.head.appendChild(style);
 
-      // Simple confetti using canvas
-      const ctx = canvas.getContext('2d');
-      const particles = [];
-      const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'];
-
-      // Create particles
-      for (let i = 0; i < 100; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: -10,
-          vx: (Math.random() - 0.5) * 4,
-          vy: Math.random() * 3 + 2,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          size: Math.random() * 8 + 4,
-          rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 10
-        });
+      // Colors inspired by the CodePen
+      const colors = ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
+      
+      // Create confetti particles
+      for (let i = 0; i < 150; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'confetti-particle';
+        
+        // Random properties
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 8 + 4;
+        const leftPosition = Math.random() * 100;
+        const animationDelay = Math.random() * 3;
+        const animationDuration = Math.random() * 2 + 2;
+        
+        // Random shape (rectangle or circle)
+        const isCircle = Math.random() > 0.5;
+        
+        particle.style.cssText = `
+          left: ${leftPosition}%;
+          width: ${size}px;
+          height: ${size}px;
+          background-color: ${color};
+          border-radius: ${isCircle ? '50%' : '0'};
+          animation-delay: ${animationDelay}s;
+          animation-duration: ${animationDuration}s;
+          opacity: 0.8;
+        `;
+        
+        confettiContainer.appendChild(particle);
       }
 
-      // Animation loop
-      const animate = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        particles.forEach((particle, index) => {
-          // Update position
-          particle.x += particle.vx;
-          particle.y += particle.vy;
-          particle.rotation += particle.rotationSpeed;
-          
-          // Apply gravity
-          particle.vy += 0.1;
-          
-          // Draw particle
-          ctx.save();
-          ctx.translate(particle.x, particle.y);
-          ctx.rotate(particle.rotation * Math.PI / 180);
-          ctx.fillStyle = particle.color;
-          ctx.fillRect(-particle.size/2, -particle.size/2, particle.size, particle.size);
-          ctx.restore();
-          
-          // Remove particles that are off screen
-          if (particle.y > canvas.height + 10) {
-            particles.splice(index, 1);
-          }
-        });
-        
-        if (particles.length > 0) {
-          requestAnimationFrame(animate);
-        } else {
-          this.removeConfettiAnimation();
-        }
-      };
-
-      animate();
+      document.body.appendChild(confettiContainer);
 
       // Auto-remove after 5 seconds
       setTimeout(() => {
@@ -321,6 +322,10 @@ class ReferralRedeemPage {
     const existing = document.getElementById('confetti-container');
     if (existing) {
       existing.remove();
+    }
+    const styles = document.getElementById('confetti-styles');
+    if (styles) {
+      styles.remove();
     }
     this.confettiInstance = null;
   }
