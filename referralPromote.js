@@ -332,6 +332,35 @@ class ReferralPromotePage {
 
 
 
+      // TEST: Try sharing base64 test image first
+      try {
+        console.log("Testing base64 image sharing...");
+        const response = await fetch('/testImage.txt');
+        const base64Data = await response.text();
+        
+        // Convert base64 to blob
+        const binaryData = atob(base64Data.trim());
+        const bytes = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          bytes[i] = binaryData.charCodeAt(i);
+        }
+        const testBlob = new Blob([bytes], { type: 'image/png' });
+        const testFile = new File([testBlob], 'test-image.png', { type: 'image/png' });
+        
+        console.log("Test file created:", testFile.name, testFile.size, "bytes");
+        
+        if (navigator.canShare && navigator.canShare({ files: [testFile] })) {
+          await navigator.share({
+            files: [testFile],
+            text: fallbackText || `${name} invited you to join Keto Recipes App!`
+          });
+          console.log("Base64 test image shared successfully!");
+          return;
+        }
+      } catch (testError) {
+        console.log("Base64 test sharing failed:", testError.message);
+      }
+
       // Try different sharing approaches for better compatibility
       if (navigator.share) {
         console.log("Attempting multiple share approaches...");
