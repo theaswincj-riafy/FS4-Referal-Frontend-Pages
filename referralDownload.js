@@ -307,22 +307,26 @@ class ReferralDownloadPage {
   }
 
   copyToClipboard(text) {
+    // Convert to lowercase before copying
+    const lowercaseText = text.toLowerCase();
+    
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
+      navigator.clipboard.writeText(lowercaseText).then(() => {
         ReferralUtils.showToast('Code copied to clipboard!');
         this.playClipboardCopyAudio();
       }).catch(err => {
         console.error('Failed to copy: ', err);
-        this.fallbackCopyTextToClipboard(text);
+        this.fallbackCopyTextToClipboard(lowercaseText);
       });
     } else {
-      this.fallbackCopyTextToClipboard(text);
+      this.fallbackCopyTextToClipboard(lowercaseText);
     }
   }
 
   fallbackCopyTextToClipboard(text) {
     const textArea = document.createElement('textarea');
-    textArea.value = text;
+    // Ensure text is lowercase for fallback method too
+    textArea.value = text.toLowerCase();
     textArea.style.top = '0';
     textArea.style.left = '0';
     textArea.style.position = 'fixed';
