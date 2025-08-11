@@ -166,18 +166,20 @@ class ReferralPromotePage {
       // Wait a bit for the library to load
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Generate the share card blob and store it
-      this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname);
-      this.shareCardFile = new File([this.shareCardBlob], 'invite-card.png', { type: 'image/png' });
+      // Generate the share card blob and store it as JPEG for better compatibility
+      this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname, 'jpeg');
+      this.shareCardFile = new File([this.shareCardBlob], 'invite-card.jpg', { type: 'image/jpeg' });
       
-      console.log("Share card preloaded successfully");
+      console.log("Share card preloaded successfully as JPEG:", this.shareCardFile);
+      console.log("File size:", this.shareCardBlob.size, "bytes");
+      console.log("File type:", this.shareCardFile.type);
     } catch (error) {
       console.warn("Failed to preload share card:", error);
     }
   }
 
   // Render share card to blob
-  async renderShareCardToBlob(name) {
+  async renderShareCardToBlob(name, format = 'png') {
     try {
       const iframe = document.createElement('iframe');
       // Keep it renderable but invisible
@@ -209,17 +211,34 @@ class ReferralPromotePage {
       // Pick the element to snapshot
       const root = iframe.contentDocument.querySelector('#card') || iframe.contentDocument.body;
       
-      if (!window.htmlToImage?.toBlob) {
+      if (!window.htmlToImage) {
         throw new Error('html-to-image library not available');
       }
       
-      const blob = await window.htmlToImage.toBlob(root, { 
-        pixelRatio: 2,
-        width: 400,
-        height: 600
-      });
+      let blob;
+      if (format === 'jpeg' || format === 'jpg') {
+        // Use toJpeg for JPEG format with quality
+        blob = await window.htmlToImage.toJpeg(root, { 
+          pixelRatio: 2,
+          width: 400,
+          height: 600,
+          quality: 0.9,
+          backgroundColor: '#ffffff'
+        });
+        // Convert data URL to blob
+        const response = await fetch(blob);
+        blob = await response.blob();
+      } else {
+        // Use toBlob for PNG format
+        blob = await window.htmlToImage.toBlob(root, { 
+          pixelRatio: 2,
+          width: 400,
+          height: 600
+        });
+      }
 
       iframe.remove();
+      console.log("Generated blob:", blob.type, blob.size, "bytes");
       return blob;
     } catch (error) {
       console.error("Error rendering share card:", error);
@@ -236,8 +255,8 @@ class ReferralPromotePage {
       let file = this.shareCardFile;
       if (!file) {
         console.log("Generating share card on demand...");
-        const blob = await this.renderShareCardToBlob(name);
-        file = new File([blob], 'invite-card.png', { type: 'image/png' });
+        const blob = await this.renderShareCardToBlob(name, 'jpeg');
+        file = new File([blob], 'invite-card.jpg', { type: 'image/jpeg' });
       }
 
       console.log("Share file ready:", file);
@@ -289,7 +308,7 @@ class ReferralPromotePage {
       const url = URL.createObjectURL(file);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'invite-card.png';
+      a.download = file.name || 'invite-card.jpg';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
