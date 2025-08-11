@@ -649,9 +649,9 @@ p {
 }
 
 /* Steps container with proper spacing */
-.steps-container { 
-  display: flex; 
-  flex-direction: column; 
+.steps-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .step-row {
@@ -714,7 +714,7 @@ p {
 }
 
 /* Card styling */
-.step-card { 
+.step-card {
   background: #F8F9FA;
   border-radius: 16px;
   padding: 20px;
@@ -1032,23 +1032,25 @@ p {
   background: #3BB3E8;
 }
 
-.download-footer {
-  position: fixed;
+/* New Sticky Footer Class for referralPromote.html & referralRedeem.html */
+.sticky-promo-footer {
+  position: sticky;
   bottom: 0;
-  left: 0;
-  right: 0;
   z-index: 100;
-  padding: 16px 20px;
-  /* Add safe area padding for mobile devices */
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
   background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
   border-top: 1px solid #f2f2f7;
-  /* Prevent overscroll on mobile */
-  touch-action: none;
+  padding: 16px 20px 32px;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.download-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-top: 1px solid #e5e5ea;
+  padding: 16px 20px 24px;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
 }
 
 @media (min-width: 768px) {
