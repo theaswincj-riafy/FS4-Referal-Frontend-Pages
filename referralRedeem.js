@@ -273,25 +273,55 @@ class ReferralRedeemPage {
           confettiContainer.appendChild(canvas);
           console.log("🎉 [CONFETTI] Canvas created and added to container");
 
-          // Initialize confetti with wind effects and simultaneous release
-          console.log("🎉 [CONFETTI] Initializing confetti with options...");
+          // Try different initialization approaches for react-confetti
+          console.log("🎉 [CONFETTI] Trying different initialization methods...");
           try {
-            this.confettiInstance = reactConfetti({
-              canvas: canvas,
-              width: window.innerWidth,
-              height: window.innerHeight,
-              numberOfPieces: 200,
-              gravity: 0.8,
-              wind: 0.02,
-              friction: 0.99,
-              opacity: 0.8,
+            // Method 1: Direct function call
+            console.log("🎉 [CONFETTI] Method 1: Direct function call");
+            this.confettiInstance = reactConfetti(canvas, {
+              particleCount: 200,
+              spread: 70,
+              origin: { y: 0.6 },
               colors: ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899']
             });
-            console.log("🎉 [CONFETTI] Confetti instance created:", this.confettiInstance);
-            console.log("🎉 [CONFETTI] React-confetti animation started successfully!");
-          } catch (initError) {
-            console.error("🎉 [CONFETTI] ERROR initializing confetti:", initError);
-            throw initError;
+            console.log("🎉 [CONFETTI] Method 1 successful! Instance:", this.confettiInstance);
+          } catch (method1Error) {
+            console.log("🎉 [CONFETTI] Method 1 failed:", method1Error);
+            
+            try {
+              // Method 2: Constructor approach
+              console.log("🎉 [CONFETTI] Method 2: Constructor approach");
+              this.confettiInstance = new reactConfetti({
+                canvas: canvas,
+                width: window.innerWidth,
+                height: window.innerHeight,
+                numberOfPieces: 200,
+                gravity: 0.8,
+                wind: 0.02
+              });
+              console.log("🎉 [CONFETTI] Method 2 successful! Instance:", this.confettiInstance);
+            } catch (method2Error) {
+              console.log("🎉 [CONFETTI] Method 2 failed:", method2Error);
+              
+              try {
+                // Method 3: Check if it's a default export with confetti property
+                console.log("🎉 [CONFETTI] Method 3: Check confetti property");
+                const confettiFunc = reactConfetti.confetti || reactConfetti.default;
+                if (typeof confettiFunc === 'function') {
+                  this.confettiInstance = confettiFunc({
+                    particleCount: 200,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                  });
+                  console.log("🎉 [CONFETTI] Method 3 successful! Instance:", this.confettiInstance);
+                } else {
+                  throw new Error('No confetti function found');
+                }
+              } catch (method3Error) {
+                console.error("🎉 [CONFETTI] All methods failed:", method3Error);
+                throw method3Error;
+              }
+            }
           }
         })
         .catch(error => {
@@ -348,7 +378,7 @@ class ReferralRedeemPage {
 
       const colors = ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
       
-      // Create all particles simultaneously falling straight down
+      // Create all particles simultaneously falling straight down with varied shapes
       for (let i = 0; i < 150; i++) {
         const particle = document.createElement('div');
         particle.className = 'confetti-particle';
@@ -358,18 +388,52 @@ class ReferralRedeemPage {
         const leftPosition = Math.random() * 100;
         const animationDelay = Math.random() * 0.5; // Small random delay for natural effect
         const animationDuration = 2 + Math.random() * 2; // 2-4 second fall time
-        const isCircle = Math.random() > 0.5;
+        
+        // Create varied shapes: circle, square, triangle, diamond, star
+        const shapeType = Math.floor(Math.random() * 5);
+        let shapeCSS = '';
+        
+        switch (shapeType) {
+          case 0: // Circle
+            shapeCSS = `border-radius: 50%;`;
+            break;
+          case 1: // Square (default)
+            shapeCSS = `border-radius: 0;`;
+            break;
+          case 2: // Triangle
+            shapeCSS = `
+              width: 0;
+              height: 0;
+              border-left: ${size/2}px solid transparent;
+              border-right: ${size/2}px solid transparent;
+              border-bottom: ${size}px solid ${color};
+              background-color: transparent;
+            `;
+            break;
+          case 3: // Diamond
+            shapeCSS = `
+              transform: rotate(45deg);
+              border-radius: 0;
+            `;
+            break;
+          case 4: // Star
+            shapeCSS = `
+              clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            `;
+            break;
+        }
         
         particle.style.cssText = `
           left: ${leftPosition}%;
           top: -20px;
-          width: ${size}px;
-          height: ${size}px;
-          background-color: ${color};
-          border-radius: ${isCircle ? '50%' : '0'};
+          width: ${shapeType === 2 ? '0' : size + 'px'};
+          height: ${shapeType === 2 ? '0' : size + 'px'};
+          background-color: ${shapeType === 2 ? 'transparent' : color};
+          ${shapeCSS}
           opacity: 0.9;
           animation-delay: ${animationDelay}s;
           animation-duration: ${animationDuration}s;
+          position: absolute;
         `;
         
         confettiContainer.appendChild(particle);
