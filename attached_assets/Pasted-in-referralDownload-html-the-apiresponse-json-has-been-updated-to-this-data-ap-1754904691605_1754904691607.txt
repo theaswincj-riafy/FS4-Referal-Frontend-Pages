@@ -1,0 +1,48 @@
+in referralDownload.html:
+
+the apiresponse json has been updated to this:{
+    "data": {
+        "app_image": "https://res.cloudinary.com/dmeloyjp3/image/upload/v1754899871/webp_uploads/akzztt7quddimrie6ftm.webp",
+        "app_name": "Keto Recipes App",
+        "app_store_link": "https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130",
+        "page3_referralDownload": {
+            "hero": {
+                "hero_title": "{{referrer_name}} invited you",
+                "page_title": "Keto Recipes App",
+                "quickButtonText": "Copy to clipboard",
+                "referral_code": "{{referral_code}}",
+                "subtitle": "Download the app to claim your invite and get 1 week of Premium features for Free!"
+            },
+            "how_it_works": [
+                {
+                    "desc": "Download the app from Google Play or Apple App Store",
+                    "step": 1
+                },
+                {
+                    "desc": "Open the app and and click on Redeem Referral Code",
+                    "step": 2
+                },
+                {
+                    "desc": "Paste {{referrer_name}}\u2019s referral code and hit redeem to unlock a week of Premium features for yourself!",
+                    "step": 3
+                }
+            ],
+            "page_id": "referral-download",
+            "store_ctas": {
+                "app_store_button": "Download on the App Store",
+                "app_store_link": "{{app_store_link}}",
+                "play_store_button": "Get it on Google Play",
+                "play_store_link": "{{play_store_link}}"
+            }
+        },
+        "play_store_link": "https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1",
+        "referral_code": "aswin4768",
+        "referrer_name": "Aswin"
+    },
+    "message": "Share data fetched",
+    "status": "success"
+}
+
+- fetch the data.play_store_link value for the Google Play CTA BUtton link
+- fetch the data.app_store_link value for the App Store CTA BUtton link
+- fetch the data.app_image link for the hero-image src. (if this image is missing/empty/broken, fallback to the current image images/downloadapp.png
