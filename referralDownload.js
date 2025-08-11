@@ -134,8 +134,8 @@ class ReferralDownloadPage {
         .replace(/\{\{referrer_name\}\}/g, capitalizedReferrerName)
         .replace(/\{\{referral_code\}\}/g, (apiData.referral_code || '').toUpperCase())
         .replace(/\{\{app_name\}\}/g, apiData.app_name || '')
-        .replace(/\{\{app_store_link\}\}/g, 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130')
-        .replace(/\{\{play_store_link\}\}/g, 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1');
+        .replace(/\{\{app_store_link\}\}/g, apiData.app_store_link || '')
+        .replace(/\{\{play_store_link\}\}/g, apiData.play_store_link || '');
     };
 
     // Populate app title using page_title
@@ -185,12 +185,50 @@ class ReferralDownloadPage {
     const googlePlayBtn = document.getElementById('download-google');
     const appStoreBtn = document.getElementById('download-appstore');
     
-    // Use the hardcoded store links as requested
-    this.playStoreLink = 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1';
-    this.appStoreLink = 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130';
+    // Use the API response data for store links
+    this.playStoreLink = apiData.play_store_link || 'https://play.google.com/store/apps/details?id=keto.weightloss.diet.plan&hl=en_IN&pli=1';
+    this.appStoreLink = apiData.app_store_link || 'https://apps.apple.com/in/app/keto-diet-app-recipes/id1499044130';
+    
+    console.log('Using Play Store link:', this.playStoreLink);
+    console.log('Using App Store link:', this.appStoreLink);
+    
+    // Update hero image using API data
+    this.updateHeroImage(apiData);
     
     // Apply theme colors after populating content
     this.applyThemeColors();
+  }
+
+  // Update hero image with API data
+  updateHeroImage(apiData) {
+    const heroImage = document.querySelector('.hero-image');
+    if (!heroImage) {
+      console.warn('Hero image element not found');
+      return;
+    }
+
+    // Use app_image from API if available, otherwise fallback to default
+    const appImageUrl = apiData.app_image;
+    const fallbackImage = 'images/downloadapp.png';
+    
+    if (appImageUrl) {
+      console.log('Using app image from API:', appImageUrl);
+      
+      // Test if the image loads successfully
+      const testImage = new Image();
+      testImage.onload = () => {
+        heroImage.src = appImageUrl;
+        console.log('App image loaded successfully, updating hero image');
+      };
+      testImage.onerror = () => {
+        console.warn('App image failed to load, using fallback:', fallbackImage);
+        heroImage.src = fallbackImage;
+      };
+      testImage.src = appImageUrl;
+    } else {
+      console.log('No app_image in API response, using fallback:', fallbackImage);
+      heroImage.src = fallbackImage;
+    }
   }
 
   // Play clipboard copy success sound
