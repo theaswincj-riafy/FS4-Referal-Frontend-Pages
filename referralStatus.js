@@ -1499,15 +1499,8 @@ class ReferralStatusPage {
       </section>
 
       <!-- Premium CTA Button -->
-      <div class="fixed-footer" style="position: fixed;
- bottom: 0;
- left: auto;
- right: auto;
- padding: 16px 20px 32px;
- background: white;
- border-top: 1px solid #e2e8f0;
- width:390px;>
-        <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; color: white; cursor: pointer;">
+      <div class="fixed-footer" style="position: fixed; bottom: 0; left: auto; right: auto; padding: 16px 20px 32px; background: white; border-top: 1px solid #e2e8f0; width: 390px;">
+        <button id="primary-cta-premium" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; font-weight: 600; border: none; border-radius: 12px; cursor: pointer;">
           ${successData.primary_cta}
         </button>
       </div>
@@ -1521,10 +1514,23 @@ class ReferralStatusPage {
         premiumBtn.style.background = `linear-gradient(135deg, ${THEME_ONE.gradientBG[0]}, ${THEME_ONE.gradientBG[1]})`;
         premiumBtn.style.color = THEME_ONE.textColor;
 
-        // Update scrollable content background
+        // Update scrollable content background to match referral redeem success state
         const scrollableContent = document.getElementById("main-content");
         if (scrollableContent) {
           scrollableContent.style.backgroundColor = THEME_ONE.pastelBG;
+        }
+
+        // Update success section background to match theme
+        const successSection = document.querySelector(".success-section");
+        if (successSection) {
+          successSection.style.backgroundColor = THEME_ONE.pastelBG;
+        }
+
+        // Update fixed footer background to match theme
+        const fixedFooter = document.querySelector(".fixed-footer");
+        if (fixedFooter) {
+          fixedFooter.style.backgroundColor = THEME_ONE.pastelBG;
+          fixedFooter.style.borderTop = `1px solid ${THEME_ONE.border}`;
         }
       }
 
