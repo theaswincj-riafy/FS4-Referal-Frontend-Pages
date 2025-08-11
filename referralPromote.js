@@ -588,6 +588,11 @@ class ReferralPromotePage {
             console.log("✅ SUCCESS: Share card image with text shared!");
             return;
           } catch (shareError) {
+            // Check if user cancelled/dismissed the share dialog
+            if (shareError.name === 'AbortError' || shareError.message.includes('cancelled') || shareError.message.includes('dismissed')) {
+              console.log("User cancelled sharing");
+              return; // Exit silently without toast
+            }
             console.log("❌ Image + text share failed:", shareError.message);
           }
         }
@@ -604,6 +609,11 @@ class ReferralPromotePage {
             console.log("✅ SUCCESS: Share card with title shared!");
             return;
           } catch (shareError) {
+            // Check if user cancelled/dismissed the share dialog
+            if (shareError.name === 'AbortError' || shareError.message.includes('cancelled') || shareError.message.includes('dismissed')) {
+              console.log("User cancelled sharing");
+              return; // Exit silently without toast
+            }
             console.log("❌ Image + title + text failed:", shareError.message);
           }
         }
@@ -620,6 +630,11 @@ class ReferralPromotePage {
             ReferralUtils.showToast(`Image shared! Share this text: ${shareText}`);
             return;
           } catch (shareError) {
+            // Check if user cancelled/dismissed the share dialog
+            if (shareError.name === 'AbortError' || shareError.message.includes('cancelled') || shareError.message.includes('dismissed')) {
+              console.log("User cancelled sharing");
+              return; // Exit silently without toast
+            }
             console.log("❌ Image-only share failed:", shareError.message);
           }
         }
@@ -634,6 +649,11 @@ class ReferralPromotePage {
           console.log("✅ SUCCESS: Text + URL shared!");
           return;
         } catch (shareError) {
+          // Check if user cancelled/dismissed the share dialog
+          if (shareError.name === 'AbortError' || shareError.message.includes('cancelled') || shareError.message.includes('dismissed')) {
+            console.log("User cancelled sharing");
+            return; // Exit silently without toast
+          }
           console.log("❌ Text + URL failed:", shareError.message);
         }
         
@@ -646,6 +666,11 @@ class ReferralPromotePage {
           console.log("✅ SUCCESS: Text shared!");
           return;
         } catch (shareError) {
+          // Check if user cancelled/dismissed the share dialog
+          if (shareError.name === 'AbortError' || shareError.message.includes('cancelled') || shareError.message.includes('dismissed')) {
+            console.log("User cancelled sharing");
+            return; // Exit silently without toast
+          }
           console.log("❌ Text-only failed:", shareError.message);
         }
       } else {
@@ -1446,6 +1471,12 @@ class ReferralPromotePage {
       // Use preloaded share card for instant sharing
       await this.shareImageFromTemplate(this.params.firstname, shareText);
     } catch (error) {
+      // Check if user cancelled/dismissed the share dialog
+      if (error.name === 'AbortError' || error.message.includes('cancelled') || error.message.includes('dismissed')) {
+        console.log("User cancelled sharing");
+        return; // Exit silently without toast or fallback
+      }
+      
       console.log("Image sharing failed, falling back to text sharing:", error);
       
       // Fallback to standard text sharing
@@ -1453,6 +1484,12 @@ class ReferralPromotePage {
         try {
           await navigator.share(shareData);
         } catch (shareError) {
+          // Check if user cancelled fallback sharing too
+          if (shareError.name === 'AbortError' || shareError.message.includes('cancelled') || shareError.message.includes('dismissed')) {
+            console.log("User cancelled fallback sharing");
+            return; // Exit silently without toast
+          }
+          
           console.error("Text sharing also failed:", shareError);
           // Final fallback to copying link
           if (navigator.clipboard) {
@@ -1461,7 +1498,7 @@ class ReferralPromotePage {
           }
         }
       } else {
-        // Fallback to copying link
+        // Fallback to copying link when sharing is not supported
         if (navigator.clipboard) {
           await navigator.clipboard.writeText(shareData.text + " " + shareData.url);
           ReferralUtils.showToast("Link copied to clipboard!");
