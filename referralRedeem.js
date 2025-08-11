@@ -243,89 +243,69 @@ class ReferralRedeemPage {
       document.body.appendChild(confettiContainer);
       console.log("🎉 [CONFETTI] Container created and added to DOM");
 
-      // Load react-confetti library dynamically using proper module import
-      console.log("🎉 [CONFETTI] Attempting to import react-confetti from CDN...");
-      import('https://cdn.jsdelivr.net/npm/react-confetti@6.4.0/+esm')
+      // Try canvas-confetti library instead (more reliable)
+      console.log("🎉 [CONFETTI] Attempting to import canvas-confetti from CDN...");
+      import('https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm')
         .then(confettiModule => {
-          console.log("🎉 [CONFETTI] Module imported successfully:", confettiModule);
+          console.log("🎉 [CONFETTI] Canvas-confetti module imported successfully:", confettiModule);
           console.log("🎉 [CONFETTI] Module default:", confettiModule.default);
           console.log("🎉 [CONFETTI] Module type:", typeof confettiModule.default);
           
-          const reactConfetti = confettiModule.default;
+          const confetti = confettiModule.default;
           
-          if (typeof reactConfetti !== 'function') {
-            console.error("🎉 [CONFETTI] ERROR: reactConfetti is not a function:", reactConfetti);
-            throw new Error('reactConfetti is not a function');
+          if (typeof confetti !== 'function') {
+            console.error("🎉 [CONFETTI] ERROR: confetti is not a function:", confetti);
+            throw new Error('canvas-confetti is not a function');
           }
-          
-          // Create canvas element for confetti
-          const canvas = document.createElement('canvas');
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-          canvas.style.cssText = `
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-          `;
-          confettiContainer.appendChild(canvas);
-          console.log("🎉 [CONFETTI] Canvas created and added to container");
 
-          // Try different initialization approaches for react-confetti
-          console.log("🎉 [CONFETTI] Trying different initialization methods...");
-          try {
-            // Method 1: Direct function call
-            console.log("🎉 [CONFETTI] Method 1: Direct function call");
-            this.confettiInstance = reactConfetti(canvas, {
-              particleCount: 200,
-              spread: 70,
-              origin: { y: 0.6 },
-              colors: ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899']
-            });
-            console.log("🎉 [CONFETTI] Method 1 successful! Instance:", this.confettiInstance);
-          } catch (method1Error) {
-            console.log("🎉 [CONFETTI] Method 1 failed:", method1Error);
-            
-            try {
-              // Method 2: Constructor approach
-              console.log("🎉 [CONFETTI] Method 2: Constructor approach");
-              this.confettiInstance = new reactConfetti({
-                canvas: canvas,
-                width: window.innerWidth,
-                height: window.innerHeight,
-                numberOfPieces: 200,
-                gravity: 0.8,
-                wind: 0.02
-              });
-              console.log("🎉 [CONFETTI] Method 2 successful! Instance:", this.confettiInstance);
-            } catch (method2Error) {
-              console.log("🎉 [CONFETTI] Method 2 failed:", method2Error);
-              
-              try {
-                // Method 3: Check if it's a default export with confetti property
-                console.log("🎉 [CONFETTI] Method 3: Check confetti property");
-                const confettiFunc = reactConfetti.confetti || reactConfetti.default;
-                if (typeof confettiFunc === 'function') {
-                  this.confettiInstance = confettiFunc({
-                    particleCount: 200,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                  });
-                  console.log("🎉 [CONFETTI] Method 3 successful! Instance:", this.confettiInstance);
-                } else {
-                  throw new Error('No confetti function found');
-                }
-              } catch (method3Error) {
-                console.error("🎉 [CONFETTI] All methods failed:", method3Error);
-                throw method3Error;
-              }
-            }
+          console.log("🎉 [CONFETTI] Starting canvas-confetti animation...");
+          
+          // Fire confetti with wind-like effects
+          const count = 200;
+          const defaults = {
+            origin: { y: 0.7 },
+            colors: ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899']
+          };
+
+          function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+              particleCount: Math.floor(count * particleRatio)
+            }));
           }
+
+          // Fire multiple bursts with different angles for wind effect
+          fire(0.25, {
+            spread: 26,
+            startVelocity: 55,
+            drift: -1
+          });
+          fire(0.2, {
+            spread: 60,
+            drift: 1
+          });
+          fire(0.35, {
+            spread: 100,
+            decay: 0.91,
+            scalar: 0.8,
+            drift: -0.5
+          });
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 25,
+            decay: 0.92,
+            scalar: 1.2,
+            drift: 0.5
+          });
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 45,
+            drift: 0
+          });
+
+          console.log("🎉 [CONFETTI] Canvas-confetti animation started successfully!");
         })
         .catch(error => {
-          console.error("🎉 [CONFETTI] ERROR: Failed to load react-confetti, using fallback:", error);
+          console.error("🎉 [CONFETTI] ERROR: Failed to load canvas-confetti, using fallback:", error);
           console.error("🎉 [CONFETTI] Error details:", error.message, error.stack);
           this.createFallbackConfetti();
         });
