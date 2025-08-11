@@ -946,19 +946,24 @@ class ReferralRedeemPage {
         this.showSuccessState(result);
       } else {
         // Handle different validation states
-        let errorMessage = result.message;
+        let errorMessage = result.message || "Failed to redeem code";
         if (result.validation_state === "expired") {
           errorMessage = this.validationMessages?.expired || errorMessage;
         } else if (result.validation_state === "invalid") {
           errorMessage = this.validationMessages?.invalid || errorMessage;
         }
-        throw new Error(errorMessage || "Failed to redeem code");
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("Redeem error:", error);
-      ReferralUtils.showToast(
-        error.message || "Failed to redeem code. Please try again.",
-      );
+      // Try to extract message from API response or use error message
+      let errorMessage = "Failed to redeem code. Please try again.";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      ReferralUtils.showToast(errorMessage);
     } finally {
       // Re-enable button
       if (redeemBtn) {
