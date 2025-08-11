@@ -363,10 +363,21 @@ class ReferralPromotePage {
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             console.log("Trying image + text share...");
-            // Get the transformed referral URL
+            // Get the transformed referral URL and construct proper share text
             const originalUrl = this.data?.data?.referral_url;
             const transformedUrl = this.transformReferralUrl(originalUrl);
-            const shareText = fallbackText || `${name} invited you to join Keto Recipes App!${transformedUrl ? ' ' + transformedUrl : ''}`;
+            
+            // Create share text with the transformed URL
+            let shareText = fallbackText || `${name} invited you to join Keto Recipes App!`;
+            
+            // Remove old URL if present in fallbackText and append the transformed URL
+            if (transformedUrl) {
+              // Remove any existing URLs (both old and new formats)
+              shareText = shareText.replace(/https:\/\/[^\s]+/g, '').trim();
+              shareText = `${shareText} ${transformedUrl}`;
+            }
+            
+            console.log("Final share text:", shareText);
             
             await navigator.share({
               files: [file],
@@ -425,7 +436,16 @@ class ReferralPromotePage {
         try {
           console.log("Trying text-only share...");
           await navigator.share({
-            text: fallbackText || `${name} invited you to join Keto Recipes App! ${this.transformReferralUrl(this.data?.data?.referral_url) || window.location.origin}`
+            text: (() => {
+              const transformedUrl = this.transformReferralUrl(this.data?.data?.referral_url);
+              let text = fallbackText || `${name} invited you to join Keto Recipes App!`;
+              // Remove any existing URLs and append the transformed URL
+              if (transformedUrl) {
+                text = text.replace(/https:\/\/[^\s]+/g, '').trim();
+                text = `${text} ${transformedUrl}`;
+              }
+              return text;
+            })()
           });
           console.log("Text-only shared successfully");
           return;
