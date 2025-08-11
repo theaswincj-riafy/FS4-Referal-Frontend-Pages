@@ -335,6 +335,11 @@ class ReferralStatusPage {
         "images/level3tp.png",
         "images/level4tp.png",
         "images/level5tp.png",
+        "images/locks1tp.png",
+        "images/locks2tp.png",
+        "images/locks3tp.png",
+        "images/locks4tp.png",
+        "images/locks5tp.png",
         "images/avatar1tp.png",
         "images/avatar2tp.png",
         "images/avatar5tp.png",
@@ -788,10 +793,14 @@ class ReferralStatusPage {
             // Check if this level is completed based on current_redemptions
             if (milestone.level <= currentRedemptions) {
               milestoneElement.classList.add("completed");
-              if (iconElement) iconElement.textContent = "✓";
+              if (iconElement) {
+                iconElement.innerHTML = `<img src="images/level${milestone.level}tp.png" alt="Level ${milestone.level} Unlocked" style="width: 60px; height: 60px; object-fit: contain;">`;
+              }
             } else {
               milestoneElement.classList.remove("completed");
-              if (iconElement) iconElement.textContent = "🔒";
+              if (iconElement) {
+                iconElement.innerHTML = `<img src="images/locks${milestone.level}tp.png" alt="Level ${milestone.level} Locked" style="width: 60px; height: 60px; object-fit: contain;">`;
+              }
             }
 
             // Add premium class only to milestone-5 if current_redemptions equals 5
