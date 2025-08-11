@@ -74,3 +74,5 @@ Preferred communication style: Simple, everyday language.
 **Enhanced Audio Feedback**: Added audio feedback for clipboard operations across all referral pages - completed1.mp3 for copy operations in promote/download pages, and transition.mp3 for paste operations in redeem page. All audio files are preloaded for smooth user experience.
 
 **UI Consistency Updates**: Converted info-nudge components in referralRedeem and referralStatus success states to match the bottom-status-pill design from referralPromote, featuring consistent red background (#FFF1F2) and heart emoji (❤️) styling across all success states.
+
+**Dynamic URL Transformation**: Implemented automatic referral URL transformation system that converts API-provided URLs from `https://referral-system-o0yw.onrender.com/share/{code}` format to `https://referralboost.netlify.app/referralDownload.html?referralCode={code}` format for all sharing functions. This ensures consistent branding and proper routing to the netlify-hosted referral download page.

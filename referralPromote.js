@@ -75,6 +75,27 @@ class ReferralPromotePage {
     }
   }
 
+  // Transform referral URL to netlify format
+  transformReferralUrl(originalUrl) {
+    if (!originalUrl) return null;
+    
+    try {
+      // Extract referral code from the original URL
+      // Expected format: https://referral-system-o0yw.onrender.com/share/aswin2792
+      const matches = originalUrl.match(/\/share\/(.+)$/);
+      if (matches && matches[1]) {
+        const referralCode = matches[1];
+        const transformedUrl = `https://referralboost.netlify.app/referralDownload.html?referralCode=${referralCode}`;
+        console.log("Transformed URL:", originalUrl, "->", transformedUrl);
+        return transformedUrl;
+      }
+    } catch (error) {
+      console.error("Error transforming referral URL:", error);
+    }
+    
+    return originalUrl; // Return original if transformation fails
+  }
+
   // Preload images and audio used in this page
   async preloadAssets() {
     try {
@@ -342,9 +363,14 @@ class ReferralPromotePage {
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             console.log("Trying image + text share...");
+            // Get the transformed referral URL
+            const originalUrl = this.data?.data?.referral_url;
+            const transformedUrl = this.transformReferralUrl(originalUrl);
+            const shareText = fallbackText || `${name} invited you to join Keto Recipes App!${transformedUrl ? ' ' + transformedUrl : ''}`;
+            
             await navigator.share({
               files: [file],
-              text: fallbackText || `${name} invited you to join Keto Recipes App!`
+              text: shareText
             });
             console.log("Share card image with text shared successfully!");
             return;
@@ -399,7 +425,7 @@ class ReferralPromotePage {
         try {
           console.log("Trying text-only share...");
           await navigator.share({
-            text: fallbackText || `${name} invited you to join Keto Recipes App! ${this.data?.data?.referral_url || window.location.origin}`
+            text: fallbackText || `${name} invited you to join Keto Recipes App! ${this.transformReferralUrl(this.data?.data?.referral_url) || window.location.origin}`
           });
           console.log("Text-only shared successfully");
           return;
@@ -1142,7 +1168,7 @@ class ReferralPromotePage {
     const shareData = {
       title: "Join me on this app!",
       text: shareText,
-      url: this.data?.data?.referral_url || window.location.origin,
+      url: this.transformReferralUrl(this.data?.data?.referral_url) || window.location.origin,
     };
 
     try {
