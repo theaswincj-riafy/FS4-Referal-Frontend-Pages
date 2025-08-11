@@ -1,195 +1,221 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Share Card</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            background: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 0;
-        }
-        
-        #card {
-            width: 400px;
-            height: 600px;
-            background: #ffffff;
-            border-radius: 0px;
-            padding: 16px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 2fr 1.5fr 2fr;
-            gap: 12px;
-            position: relative;
-        }
-        
-        .bento-grid {
-            background: #f3f3f3;
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        
-        .invitation-grid {
-            padding: 12px;
-        }
-        
-        .invitation-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1d1d1f;
-            line-height: 1.3;
-        }
-        
-        .help-grid {
-            padding: 12px;
-        }
-        
-        .help-text {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #1d1d1f;
-            line-height: 1.4;
-        }
-        
-        .code-grid {
-            grid-column: 1 / -1;
-            padding: 16px;
-            background: linear-gradient(135deg, rgb(255, 215, 0), rgb(255, 165, 0));
-        }
-        
-        .code-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: rgb(51, 51, 51);
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-        
-        .code-value {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: rgb(51, 51, 51);
-            letter-spacing: 1px;
-        }
-        
-        .avatar-grid {
-            padding: 8px;
-        }
-        
-        .avatar-image {
-            width: 150px;
-            height: 150px;
-            object-fit: contain;
-        }
-        
-        .download-grid {
-            padding: 8px;
-        }
-        
-        .download-image {
-            width: 150px;
-            height: 150px;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-    </style>
-</head>
-<body>
-    <div id="card">
-        <!-- Row 1: Download image and Invitation text -->
-        <div class="bento-grid download-grid">
-            <img src="images/downloadapp.png" alt="Download App" class="download-image" />
-        </div>
-        
-        <div class="bento-grid invitation-grid">
-            <div class="invitation-title" id="invitation-text">Welcome! invited to try out this App. Download Now!</div>
-        </div>
-        
-        <!-- Row 2: Referral code (spans full width) -->
-        <div class="bento-grid code-grid">
-            <div class="code-label">Referral Code is:</div>
-            <div class="code-value" id="referral-code">LOADING</div>
-        </div>
-        
-        <!-- Row 3: Help text and Avatar image -->
-        <div class="bento-grid help-grid">
-            <div class="help-text" id="help-text">Loading...</div>
-        </div>
-        
-        <div class="bento-grid avatar-grid">
-            <img id="avatar-image" src="images/avatar1tp.png" alt="Avatar" class="avatar-image" />
-        </div>
-    </div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Share Card</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-    <script src="appTheme.js"></script>
-    <script>
-        // Get parameters from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const userName = urlParams.get('name') || 'Friend';
-        const pendingRedemptions = parseInt(urlParams.get('pendingredemptions') || '0');
-        const referralCode = urlParams.get('referral_code') || '';
-        
-        // Colors are now set in CSS directly
-        
-        // Update invitation text
-        document.getElementById('invitation-text').textContent = `${userName} invited you to join this App. Download Now!`;
-        
-        // Update help text
-        const helpText = `${userName} only needs ${pendingRedemptions} more levels to unlock free Premium! You can help ${userName} advance 1 level by redeeming this code!`;
-        document.getElementById('help-text').textContent = helpText;
-        
-        // Update referral code
-        document.getElementById('referral-code').textContent = referralCode;
-        
-        // Update avatar image based on pending redemptions
-        const avatarImage = document.getElementById('avatar-image');
-        avatarImage.src = `images/avatar${pendingRedemptions}tp.png`;
-        avatarImage.onerror = function() {
-            // Fallback to avatar1tp.png if the specific avatar doesn't exist
-            this.src = 'images/avatar1tp.png';
-        };
-        
-        // Wait for images to load
-        const images = document.querySelectorAll('img');
-        let loadedImages = 0;
-        
-        function checkAllImagesLoaded() {
-            loadedImages++;
-            if (loadedImages === images.length) {
-                // All images loaded, card is ready
-                document.body.classList.add('ready');
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                    "Segoe UI", Roboto, sans-serif;
+                background: transparent;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 0;
             }
-        }
-        
-        images.forEach(img => {
-            if (img.complete) {
-                checkAllImagesLoaded();
+
+            #card {
+                width: 400px;
+                height: 600px;
+                background: #ffffff;
+                border-radius: 0px;
+                padding: 16px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 2fr 1.5fr 2fr;
+                gap: 12px;
+                position: relative;
+            }
+
+            .bento-grid {
+                background: #f3f3f3;
+                border-radius: 12px;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+
+            .invitation-grid {
+                padding: 12px;
+            }
+
+            .invitation-title {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #1d1d1f;
+                line-height: 1.3;
+            }
+
+            .help-grid {
+                padding: 12px;
+            }
+
+            .help-text {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #1d1d1f;
+                line-height: 1.4;
+            }
+
+            .code-grid {
+                grid-column: 1 / -1;
+                padding: 16px;
+                background: linear-gradient(
+                    135deg,
+                    rgb(255, 215, 0),
+                    rgb(255, 165, 0)
+                );
+            }
+
+            .code-label {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: rgb(51, 51, 51);
+                opacity: 0.8;
+                margin-bottom: 4px;
+            }
+
+            .code-value {
+                font-size: 1.2rem;
+                font-weight: 800;
+                color: rgb(51, 51, 51);
+                letter-spacing: 1px;
+            }
+
+            .avatar-grid {
+                padding: 8px;
+            }
+
+            .avatar-image {
+                width: 150px;
+                height: 150px;
+                object-fit: contain;
+            }
+
+            .download-grid {
+                padding: 8px;
+            }
+
+            .download-image {
+                width: 150px;
+                height: 150px;
+                object-fit: contain;
+                border-radius: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="card">
+            <!-- Row 1: Download image and Invitation text -->
+            <div class="bento-grid download-grid">
+                <img
+                    src="images/downloadapp.png"
+                    alt="Download App"
+                    class="download-image"
+                />
+            </div>
+
+            <div class="bento-grid invitation-grid">
+                <div class="invitation-title" id="invitation-text">
+                    Welcome! invited to try out this App. Download Now!
+                </div>
+            </div>
+
+            <!-- Row 2: Referral code (spans full width) -->
+            <div class="bento-grid code-grid">
+                <div class="code-label">Referral Code is:</div>
+                <div class="code-value" id="referral-code">LOADING</div>
+            </div>
+
+            <!-- Row 3: Help text and Avatar image -->
+            <div class="bento-grid help-grid">
+                <div class="help-text" id="help-text">Loading...</div>
+            </div>
+
+            <div class="bento-grid avatar-grid">
+                <img
+                    id="avatar-image"
+                    src="images/avatar1tp.png"
+                    alt="Avatar"
+                    class="avatar-image"
+                />
+            </div>
+        </div>
+
+        <script src="appTheme.js"></script>
+        <script>
+            // Get parameters from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const userName = urlParams.get("name") || "Friend";
+            const pendingRedemptions = parseInt(
+                urlParams.get("pendingredemptions") || "0",
+            );
+            const referralCode = urlParams.get("referral_code") || "";
+
+            // Colors are now set in CSS directly
+
+            // Update invitation text
+            document.getElementById("invitation-text").textContent =
+                `${userName} invited you to join this App. Download Now!`;
+
+            var helpText;
+            const avatarImage = document.getElementById("avatar-image");
+            // Update help text
+            if (pendingRedemptions == 0) {
+                helpText = `${userName} just unlocked Premium! Redeem this code after you download to claim your free Premium as well.`;
+                avatarImage.src = `images/crown.png`;
             } else {
-                img.addEventListener('load', checkAllImagesLoaded);
-                img.addEventListener('error', checkAllImagesLoaded);
+                helpText = `${userName} only needs ${pendingRedemptions} more levels to unlock free Premium! You can help ${userName} advance 1 level by redeeming this code after download!`;
+                avatarImage.src = `images/avatar${pendingRedemptions}tp.png`;
             }
-        });
-        
-        // If no images, mark as ready immediately
-        if (images.length === 0) {
-            document.body.classList.add('ready');
-        }
-    </script>
-</body>
+            document.getElementById("help-text").textContent = helpText;
+
+            // Update referral code
+            document.getElementById("referral-code").textContent = referralCode;
+
+            // Update avatar image based on pending redemptions
+            avatarImage.onerror = function () {
+                // Fallback to avatar1tp.png if the specific avatar doesn't exist
+                this.src = "images/avatardancingtp.png";
+            };
+
+            // Wait for images to load
+            const images = document.querySelectorAll("img");
+            let loadedImages = 0;
+
+            function checkAllImagesLoaded() {
+                loadedImages++;
+                if (loadedImages === images.length) {
+                    // All images loaded, card is ready
+                    document.body.classList.add("ready");
+                }
+            }
+
+            images.forEach((img) => {
+                if (img.complete) {
+                    checkAllImagesLoaded();
+                } else {
+                    img.addEventListener("load", checkAllImagesLoaded);
+                    img.addEventListener("error", checkAllImagesLoaded);
+                }
+            });
+
+            // If no images, mark as ready immediately
+            if (images.length === 0) {
+                document.body.classList.add("ready");
+            }
+        </script>
+    </body>
 </html>
