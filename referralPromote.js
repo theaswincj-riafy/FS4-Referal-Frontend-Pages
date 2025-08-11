@@ -233,7 +233,7 @@ class ReferralPromotePage {
         border: 'none'
       });
       // Get additional parameters from API data
-      const pendingRedemptions = this.data?.data?.pendingredemptions || 0;
+      const pendingRedemptions = this.data?.data?.pending_redemptions || 0;
       const referralCode = this.data?.data?.referral_code || '';
       const appImage = this.data?.data?.app_image || '';
       const appName = this.data?.data?.app_name || '';
