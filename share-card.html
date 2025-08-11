@@ -49,6 +49,7 @@
 
             .invitation-grid {
                 padding: 12px;
+                background: #e5feff;
             }
 
             .invitation-title {
@@ -60,6 +61,7 @@
 
             .help-grid {
                 padding: 12px;
+                background: #ffecec;
             }
 
             .help-text {
@@ -72,7 +74,7 @@
             .code-grid {
                 grid-column: 1 / -1;
                 padding: 16px;
-                background: #f3f3f3;
+                background: #e5fff0;
             }
 
             .app-title {
@@ -101,6 +103,7 @@
 
             .avatar-grid {
                 padding: 8px;
+                background: #fffae0;
             }
 
             .avatar-image {
@@ -112,6 +115,7 @@
             .download-grid {
                 padding: 0;
                 overflow: hidden;
+                background: #fde8ff;
             }
 
             .download-image {
@@ -200,14 +204,19 @@
 
             var helpText;
             const avatarImage = document.getElementById("avatar-image");
-            // Update help text
-            if (pendingRedemptions == 0) {
-                helpText = `${userName} just unlocked Premium! Redeem this code after you download to claim your free Premium as well.`;
-                avatarImage.src = `images/crown.png`;
-            } else {
-                helpText = `You’ll love this app. Accept your invite & unlock a surprise reward! 🎉 <br>  <br>  You’ve got a mystery gift waiting.`;
-                avatarImage.src = `images/redeemcode.png`;
-            }
+
+            // // Update help text
+            // if (pendingRedemptions == 0) {
+            //     helpText = `${userName} just unlocked Premium! Redeem this code after you download to claim your free Premium as well.`;
+            //     avatarImage.src = `images/crown.png`;
+            // } else {
+            //     helpText = `You’ll love this app. Accept your invite & unlock a surprise reward! 🎉 <br>  <br>  You’ve got a mystery gift waiting.`;
+            //     avatarImage.src = `images/redeemcode.png`;
+            // }
+
+            helpText = `You’ll love this app. Accept your invite & unlock a surprise reward! 🎉 <br>  <br>  You’ve got a mystery gift waiting.`;
+            avatarImage.src = `images/redeemcode.png`;
+
             document.getElementById("help-text").innerHTML = helpText;
 
             // Update referral code
