@@ -738,10 +738,8 @@
             }
 
             function getAppName(packageName) {
-                // Convert package name to readable app name
-                const parts = packageName.split('.');
-                const appPart = parts[parts.length - 1] || 'App';
-                return appPart.charAt(0).toUpperCase() + appPart.slice(1).replace(/([A-Z])/g, ' $1').trim();
+                // Return a generic app name instead of parsing package name
+                return 'App';
             }
         </script>
     </body>
