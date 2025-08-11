@@ -780,9 +780,7 @@ p {
   max-width: 400px;
 }
 
-#referralStatus-bottom-status-pill{
-  padding-bottom:100px;
-}
+
 
 .benefit-card {
   position: absolute;
@@ -2089,6 +2087,7 @@ p {
 /* FAQ Section */
 .faq-section {
   margin-bottom: 0px;
+  padding-bottom: 100px;
 }
 
 #level-title{
