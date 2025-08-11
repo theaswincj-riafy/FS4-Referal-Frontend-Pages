@@ -234,8 +234,10 @@ class ReferralPromotePage {
       // Get additional parameters from API data
       const pendingRedemptions = this.data?.data?.pendingredemptions || 0;
       const referralCode = this.data?.data?.referral_code || '';
+      const appImage = this.data?.data?.app_image || '';
+      const appName = this.data?.data?.app_name || '';
       
-      iframe.src = `/share-card.html?name=${encodeURIComponent(name)}&pendingredemptions=${pendingRedemptions}&referral_code=${encodeURIComponent(referralCode)}`;
+      iframe.src = `/share-card.html?name=${encodeURIComponent(name)}&pendingredemptions=${pendingRedemptions}&referral_code=${encodeURIComponent(referralCode)}&app_image=${encodeURIComponent(appImage)}&app_name=${encodeURIComponent(appName)}`;
       document.body.appendChild(iframe);
 
       await new Promise(res => iframe.onload = res);
