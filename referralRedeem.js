@@ -219,10 +219,10 @@ class ReferralRedeemPage {
     }
   }
 
-  // Create confetti animation using CSS-based particles (CodePen style)
+  // Create confetti animation using react-confetti library with wind effects
   createConfettiAnimation() {
     try {
-      console.log("Creating confetti animation...");
+      console.log("Creating confetti animation with react-confetti...");
       
       // Remove any existing confetti
       this.removeConfettiAnimation();
@@ -240,85 +240,142 @@ class ReferralRedeemPage {
         z-index: 10000;
         overflow: hidden;
       `;
+      document.body.appendChild(confettiContainer);
 
-      // Add CSS animations for confetti
+      // Load react-confetti library dynamically
+      import('https://cdn.jsdelivr.net/npm/react-confetti@6.1.0/+esm')
+        .then(confettiModule => {
+          const Confetti = confettiModule.default;
+          
+          // Create canvas element for confetti
+          const canvas = document.createElement('canvas');
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+          canvas.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          `;
+          confettiContainer.appendChild(canvas);
+
+          // Initialize confetti with wind effects and simultaneous release
+          this.confettiInstance = new Confetti(canvas, {
+            particleCount: 200,
+            spread: 100,
+            startVelocity: 50,
+            scalar: 1.2,
+            drift: 0.1,
+            gravity: 0.8,
+            wind: 0.02,
+            colors: ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'],
+            shapes: ['square', 'circle'],
+            ticks: 300,
+            origin: {
+              x: 0.5,
+              y: 0
+            }
+          });
+
+          // Start the animation
+          this.confettiInstance.start();
+
+          console.log("React-confetti animation started with wind effects");
+        })
+        .catch(error => {
+          console.error("Failed to load react-confetti, using fallback:", error);
+          this.createFallbackConfetti();
+        });
+
+      // Auto-remove after 6 seconds
+      setTimeout(() => {
+        this.removeConfettiAnimation();
+      }, 6000);
+
+    } catch (error) {
+      console.error("Error creating confetti animation:", error);
+      this.createFallbackConfetti();
+    }
+  }
+
+  // Fallback confetti with wind-like effects using CSS
+  createFallbackConfetti() {
+    try {
+      const confettiContainer = document.getElementById('confetti-container');
+      if (!confettiContainer) return;
+
+      // Add CSS animations for wind-scattered confetti
       const style = document.createElement('style');
       style.id = 'confetti-styles';
       style.textContent = `
-        @keyframes confetti-fall {
+        @keyframes confetti-fall-wind {
           0% {
-            transform: translateY(-100vh) rotateZ(0deg);
+            transform: translateY(-20px) translateX(0px) rotate(0deg);
             opacity: 1;
           }
+          25% {
+            transform: translateY(25vh) translateX(50px) rotate(180deg);
+          }
+          50% {
+            transform: translateY(50vh) translateX(-30px) rotate(360deg);
+          }
+          75% {
+            transform: translateY(75vh) translateX(80px) rotate(540deg);
+          }
           100% {
-            transform: translateY(100vh) rotateZ(720deg);
+            transform: translateY(100vh) translateX(-20px) rotate(720deg);
             opacity: 0;
           }
         }
         
-        @keyframes confetti-shake {
-          0%, 100% { transform: translateX(0px); }
-          50% { transform: translateX(80px); }
-        }
-        
         .confetti-particle {
           position: absolute;
-          animation: confetti-fall 3s linear infinite;
-        }
-        
-        .confetti-particle:nth-child(odd) {
-          animation: confetti-fall 3s linear infinite, confetti-shake 0.5s ease-in-out infinite alternate;
+          animation: confetti-fall-wind 4s ease-out forwards;
         }
       `;
       document.head.appendChild(style);
 
-      // Colors inspired by the CodePen
       const colors = ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
       
-      // Create confetti particles
+      // Create all particles simultaneously (no stagger)
       for (let i = 0; i < 150; i++) {
         const particle = document.createElement('div');
         particle.className = 'confetti-particle';
         
-        // Random properties
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const size = Math.random() * 8 + 4;
+        const size = Math.random() * 10 + 4;
         const leftPosition = Math.random() * 100;
-        const animationDelay = Math.random() * 3;
-        const animationDuration = Math.random() * 2 + 2;
-        
-        // Random shape (rectangle or circle)
         const isCircle = Math.random() > 0.5;
         
         particle.style.cssText = `
           left: ${leftPosition}%;
+          top: 0;
           width: ${size}px;
           height: ${size}px;
           background-color: ${color};
           border-radius: ${isCircle ? '50%' : '0'};
-          animation-delay: ${animationDelay}s;
-          animation-duration: ${animationDuration}s;
-          opacity: 0.8;
+          opacity: 0.9;
         `;
         
         confettiContainer.appendChild(particle);
       }
-
-      document.body.appendChild(confettiContainer);
-
-      // Auto-remove after 5 seconds
-      setTimeout(() => {
-        this.removeConfettiAnimation();
-      }, 5000);
-
-      console.log("Confetti animation started");
+      
+      console.log("Fallback confetti animation with wind effects started");
     } catch (error) {
-      console.error("Error creating confetti animation:", error);
+      console.error("Error creating fallback confetti:", error);
     }
   }
 
   // Remove confetti animation
   removeConfettiAnimation() {
+    // Stop confetti instance if it exists
+    if (this.confettiInstance && typeof this.confettiInstance.stop === 'function') {
+      this.confettiInstance.stop();
+    }
+    
+    // Remove DOM elements
     const existing = document.getElementById('confetti-container');
     if (existing) {
       existing.remove();
