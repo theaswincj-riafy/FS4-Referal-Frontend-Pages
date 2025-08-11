@@ -225,7 +225,7 @@ p {
 
 /* Sticky Layout */
 .sticky-header {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 100;
   background: #ffffff;
@@ -235,6 +235,7 @@ p {
   align-items: center;
   gap: 16px;
   min-height: 60px;
+  width: 100%;
 }
 
 .back-btn {
@@ -291,7 +292,7 @@ p {
 }
 
 .sticky-footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   z-index: 100;
   background: #ffffff;
@@ -330,7 +331,7 @@ p {
 
 /* Hero Section */
 .hero-section {
-  padding: 24px 20px 32px;
+  padding: 80px 20px 32px 20px;
   text-align: center;
   background: #f5f5f7;
   color: #1d1d1f;
@@ -511,6 +512,11 @@ p {
   max-width: 760px;
   margin: 0 auto;
   border-radius: 0;
+  padding-bottom: 10rem;
+}
+
+#how-it-works-redeem{
+  padding-bottom: 10rem;
 }
 
 /* Centered Heading Area within Combined Section */
@@ -592,7 +598,7 @@ p {
 
 /* Download Page Footer */
 .download-footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   z-index: 100;
   background: #ffffff;
@@ -639,7 +645,7 @@ p {
 
 /* Sticky Footer Updates */
 .sticky-footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   z-index: 100;
   background: #ffffff;
@@ -1046,7 +1052,7 @@ p {
 }
 
 .download-footer {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   z-index: 100;
   background: #ffffff;
@@ -1057,7 +1063,7 @@ p {
 
 @media (min-width: 768px) {
   .download-footer {
-    position: sticky;
+    position: fixed;
     left: auto;
     right: auto;
     border-radius: 0 0 24px 24px;
@@ -1489,7 +1495,7 @@ p {
 
 /* Success State Styles */
 .success-section {
-  padding: 0rem 1rem;
+  padding: 5rem 1rem 2rem 1rem;
 }
 
 /* Remove vertical scroll when in already redeemed state */
@@ -2309,4 +2315,9 @@ p {
     padding: 14px 20px;
     font-size: 0.9rem;
   }
+}
+
+
+#combined-card-section-status{
+  padding-bottom:1rem;
 }
