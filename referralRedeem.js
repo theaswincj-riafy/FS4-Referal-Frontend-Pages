@@ -842,9 +842,10 @@ class ReferralRedeemPage {
             ReferralUtils.showToast("Referral code pasted successfully!");
             this.playClipboardPasteAudio();
           } else {
-            // Don't paste anything if no valid code found
+            // Show toast and play sound on failed paste
             console.log("No valid referral code found in clipboard text:", text);
-            // Don't show error toast, just silently fail as requested
+            ReferralUtils.showToast("No referral code found");
+            this.playClipboardPasteAudio();
           }
         }
       } else {
