@@ -336,7 +336,23 @@ class ReferralPromotePage {
       if (navigator.share) {
         console.log("Attempting multiple share approaches...");
         
-        // Approach 1: Share image with title (avoid text field that may cause JSON issues)
+        // Approach 1: Share image with text and URL (comprehensive sharing)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            console.log("Trying image + text + URL share...");
+            await navigator.share({
+              files: [file],
+              text: fallbackText || `${name} invited you to join Keto Recipes App!`,
+              url: this.data?.data?.referral_url || window.location.origin
+            });
+            console.log("Image + text + URL shared successfully");
+            return;
+          } catch (shareError) {
+            console.log("Image + text + URL failed:", shareError.message);
+          }
+        }
+        
+        // Approach 1b: Share image with title only
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
             console.log("Trying image + title share...");
@@ -396,7 +412,7 @@ class ReferralPromotePage {
       const url = URL.createObjectURL(file);
       const a = document.createElement('a');
       a.href = url;
-      a.download = file.name || 'invite-card.jpg';
+      a.download = file.name || 'share-card.png';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
