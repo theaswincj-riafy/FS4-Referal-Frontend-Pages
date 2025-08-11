@@ -79,6 +79,14 @@
                 );
             }
 
+            .app-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: rgb(51, 51, 51);
+                margin-bottom: 8px;
+                text-align: center;
+            }
+
             .code-label {
                 font-size: 0.8rem;
                 font-weight: 600;
@@ -135,6 +143,7 @@
 
             <!-- Row 2: Referral code (spans full width) -->
             <div class="bento-grid code-grid">
+                <div class="app-title" id="app-title">Loading...</div>
                 <div class="code-label">Referral Code is:</div>
                 <div class="code-value" id="referral-code">LOADING</div>
             </div>
@@ -163,12 +172,29 @@
                 urlParams.get("pendingredemptions") || "0",
             );
             const referralCode = urlParams.get("referral_code") || "";
+            const appName = decodeURIComponent(urlParams.get("app_name") || "this App");
+            const appImage = decodeURIComponent(urlParams.get("app_image") || "");
 
             // Colors are now set in CSS directly
 
+            // Update app title
+            document.getElementById("app-title").textContent = appName;
+
             // Update invitation text
             document.getElementById("invitation-text").textContent =
-                `${userName} invited you to join this App. Download Now!`;
+                `${userName} invited you to join ${appName}. Download Now!`;
+
+            // Update download image
+            const downloadImage = document.querySelector(".download-image");
+            if (appImage && appImage.trim() !== "") {
+                downloadImage.src = appImage;
+                downloadImage.onerror = function() {
+                    // Fallback to default image if app_image fails to load
+                    this.src = "images/downloadapp.png";
+                };
+            } else {
+                downloadImage.src = "images/downloadapp.png";
+            }
 
             var helpText;
             const avatarImage = document.getElementById("avatar-image");
