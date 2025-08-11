@@ -218,7 +218,7 @@ class ReferralPromotePage {
       let blob;
       if (format === 'jpeg' || format === 'jpg') {
         // Use toJpeg for JPEG format with quality
-        blob = await window.htmlToImage.toJpeg(root, { 
+        const dataUrl = await window.htmlToImage.toJpeg(root, { 
           pixelRatio: 2,
           width: 400,
           height: 600,
@@ -226,8 +226,14 @@ class ReferralPromotePage {
           backgroundColor: '#ffffff'
         });
         // Convert data URL to blob
-        const response = await fetch(blob);
+        const response = await fetch(dataUrl);
         blob = await response.blob();
+        
+        // Ensure the blob has the correct MIME type
+        if (blob.type !== 'image/jpeg') {
+          console.log("Correcting blob MIME type from", blob.type, "to image/jpeg");
+          blob = new Blob([blob], { type: 'image/jpeg' });
+        }
       } else {
         // Use toBlob for PNG format
         blob = await window.htmlToImage.toBlob(root, { 
@@ -260,6 +266,10 @@ class ReferralPromotePage {
       }
 
       console.log("Share file ready:", file);
+      console.log("File name:", file.name);
+      console.log("File size:", file.size, "bytes");
+      console.log("File type:", file.type);
+      console.log("File constructor:", file.constructor.name);
       console.log("Checking Web Share API capabilities...");
       console.log("navigator.canShare exists:", !!navigator.canShare);
       console.log("navigator.share exists:", !!navigator.share);
@@ -269,15 +279,31 @@ class ReferralPromotePage {
         console.log("Can share text:", navigator.canShare({ text: fallbackText }));
       }
 
-      // Try Web Share Level 2 with files
+      // Debug: Always download the file for inspection
+      console.log("DEBUG: Downloading file for inspection...");
+      const debugUrl = URL.createObjectURL(file);
+      const debugA = document.createElement('a');
+      debugA.href = debugUrl;
+      debugA.download = 'debug-' + file.name;
+      document.body.appendChild(debugA);
+      debugA.click();
+      document.body.removeChild(debugA);
+      URL.revokeObjectURL(debugUrl);
+
+      // Try Web Share Level 2 with files only (no text to avoid JSON issues)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        console.log("Attempting to share image with text via Web Share API...");
-        await navigator.share({
-          files: [file],
-          text: fallbackText || `${name} invited you to join Keto Recipes App!`
-        });
-        console.log("Image shared successfully via Web Share API");
-        return;
+        console.log("Attempting to share image only via Web Share API...");
+        try {
+          await navigator.share({
+            files: [file]
+            // Removing text to avoid JSON serialization issues
+          });
+          console.log("Image shared successfully via Web Share API");
+          return;
+        } catch (shareError) {
+          console.error("File sharing failed:", shareError);
+          // Continue to fallback options
+        }
       } 
       
       // Try sharing both image and text separately for better compatibility
