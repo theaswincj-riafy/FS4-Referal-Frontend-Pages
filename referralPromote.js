@@ -20,6 +20,11 @@ class ReferralPromotePage {
         this.hideLoader();
         this.initCardStack();
         this.bindEvents();
+        
+        // Start share card preloading after page is fully loaded (non-blocking)
+        setTimeout(() => {
+          this.preloadShareCard();
+        }, 500);
       } else {
         throw new Error("No data loaded");
       }
@@ -111,10 +116,7 @@ class ReferralPromotePage {
       this.clipboardCopyAudio.volume = 0.8;
       
       // Load html-to-image library for share card rendering
-      this.loadHtmlToImageLibrary();
-      
-      // Preload share card for instant sharing
-      this.preloadShareCard();
+      await this.loadHtmlToImageLibrary();
       
       console.log("Assets preloaded successfully");
     } catch (error) {
@@ -162,19 +164,34 @@ class ReferralPromotePage {
   // Preload share card for instant sharing
   async preloadShareCard() {
     try {
-      console.log("Preloading share card...");
-      // Wait a bit for the library to load
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log("Starting share card preload process...");
+      
+      // Wait for library to be fully loaded
+      let attempts = 0;
+      while (!window.htmlToImage && attempts < 10) {
+        console.log("Waiting for html-to-image library... attempt", attempts + 1);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        attempts++;
+      }
+      
+      if (!window.htmlToImage) {
+        throw new Error("html-to-image library failed to load after 5 seconds");
+      }
+      
+      console.log("html-to-image library ready, generating share card...");
       
       // Generate the share card blob and store it as JPEG for better compatibility
       this.shareCardBlob = await this.renderShareCardToBlob(this.params.firstname, 'jpeg');
       this.shareCardFile = new File([this.shareCardBlob], 'invite-card.jpg', { type: 'image/jpeg' });
       
-      console.log("Share card preloaded successfully as JPEG:", this.shareCardFile);
+      console.log("✅ Share card preloaded successfully!");
+      console.log("File name:", this.shareCardFile.name);
       console.log("File size:", this.shareCardBlob.size, "bytes");
       console.log("File type:", this.shareCardFile.type);
     } catch (error) {
-      console.warn("Failed to preload share card:", error);
+      console.warn("❌ Failed to preload share card:", error);
+      this.shareCardFile = null;
+      this.shareCardBlob = null;
     }
   }
 
@@ -260,9 +277,13 @@ class ReferralPromotePage {
       // Use preloaded share card if available, otherwise generate new one
       let file = this.shareCardFile;
       if (!file) {
-        console.log("Generating share card on demand...");
+        console.log("⚠️ Share card not preloaded, generating on demand...");
+        ReferralUtils.showToast("Preparing your share card...");
         const blob = await this.renderShareCardToBlob(name, 'jpeg');
         file = new File([blob], 'invite-card.jpg', { type: 'image/jpeg' });
+        console.log("✅ Share card generated on demand");
+      } else {
+        console.log("✅ Using preloaded share card");
       }
 
       console.log("Share file ready:", file);
