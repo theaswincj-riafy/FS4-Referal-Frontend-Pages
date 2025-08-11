@@ -779,6 +779,16 @@ class ReferralStatusPage {
       heroImage.src = imageSrc;
     }
 
+    // Show/hide level-title based on current_redemptions
+    const levelTitle = document.getElementById("level-title");
+    if (levelTitle) {
+      if (currentRedemptions === 0) {
+        levelTitle.style.display = "none";
+      } else {
+        levelTitle.style.display = "block";
+      }
+    }
+
     // Get redeem_dates from API response
     const redeemDates = pageData.redeem_dates || {};
 
