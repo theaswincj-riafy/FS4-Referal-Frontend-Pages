@@ -427,10 +427,10 @@ class ReferralStatusPage {
       `;
       document.body.appendChild(confettiContainer);
 
-      // Load react-confetti library dynamically
-      import('https://cdn.jsdelivr.net/npm/react-confetti@6.1.0/+esm')
+      // Load react-confetti library dynamically using proper module import
+      import('https://cdn.jsdelivr.net/npm/react-confetti@6.4.0/+esm')
         .then(confettiModule => {
-          const Confetti = confettiModule.default;
+          const reactConfetti = confettiModule.default;
           
           // Create canvas element for confetti
           const canvas = document.createElement('canvas');
@@ -447,25 +447,17 @@ class ReferralStatusPage {
           confettiContainer.appendChild(canvas);
 
           // Initialize confetti with wind effects and simultaneous release
-          this.confettiInstance = new Confetti(canvas, {
-            particleCount: 200,
-            spread: 100,
-            startVelocity: 50,
-            scalar: 1.2,
-            drift: 0.1,
+          this.confettiInstance = reactConfetti({
+            canvas: canvas,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            numberOfPieces: 200,
             gravity: 0.8,
             wind: 0.02,
-            colors: ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'],
-            shapes: ['square', 'circle'],
-            ticks: 300,
-            origin: {
-              x: 0.5,
-              y: 0
-            }
+            friction: 0.99,
+            opacity: 0.8,
+            colors: ['#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899']
           });
-
-          // Start the animation
-          this.confettiInstance.start();
 
           console.log("React-confetti animation started with wind effects");
         })
