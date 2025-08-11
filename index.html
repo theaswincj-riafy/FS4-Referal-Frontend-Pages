@@ -390,8 +390,8 @@
                     params.append('referralCode', data.referralCode);
                 }
 
-                // Add FCM token only for referralPromote page if switch is enabled
-                if (page === 'referralPromote.html' && data.fcmTokenEnabled) {
+                // Add FCM token for referralPromote and referralStatus pages if switch is enabled
+                if ((page === 'referralPromote.html' || page === 'referralStatus.html') && data.fcmTokenEnabled) {
                     // Load FCM token from external file
                     if (typeof FCM_TOKEN !== 'undefined') {
                         params.append('fb_token', FCM_TOKEN);
