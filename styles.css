@@ -273,6 +273,8 @@ p {
   /* Enable smooth mouse wheel scrolling */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  /* Ensure content doesn't push footer out of view */
+  min-height: 0;
 }
 
 .page-content-wrapper {
@@ -296,6 +298,7 @@ p {
   border-top: 1px solid #f2f2f7;
   padding: 16px 20px 32px;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
+  margin-top: auto;
 }
 
 .primary-cta {
