@@ -830,11 +830,22 @@ class ReferralRedeemPage {
       if (navigator.clipboard) {
         const text = await navigator.clipboard.readText();
         const input = document.getElementById("redeem-input");
+        
         if (input) {
-          input.value = text.trim();
-          this.validateInput();
-          ReferralUtils.showToast("Code pasted successfully!");
-          this.playClipboardPasteAudio();
+          // Extract referral code from clipboard text intelligently
+          const extractedCode = this.extractReferralCode(text);
+          
+          if (extractedCode) {
+            // Only paste if we found a valid referral code
+            input.value = extractedCode.toUpperCase();
+            this.validateInput();
+            ReferralUtils.showToast("Referral code pasted successfully!");
+            this.playClipboardPasteAudio();
+          } else {
+            // Don't paste anything if no valid code found
+            console.log("No valid referral code found in clipboard text:", text);
+            // Don't show error toast, just silently fail as requested
+          }
         }
       } else {
         ReferralUtils.showToast(
@@ -847,6 +858,39 @@ class ReferralRedeemPage {
         "Failed to paste from clipboard. Please paste manually.",
       );
     }
+  }
+
+  // Extract referral code from clipboard text
+  extractReferralCode(text) {
+    if (!text || typeof text !== 'string') {
+      return null;
+    }
+
+    const trimmedText = text.trim();
+    
+    // Pattern 1: Extract from URL format
+    // Example: "Aswin invited you to try Keto Recipes App! Get 1 week of Premium features for free using this referral: https://referralboost.netlify.app/referralDownload.html?referralCode=aswin3154"
+    const urlPattern = /referralCode=([a-zA-Z0-9]+)/i;
+    const urlMatch = trimmedText.match(urlPattern);
+    
+    if (urlMatch && urlMatch[1]) {
+      console.log("Extracted referral code from URL:", urlMatch[1]);
+      return urlMatch[1];
+    }
+    
+    // Pattern 2: Direct referral code (alphanumeric, typically 6-20 characters)
+    // Example: "aswin3154"
+    // This should be the entire text or the main part without special characters
+    const directCodePattern = /^[a-zA-Z0-9]+$/;
+    
+    if (directCodePattern.test(trimmedText) && trimmedText.length >= 4 && trimmedText.length <= 20) {
+      console.log("Detected direct referral code:", trimmedText);
+      return trimmedText;
+    }
+    
+    // If neither pattern matches, return null (no valid code found)
+    console.log("No valid referral code pattern found in text:", trimmedText);
+    return null;
   }
 
   validateInput() {

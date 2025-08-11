@@ -150,7 +150,7 @@ class ReferralStatusPage {
       );
 
       // Set dynamic loading text
-      const loadingTextElement = document.getElementById('loading-text');
+      const loadingTextElement = document.getElementById("loading-text");
       if (loadingTextElement) {
         loadingTextElement.textContent = ReferralUtils.getRandomLoadingText();
       }
@@ -755,7 +755,8 @@ class ReferralStatusPage {
       .replace(/\{\{current_redemptions\}\}/g, currentRedemptions)
       .replace(/\{\{target_redemptions\}\}/g, 5)
       .replace(/\{\{pending_redemptions\}\}/g, pendingRedemptions);
-    document.getElementById("progress-display").textContent = progressText;
+    document.getElementById("progress-display-status").textContent =
+      progressText;
 
     // Use hero.quickButtonText for invite button
     document
@@ -1386,7 +1387,9 @@ class ReferralStatusPage {
       }
 
       // Apply theme colors to progress-display
-      const progressDisplay = document.getElementById("progress-display");
+      const progressDisplay = document.getElementById(
+        "progress-display-status",
+      );
       if (progressDisplay) {
         progressDisplay.style.borderColor = THEME_ONE.border;
         progressDisplay.style.backgroundColor = THEME_ONE.pastelBGFill;
