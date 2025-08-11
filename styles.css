@@ -2371,3 +2371,8 @@ p {
 #progress-display-status{
   margin-bottom:0px
 }
+
+
+.desktop-Background{
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+}
